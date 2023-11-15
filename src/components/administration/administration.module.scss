@@ -1,0 +1,76 @@
+.administrationInner {
+  padding: 40px 30px;
+
+  .titleWrapper {
+    margin: 0 0 25px 12px;
+
+    .title {
+      margin: 0;
+      color: var(--orange);
+      font-size: 36px;
+      font-weight: 500;
+    }
+  }
+
+  .addUserIcon {
+    font-size: 24px;
+  }
+
+  .userList {
+    width: 100%;
+
+    .user {
+      border: 1px solid var(--orange);
+      border-radius: 6px;
+      background: white;
+      padding: 20px;
+
+      &__icon {
+        font-size: 50px;
+      }
+
+      &__descriptions {
+        :global {
+          .ant-descriptions-row:last-child .ant-descriptions-item {
+            padding-bottom: 0;
+          }
+
+          .ant-descriptions-item {
+            .ant-descriptions-item-content {
+              font-size: 20px;
+              font-weight: 500;
+            }
+          }
+        }
+
+        &__password {
+          border: none;
+          padding: 0;
+          font-size: 20px;
+
+          &:focus-within,
+          &:focus {
+            border: none;
+            outline: none;
+            box-shadow: none;
+          }
+
+          input {
+            width: fit-content;
+          }
+
+          :global {
+            .ant-input-suffix .anticon {
+              color: var(--orange);
+            }
+          }
+        }
+      }
+
+      &__deleteIcon {
+        color: var(--orange);
+        font-size: 24px;
+      }
+    }
+  }
+}

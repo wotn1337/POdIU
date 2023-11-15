@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  height: auto;
+  background-color: transparent;
+  padding: 40px 170px 0 70px;
+  justify-content: space-between;
+  align-items: end;
+
+  &__logo {
+    width: 150px;
+  }
+
+  &__menu {
+    border-bottom: none;
+
+    li:last-child {
+      padding-right: 0;
+
+      &::after {
+        width: calc(100% - 16px);
+      }
+    }
+  }
+}
