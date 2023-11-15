@@ -1,5 +1,5 @@
 import { DeleteOutlined, UserOutlined } from "@ant-design/icons";
-import { Descriptions, DescriptionsProps, Flex, Input, Typography } from "antd";
+import { Descriptions, DescriptionsProps, Flex } from "antd";
 import s from "./administration.module.scss";
 import { RoleDropdown } from "./roleDropdown";
 import { UserPassword } from "./userPassword";
