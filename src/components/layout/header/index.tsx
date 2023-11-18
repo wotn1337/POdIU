@@ -1,8 +1,11 @@
 import {
+  BankOutlined,
   HomeOutlined,
   LockOutlined,
   PoweroffOutlined,
   SettingOutlined,
+  TableOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Layout as AntdLayout, Menu, MenuProps } from "antd";
@@ -17,13 +20,28 @@ const { Header: AntdHeader } = AntdLayout;
 const items: MenuProps["items"] = [
   {
     label: <NavLink to={PATH.MAIN}>Главная</NavLink>,
-    key: "",
+    key: PATH.MAIN,
     icon: <HomeOutlined />,
   },
   {
     label: <NavLink to={PATH.ADMINSTRATION}>Администрирование</NavLink>,
-    key: "administration",
+    key: PATH.ADMINSTRATION,
     icon: <SettingOutlined />,
+  },
+  {
+    label: <NavLink to={PATH.STUDENTS}>Студенты</NavLink>,
+    key: PATH.STUDENTS,
+    icon: <TeamOutlined />,
+  },
+  {
+    label: <NavLink to={PATH.DORMITORIES}>Общежития</NavLink>,
+    key: PATH.DORMITORIES,
+    icon: <BankOutlined />,
+  },
+  {
+    label: <NavLink to={PATH.SETTLEMENT}>Поселение</NavLink>,
+    key: PATH.SETTLEMENT,
+    icon: <TableOutlined />,
   },
   {
     label: "Имя пользователя",
