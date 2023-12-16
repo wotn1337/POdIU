@@ -16,6 +16,17 @@
     font-size: 24px;
   }
 
+  .createUserForm {
+    .submitButtonWrapper {
+      margin-bottom: 0;
+
+      .submitButton {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+
   .userList {
     width: 100%;
 
