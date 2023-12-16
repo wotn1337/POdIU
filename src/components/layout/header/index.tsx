@@ -1,5 +1,6 @@
 import {
   HomeOutlined,
+  LoadingOutlined,
   LockOutlined,
   PoweroffOutlined,
   SettingOutlined,
@@ -11,41 +12,47 @@ import s from "./header.module.scss";
 import { useCurrentPage } from "hooks/useCurrentPage";
 import { NavLink } from "react-router-dom";
 import { PATH } from "assets/constants";
+import { useDispatch, useSelector } from "app/store";
+import { logout } from "app/features/auth/authActions";
 
 const { Header: AntdHeader } = AntdLayout;
 
-const items: MenuProps["items"] = [
-  {
-    label: <NavLink to={PATH.MAIN}>Главная</NavLink>,
-    key: "",
-    icon: <HomeOutlined />,
-  },
-  {
-    label: <NavLink to={PATH.ADMINSTRATION}>Администрирование</NavLink>,
-    key: "administration",
-    icon: <SettingOutlined />,
-  },
-  {
-    label: "Имя пользователя",
-    key: "user",
-    icon: <UserOutlined />,
-    children: [
-      {
-        label: <NavLink to={PATH.ACCESS_SETTINGS}>Настройки входа</NavLink>,
-        key: "access-settings",
-        icon: <LockOutlined />,
-      },
-      {
-        label: "Выйти",
-        key: "logout",
-        icon: <PoweroffOutlined />,
-      },
-    ],
-  },
-];
-
 export const Header = () => {
   const currentPage = useCurrentPage();
+  const { userInfo, loading } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const items: MenuProps["items"] = [
+    {
+      label: <NavLink to={PATH.MAIN}>Главная</NavLink>,
+      key: "",
+      icon: <HomeOutlined />,
+    },
+    {
+      label: <NavLink to={PATH.ADMINSTRATION}>Администрирование</NavLink>,
+      key: "administration",
+      icon: <SettingOutlined />,
+    },
+    {
+      label: userInfo?.email,
+      key: "user",
+      icon: <UserOutlined />,
+      children: [
+        {
+          label: <NavLink to={PATH.ACCESS_SETTINGS}>Настройки входа</NavLink>,
+          key: "access-settings",
+          icon: <LockOutlined />,
+        },
+        {
+          label: "Выйти",
+          key: "logout",
+          onClick: () => dispatch(logout()),
+          disabled: loading,
+          icon: loading ? <LoadingOutlined /> : <PoweroffOutlined />,
+        },
+      ],
+    },
+  ];
 
   return (
     <AntdHeader className={s.header}>

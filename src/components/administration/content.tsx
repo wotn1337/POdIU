@@ -1,7 +1,8 @@
 import { Space, Typography } from "antd";
 import { ContentWrapper } from "components/shared";
 import s from "./administration.module.scss";
-import { UserAddOutlined } from "@ant-design/icons";
+import { CreateRoleModal } from "./createRoleModal";
+import { CreateUserModal } from "./createUserModal";
 import { UserList } from "./userList";
 
 export const AdministrationPageContent = () => {
@@ -12,7 +13,8 @@ export const AdministrationPageContent = () => {
           <Typography.Title className={s.title}>
             Список пользователей
           </Typography.Title>
-          <UserAddOutlined className={s.addUserIcon} />
+          <CreateUserModal />
+          <CreateRoleModal />
         </Space>
         <UserList />
       </section>

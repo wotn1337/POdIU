@@ -1,17 +1,19 @@
 import { DeleteOutlined, UserOutlined } from "@ant-design/icons";
-import { Descriptions, DescriptionsProps, Flex } from "antd";
+import {
+  Button,
+  Descriptions,
+  DescriptionsProps,
+  Flex,
+  Space,
+  Tag,
+} from "antd";
+import { User as UserType } from "app/features/administration/types";
 import s from "./administration.module.scss";
-import { RoleDropdown } from "./roleDropdown";
-import { UserPassword } from "./userPassword";
+import { getFlatPermissions } from "./utils";
 
-type Props = {
-  name: string;
-  email: string;
-  role: string;
-  password: string;
-};
+type Props = UserType;
 
-export const User: React.FC<Props> = ({ name, email, role, password }) => {
+export const User: React.FC<Props> = ({ name, email, roles, permissions }) => {
   const descriptionsItems: DescriptionsProps["items"] = [
     {
       key: "name",
@@ -24,15 +26,33 @@ export const User: React.FC<Props> = ({ name, email, role, password }) => {
       children: email,
     },
     {
-      key: "role",
-      label: "Роль",
-      children: <RoleDropdown role={role} />,
+      key: "roles",
+      label: "Роли",
+      // children: <RoleDropdown role={role} />,
+      children: (
+        <Space size={4} wrap>
+          {roles.map((role) => (
+            <Tag key={role.id}>{role.title}</Tag>
+          ))}
+        </Space>
+      ),
     },
     {
-      key: "password",
-      label: "Пароль",
-      children: <UserPassword password={password} />,
+      key: "permissions",
+      label: "Права",
+      children: (
+        <Space size={0} wrap>
+          {getFlatPermissions(permissions).map((perm) => (
+            <Tag key={perm.id}>{perm.title}</Tag>
+          ))}
+        </Space>
+      ),
     },
+    // {
+    //   key: "password",
+    //   label: "Пароль",
+    //   children: <UserPassword password={password} />,
+    // },
   ];
 
   return (
@@ -44,7 +64,7 @@ export const User: React.FC<Props> = ({ name, email, role, password }) => {
         column={4}
         className={s.user__descriptions}
       />
-      <DeleteOutlined className={s.user__deleteIcon} />
+      <Button icon={<DeleteOutlined className={s.user__deleteIcon} />} />
     </Flex>
   );
 };
