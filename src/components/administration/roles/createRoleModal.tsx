@@ -5,12 +5,12 @@ import {
 } from "app/features/administration/administrationActions";
 import { useDispatch, useSelector } from "app/store";
 import { useEffect } from "react";
-import s from "./administration.module.scss";
-import { getFlatPermissions } from "./utils";
+import { getFlatPermissions } from "../utils";
 import {
   clearCreateRoleMessage,
   setOpenCreateRolePopover,
 } from "app/features/administration/administrationSlice";
+import s from "../administration.module.scss";
 
 const { Option } = Select;
 
@@ -53,7 +53,7 @@ export const CreateRoleModal = () => {
       >
         <Form
           name="create-role"
-          className={s.createUserForm}
+          className={s.createForm}
           onFinish={(values) => dispatch(createRole(values))}
           disabled={creatingRole}
         >
@@ -62,12 +62,7 @@ export const CreateRoleModal = () => {
             name="title"
             rules={[{ required: true, message: requiredMessage }]}
           >
-            <Input
-              onChange={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-            />
+            <Input />
           </Form.Item>
 
           <Form.Item

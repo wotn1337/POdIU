@@ -1,22 +1,5 @@
 .administrationInner {
-  padding: 40px 30px;
-
-  .titleWrapper {
-    margin: 0 0 25px 12px;
-
-    .title {
-      margin: 0;
-      color: var(--orange);
-      font-size: 36px;
-      font-weight: 500;
-    }
-  }
-
-  .addUserIcon {
-    font-size: 24px;
-  }
-
-  .createUserForm {
+  .createForm {
     .submitButtonWrapper {
       margin-bottom: 0;
 
@@ -78,9 +61,13 @@
         }
       }
 
-      &__deleteIcon {
-        color: var(--orange);
-        font-size: 24px;
+      &__deleteButton {
+        padding: 0 3px;
+
+        &__icon {
+          color: var(--orange);
+          font-size: 24px;
+        }
       }
     }
   }

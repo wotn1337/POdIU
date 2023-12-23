@@ -1,19 +1,22 @@
 import {
-  HomeOutlined,
+  ApartmentOutlined,
+  AuditOutlined,
+  BankOutlined,
   LoadingOutlined,
-  LockOutlined,
-  PoweroffOutlined,
+  LogoutOutlined,
   SettingOutlined,
+  TeamOutlined,
   UserOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Layout as AntdLayout, Menu, MenuProps } from "antd";
+import { logout } from "app/features/auth/authActions";
+import { useDispatch, useSelector } from "app/store";
+import { PATH } from "assets/constants";
 import { Logo } from "assets/images";
-import s from "./header.module.scss";
 import { useCurrentPage } from "hooks/useCurrentPage";
 import { NavLink } from "react-router-dom";
-import { PATH } from "assets/constants";
-import { useDispatch, useSelector } from "app/store";
-import { logout } from "app/features/auth/authActions";
+import s from "./header.module.scss";
 
 const { Header: AntdHeader } = AntdLayout;
 
@@ -24,14 +27,36 @@ export const Header = () => {
 
   const items: MenuProps["items"] = [
     {
-      label: <NavLink to={PATH.MAIN}>Главная</NavLink>,
-      key: "",
-      icon: <HomeOutlined />,
-    },
-    {
-      label: <NavLink to={PATH.ADMINSTRATION}>Администрирование</NavLink>,
+      label: "Администрирование",
       key: "administration",
       icon: <SettingOutlined />,
+      children: [
+        {
+          label: <NavLink to={PATH.USERS}>Пользователи</NavLink>,
+          key: PATH.USERS,
+          icon: <UserSwitchOutlined />,
+        },
+        {
+          label: <NavLink to={PATH.ROLES}>Роли</NavLink>,
+          key: PATH.ROLES,
+          icon: <ApartmentOutlined />,
+        },
+      ],
+    },
+    {
+      label: <NavLink to={PATH.STUDENTS}>Студенты</NavLink>,
+      key: PATH.STUDENTS,
+      icon: <TeamOutlined />,
+    },
+    {
+      label: <NavLink to={PATH.DORMITORIES}>Общежития</NavLink>,
+      key: PATH.DORMITORIES,
+      icon: <BankOutlined />,
+    },
+    {
+      label: <NavLink to={PATH.SETTLEMENT}>Поселение</NavLink>,
+      key: PATH.SETTLEMENT,
+      icon: <AuditOutlined />,
     },
     {
       label: userInfo?.email,
@@ -39,16 +64,11 @@ export const Header = () => {
       icon: <UserOutlined />,
       children: [
         {
-          label: <NavLink to={PATH.ACCESS_SETTINGS}>Настройки входа</NavLink>,
-          key: "access-settings",
-          icon: <LockOutlined />,
-        },
-        {
           label: "Выйти",
           key: "logout",
           onClick: () => dispatch(logout()),
           disabled: loading,
-          icon: loading ? <LoadingOutlined /> : <PoweroffOutlined />,
+          icon: loading ? <LoadingOutlined /> : <LogoutOutlined />,
         },
       ],
     },

@@ -3,6 +3,7 @@ import { StateType } from "./types";
 import {
   createRole,
   createUser,
+  deleteRole,
   getPermissions,
   getRoles,
   getUsers,
@@ -17,6 +18,7 @@ const initialState: StateType = {
   permissionsLoading: false,
   creatingRole: false,
   loadingRoles: false,
+  deleteRolesIds: [],
 };
 
 const administrationSlice = createSlice({
@@ -101,6 +103,18 @@ const administrationSlice = createSlice({
     });
     builder.addCase(getRoles.rejected, (state) => {
       state.loadingRoles = false;
+    });
+
+    // delete role
+    builder.addCase(deleteRole.pending, (state, { meta: { arg } }) => {
+      state.deleteRolesIds.push(arg);
+    });
+    builder.addCase(deleteRole.fulfilled, (state, { meta: { arg } }) => {
+      state.deleteRolesIds = state.deleteRolesIds.filter((id) => id !== arg);
+      state.roles = state.roles?.filter(({ id }) => id !== arg);
+    });
+    builder.addCase(deleteRole.rejected, (state, { meta: { arg } }) => {
+      state.deleteRolesIds = state.deleteRolesIds.filter((id) => id !== arg);
     });
   },
 });

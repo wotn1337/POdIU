@@ -1,0 +1,42 @@
+export const data = [
+  {
+    id: 1,
+    number: 10,
+    address: "Room 1242",
+    room_count: 214,
+    student_count: 303,
+    capacity: 942,
+  },
+  {
+    id: 2,
+    number: 24,
+    address: "PO Box 30920",
+    room_count: 148,
+    student_count: 383,
+    capacity: 624,
+  },
+  {
+    id: 3,
+    number: 67,
+    address: "PO Box 25538",
+    room_count: 128,
+    student_count: 208,
+    capacity: 1095,
+  },
+  {
+    id: 4,
+    number: 35,
+    address: "7th Floor",
+    room_count: 226,
+    student_count: 365,
+    capacity: 887,
+  },
+  {
+    id: 5,
+    number: 41,
+    address: "6th Floor",
+    room_count: 252,
+    student_count: 341,
+    capacity: 1115,
+  },
+];
