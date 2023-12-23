@@ -1,17 +1,16 @@
 import { Button, Checkbox, Form, Input, Modal, Select, message } from "antd";
-import s from "./administration.module.scss";
-import { useDispatch, useSelector } from "app/store";
 import {
   createUser,
   getRoles,
 } from "app/features/administration/administrationActions";
-import { useEffect } from "react";
 import {
   clearCreateMessage,
   setOpenCreateUserPopover,
 } from "app/features/administration/administrationSlice";
-import { UserAddOutlined } from "@ant-design/icons";
-import { getFlatPermissions } from "./utils";
+import { useDispatch, useSelector } from "app/store";
+import { useEffect } from "react";
+import { getFlatPermissions } from "../utils";
+import s from "../administration.module.scss";
 
 const { Option } = Select;
 
@@ -41,14 +40,9 @@ export const CreateUserModal = () => {
 
   return (
     <>
-      <Button
-        icon={
-          <UserAddOutlined
-            className={s.addUserIcon}
-            onClick={() => dispatch(setOpenCreateUserPopover(true))}
-          />
-        }
-      />
+      <Button onClick={() => dispatch(setOpenCreateUserPopover(true))}>
+        Добавить пользователя
+      </Button>
       <Modal
         title="Добавить пользователя"
         open={createUserModalOpen}
@@ -59,7 +53,7 @@ export const CreateUserModal = () => {
       >
         <Form
           name="create-user"
-          className={s.createUserForm}
+          className={s.createForm}
           disabled={creating}
           onFinish={(values) => dispatch(createUser(values))}
           initialValues={{ is_admin: false }}

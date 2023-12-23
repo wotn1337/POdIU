@@ -1,5 +1,5 @@
 import { Skeleton, Space } from "antd";
-import s from "./administration.module.scss";
+import s from "./users.module.scss";
 import { User } from "./user";
 import { useSelector } from "app/store";
 
@@ -8,9 +8,7 @@ export const UserList: React.FC = () => {
   return (
     <Skeleton loading={loading} active>
       <Space direction="vertical" size={24} className={s.userList}>
-        {users.map((user, index) => (
-          <User key={index} {...user} />
-        ))}
+        {users.map((user, index) => <User key={index} {...user} />).reverse()}
       </Space>
     </Skeleton>
   );

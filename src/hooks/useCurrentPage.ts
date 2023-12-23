@@ -6,16 +6,18 @@ export const useCurrentPage = () => {
   const [page, setPage] = useState<string>("");
 
   useEffect(() => {
-    const pathnameWithoutFirstSlash = location.pathname.slice(1);
-    if (pathnameWithoutFirstSlash) {
-      if (pathnameWithoutFirstSlash.includes("/")) {
-        setPage(pathnameWithoutFirstSlash.split("/")[0]);
-      } else {
-        setPage(pathnameWithoutFirstSlash);
-      }
-      return;
-    }
-    setPage("");
+    setPage(location.pathname);
+    // const pathnameWithoutFirstSlash = location.pathname.slice(1);
+    // if (pathnameWithoutFirstSlash) {
+    //   setPage(pathnameWithoutFirstSlash);
+    //   if (pathnameWithoutFirstSlash.includes("/")) {
+    //     setPage(pathnameWithoutFirstSlash.split("/")[0]);
+    //   } else {
+    //     setPage(pathnameWithoutFirstSlash);
+    //   }
+    //   return;
+    // }
+    // setPage("");
   }, [location]);
 
   return page;

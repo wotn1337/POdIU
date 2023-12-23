@@ -8,8 +8,8 @@ import {
   Tag,
 } from "antd";
 import { User as UserType } from "app/features/administration/types";
-import s from "./administration.module.scss";
-import { getFlatPermissions } from "./utils";
+import s from "./users.module.scss";
+import { getFlatPermissions } from "../utils";
 
 type Props = UserType;
 
@@ -64,7 +64,10 @@ export const User: React.FC<Props> = ({ name, email, roles, permissions }) => {
         column={4}
         className={s.user__descriptions}
       />
-      <Button icon={<DeleteOutlined className={s.user__deleteIcon} />} />
+      <Button
+        className={s.user__deleteButton}
+        icon={<DeleteOutlined className={s.user__deleteButton__icon} />}
+      />
     </Flex>
   );
 };

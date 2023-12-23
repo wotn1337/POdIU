@@ -9,6 +9,7 @@ import {
   RolesResponse,
   User,
 } from "./types";
+import { WithMessage } from "app/types";
 
 type Response = {
   users: User[];
@@ -58,6 +59,16 @@ export const getRoles = createAsyncThunk<RolesResponse>(
   "administration/getRoles",
   async () => {
     const response = await axiosInstance.get<RolesResponse>("/api/v1/roles");
+    return response.data;
+  }
+);
+
+export const deleteRole = createAsyncThunk<WithMessage, number>(
+  "administration/deleteRole",
+  async (id) => {
+    const response = await axiosInstance.delete<WithMessage>(
+      `/api/v1/roles/${id}/delete`
+    );
     return response.data;
   }
 );

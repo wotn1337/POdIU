@@ -1,3 +1,5 @@
+import { WithMessage } from "app/types";
+
 export type Role = {
   id: number;
   title: string;
@@ -45,22 +47,21 @@ export type StateType = {
   createRoleMessage?: string;
   roles?: Role[];
   loadingRoles: boolean;
+  deleteRolesIds: number[];
 };
 
-export type CreateUserResponse = {
-  message: string;
+export type CreateUserResponse = WithMessage<{
   user: User;
-};
+}>;
 
 export type CreateRoleData = {
   title: string;
   permissions: number[];
 };
 
-export type CreateRoleResponse = {
+export type CreateRoleResponse = WithMessage<{
   role: Role;
-  message: string;
-};
+}>;
 
 export type RolesResponse = {
   roles: Role[];

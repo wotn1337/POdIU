@@ -1,0 +1,43 @@
+.tabledContent {
+  padding-bottom: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+
+  &__header {
+    padding: 40px 24px 16px;
+    background-color: #fff;
+    height: auto;
+    line-height: normal;
+    border-radius: 8px 8px 0 0;
+
+    .titleWrapper {
+      margin-bottom: 25px;
+      display: flex;
+
+      .title {
+        margin: 0;
+        color: var(--orange);
+        font-size: 36px;
+        font-weight: 500;
+      }
+    }
+
+    .searchInput {
+      width: auto;
+    }
+  }
+
+  &__content {
+    background-color: #fff;
+    border-top: 1px solid var(--orange);
+    border-bottom: 1px solid var(--orange);
+
+    &__table {
+      :global {
+        .ant-table-pagination {
+          padding: 0 24px;
+        }
+      }
+    }
+  }
+}
