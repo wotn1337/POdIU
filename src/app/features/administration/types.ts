@@ -34,7 +34,7 @@ export type CreateUserData = BaseUserType & {
   permissions: number[] | null;
 };
 
-export type StateType = {
+export type AdministrationStateType = {
   users: User[];
   loading: boolean;
   creating: boolean;

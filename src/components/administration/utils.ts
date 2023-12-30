@@ -1,6 +1,8 @@
-import { StateType } from "app/features/administration/types";
+import { AdministrationStateType } from "app/features/administration/types";
 
-export const getFlatPermissions = (permissions: StateType["permissions"]) => {
+export const getFlatPermissions = (
+  permissions: AdministrationStateType["permissions"]
+) => {
   if (permissions) {
     return Object.entries(permissions).reduce((result, current) => {
       const [key, items] = current;

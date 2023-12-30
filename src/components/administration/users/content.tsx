@@ -5,7 +5,6 @@ import { useSelector } from "app/store";
 import { TabledContent } from "components/shared";
 import { getFlatPermissions } from "../utils";
 import { CreateUserModal } from "./createUserModal";
-import s from "../administration.module.scss";
 
 const columns: ColumnsType<User> = [
   {
@@ -48,7 +47,6 @@ export const UsersPageContent = () => {
   const { users, loading } = useSelector((state) => state.administration);
   return (
     <TabledContent<User>
-      layoutClassName={s.administrationInner}
       pageTitle="Пользователи"
       actionButtons={<CreateUserModal />}
       dataSource={users}

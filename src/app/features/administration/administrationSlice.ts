@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { StateType } from "./types";
+import { AdministrationStateType } from "./types";
 import {
   createRole,
   createUser,
@@ -9,7 +9,7 @@ import {
   getUsers,
 } from "./administrationActions";
 
-const initialState: StateType = {
+const initialState: AdministrationStateType = {
   users: [],
   loading: false,
   creating: false,
