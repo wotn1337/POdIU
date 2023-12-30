@@ -6,11 +6,15 @@ import {
 } from "react-redux";
 import authReducer from "./features/auth/authSlice";
 import administrationReducer from "./features/administration/administrationSlice";
+import studentsReducer from "./features/students/studentsSlice";
+import dormitoriesReducer from "./features/dormitories/dormitoriesSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     administration: administrationReducer,
+    students: studentsReducer,
+    dormitories: dormitoriesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

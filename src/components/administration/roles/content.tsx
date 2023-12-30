@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
 import { DeleteButton } from "components/shared/delete-button";
 import { CreateRoleModal } from "./createRoleModal";
-import s from "../administration.module.scss";
 import { deleteRole } from "app/features";
 
 export const RolesPageContent = () => {
@@ -33,7 +32,6 @@ export const RolesPageContent = () => {
 
   return (
     <TabledContent<Role>
-      layoutClassName={s.administrationInner}
       pageTitle="Роли"
       actionButtons={<CreateRoleModal />}
       dataSource={roles}

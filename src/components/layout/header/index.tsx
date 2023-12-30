@@ -22,7 +22,7 @@ const { Header: AntdHeader } = AntdLayout;
 
 export const Header = () => {
   const currentPage = useCurrentPage();
-  const { userInfo, loading } = useSelector((state) => state.auth);
+  const { user, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const items: MenuProps["items"] = [
@@ -59,7 +59,7 @@ export const Header = () => {
       icon: <AuditOutlined />,
     },
     {
-      label: userInfo?.email,
+      label: user?.name,
       key: "user",
       icon: <UserOutlined />,
       children: [

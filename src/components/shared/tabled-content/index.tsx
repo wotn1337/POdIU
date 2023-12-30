@@ -68,12 +68,12 @@ export function TabledContent<T extends AnyObject>({
             rowKey="id"
             scroll={{ x: "100%" }}
             pagination={{
-              defaultPageSize: 5,
               pageSizeOptions: [5, 10, 20, 50],
               showSizeChanger: true,
               showTotal: (total, range) =>
                 `Показано ${range.join(" - ")} (всего ${total})`,
               locale: { items_per_page: "строк на страницу" },
+              ...props.pagination,
             }}
             {...props}
           />

@@ -2,25 +2,25 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance, getToken } from "app/api";
 import {
   LoginResponse,
-  LoginResponseWithEmail,
   LoginUserData,
   LogoutResponse,
 } from "app/features/auth/types";
+import { AxiosResponse } from "axios";
 
-export const login = createAsyncThunk<LoginResponseWithEmail, LoginUserData>(
+export const login = createAsyncThunk<LoginResponse, LoginUserData>(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       await getToken();
       const response = await axiosInstance.post<
         LoginUserData,
-        { data: LoginResponse }
+        AxiosResponse<LoginResponse>
       >("/spa/v1/login", {
         email,
         password,
       });
-      sessionStorage.setItem("user", JSON.stringify({ email }));
-      return { ...response.data, email };
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+      return response.data;
     } catch (error) {
       console.log(error);
       return rejectWithValue(error);

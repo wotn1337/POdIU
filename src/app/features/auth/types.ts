@@ -1,6 +1,8 @@
+import { User } from "app/types";
+
 export type StateType = {
   loading: boolean;
-  userInfo?: { email: string };
+  user?: User;
   error: string | null | undefined;
   loggedIn: boolean;
 };
@@ -12,10 +14,7 @@ export type LoginUserData = {
 
 export type LoginResponse = {
   message: string;
+  user: User;
 };
 
 export type LogoutResponse = LoginResponse;
-
-export type LoginResponseWithEmail = LoginResponse & {
-  email: string;
-};
