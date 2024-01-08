@@ -5,10 +5,14 @@ import { AxiosResponse } from "axios";
 import {
   CreateDormitory,
   CreateDormitoryResponse,
+  CreateRoomData,
+  CreateRoomResponse,
   GetDormRoomsParams,
   GetDormRoomsResponse,
   GetDormitoriesParams,
   GetDormitoriesResponse,
+  UpdateDorm,
+  UpdateRoomData,
 } from "./types";
 
 export const getDormitories = createAsyncThunk<
@@ -32,6 +36,17 @@ export const deleteDormitory = createAsyncThunk<WithMessage, number>(
   }
 );
 
+export const updateDormitory = createAsyncThunk<
+  CreateDormitoryResponse,
+  UpdateDorm
+>("dormitories/updateDormitory", async ({ id, ...data }) => {
+  const response = await axiosInstance.patch<
+    UpdateDorm,
+    AxiosResponse<CreateDormitoryResponse>
+  >(`/api/v1/dormitories/${id}`, data);
+  return response.data;
+});
+
 export const createDormitory = createAsyncThunk<
   CreateDormitoryResponse,
   CreateDormitory
@@ -46,10 +61,17 @@ export const createDormitory = createAsyncThunk<
 export const getDormRooms = createAsyncThunk<
   GetDormRoomsResponse,
   GetDormRoomsParams
->("dormitories/getDormRooms", async ({ dormId, page, per_page }) => {
-  const response = await axiosInstance.get<GetDormRoomsResponse>(
-    `/api/v1/dormitories/${dormId}/dorm-rooms?page=${page}&per_page=${per_page}`
-  );
+>("dormitories/getDormRooms", async ({ dormId, ...params }) => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== undefined)
+    .map(
+      ([key, value]) =>
+        `${key}=${typeof value === "boolean" ? Number(value) : value}`
+    );
+  const response = await axiosInstance.get<
+    GetDormRoomsParams,
+    AxiosResponse<GetDormRoomsResponse>
+  >(`/api/v1/dormitories/${dormId}/dorm-rooms?${queryParams.join("&")}`);
   return response.data;
 });
 
@@ -59,6 +81,28 @@ export const deleteRoom = createAsyncThunk<WithMessage, number>(
     const response = await axiosInstance.delete<WithMessage>(
       `/api/v1/dormitories/dorm-rooms/${id}/delete`
     );
+    return response.data;
+  }
+);
+
+export const createRoom = createAsyncThunk<CreateRoomResponse, CreateRoomData>(
+  "dormitories/createRoom",
+  async ({ dorm, ...data }) => {
+    const response = await axiosInstance.post<
+      CreateRoomData,
+      AxiosResponse<CreateRoomResponse>
+    >(`/api/v1/dormitories/${dorm}/dorm-rooms`, data);
+    return response.data;
+  }
+);
+
+export const updateRoom = createAsyncThunk<CreateRoomResponse, UpdateRoomData>(
+  "dormitories/updateRoom",
+  async ({ id, dorm, oldDorm, ...data }) => {
+    const response = await axiosInstance.patch<
+      UpdateRoomData,
+      AxiosResponse<CreateRoomResponse>
+    >(`/api/v1/dormitories/dorm-rooms/${id}`, { dormitory_id: dorm, ...data });
     return response.data;
   }
 );

@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { StudentsStateType } from "./types";
 import {
+  createStudent,
   deleteStudent,
   getAcademicGroups,
   getCountries,
   getGenders,
   getStudents,
+  updateStudent,
 } from ".";
 
 const initialState: StudentsStateType = {
@@ -13,7 +15,9 @@ const initialState: StudentsStateType = {
   students: [],
   current_page: 1,
   per_page: 10,
-  openCreateModal: false,
+  createModal: {
+    open: false,
+  },
   creating: false,
   deletingIds: [],
   academicGroups: [],
@@ -22,6 +26,10 @@ const initialState: StudentsStateType = {
   loadingAcademicGroups: false,
   loadingCountries: false,
   loadingGenders: false,
+  settlementModal: {
+    open: false,
+  },
+  updating: false,
 };
 
 const studentsSlice = createSlice({
@@ -34,11 +42,27 @@ const studentsSlice = createSlice({
     setPageSize: (state, action) => {
       state.per_page = action.payload;
     },
-    setOpenCreateModal: (state, { payload }) => {
-      state.openCreateModal = payload;
+    setCreateModal: (state, { payload }) => {
+      state.createModal = payload;
+    },
+    setSettlementModal: (state, { payload }) => {
+      state.settlementModal = payload;
     },
   },
   extraReducers: (builder) => {
+    // create students
+    builder.addCase(createStudent.pending, (state) => {
+      state.creating = true;
+    });
+    builder.addCase(createStudent.fulfilled, (state, { payload }) => {
+      state.creating = false;
+      state.createModal = { open: false };
+      state.students.push(payload.student);
+    });
+    builder.addCase(createStudent.rejected, (state) => {
+      state.creating = false;
+    });
+
     // get students
     builder.addCase(getStudents.pending, (state) => {
       state.loading = true;
@@ -99,10 +123,30 @@ const studentsSlice = createSlice({
     builder.addCase(getAcademicGroups.rejected, (state) => {
       state.loadingAcademicGroups = false;
     });
+
+    // update student
+    builder.addCase(updateStudent.pending, (state) => {
+      state.updating = true;
+    });
+    builder.addCase(updateStudent.fulfilled, (state, { payload }) => {
+      state.updating = false;
+      state.createModal = { open: false };
+      state.settlementModal = { open: false };
+      state.students = state.students.map((student) => {
+        if (student.id === payload.student.id) {
+          return { ...payload.student };
+        }
+        return student;
+      });
+    });
+    builder.addCase(updateStudent.rejected, (state) => {
+      state.updating = false;
+    });
   },
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setPage, setPageSize, setOpenCreateModal } = actions;
+export const { setPage, setPageSize, setCreateModal, setSettlementModal } =
+  actions;
 
 export default reducer;

@@ -1,33 +1,34 @@
 import { Checkbox, Form, Input, Select, message } from "antd";
 import {
   createUser,
+  editUser,
   getPermissions,
   getRoles,
 } from "app/features/administration/administrationActions";
 import {
   clearCreateMessage,
-  setOpenCreateUserPopover,
+  setCreateUserModal,
 } from "app/features/administration/administrationSlice";
 import { useDispatch, useSelector } from "app/store";
 import { CreateModal } from "components/shared/create-modal";
 import { useEffect } from "react";
 import { getFlatPermissions } from "../utils";
+import { requiredMessage } from "assets/constants";
 
 const { Option } = Select;
-
-const requiredMessage = "Это поле обязательно для заполнения";
 
 export const CreateUserModal = () => {
   const dispatch = useDispatch();
   const {
     creating,
     createMessage,
-    createUserModalOpen,
+    createUserModal,
     loadingRoles,
     roles,
     permissionsLoading,
     permissions,
   } = useSelector((state) => state.administration);
+  const { open, defaultUser } = createUserModal;
 
   useEffect(() => {
     if (createMessage) {
@@ -43,23 +44,30 @@ export const CreateUserModal = () => {
   return (
     <CreateModal
       openButtonProps={{
-        onClick: () => dispatch(setOpenCreateUserPopover(true)),
-        children: "Добавить пользователя",
+        onClick: () => dispatch(setCreateUserModal({ open: true })),
+        children: `${defaultUser ? "Изменить" : "Добавить"} пользователя`,
       }}
       modalProps={{
-        title: "Добавить пользователя",
-        open: createUserModalOpen,
-        onCancel: () => dispatch(setOpenCreateUserPopover(false)),
+        title: `${defaultUser ? "Изменить" : "Добавить"} пользователя`,
+        open: open,
+        onCancel: () => dispatch(setCreateUserModal({ open: false })),
       }}
       formProps={{
         name: "create-user",
         disabled: creating,
-        onFinish: (values) => dispatch(createUser(values)),
-        initialValues: { is_admin: false },
+        onFinish: (values) =>
+          dispatch(defaultUser ? editUser(values) : createUser(values)),
+        initialValues: {
+          is_admin: false,
+          ...defaultUser,
+          permissions: getFlatPermissions(defaultUser?.permissions).map(
+            (p) => p.id
+          ),
+        },
       }}
       submitButtonProps={{
         loading: creating,
-        children: "Добавить",
+        children: defaultUser ? "Изменить" : "Добавить",
       }}
     >
       <Form.Item
@@ -79,13 +87,15 @@ export const CreateUserModal = () => {
       >
         <Input />
       </Form.Item>
-      <Form.Item
-        label="Пароль"
-        name="password"
-        rules={[{ required: true, message: requiredMessage }]}
-      >
-        <Input.Password />
-      </Form.Item>
+      {!defaultUser && (
+        <Form.Item
+          label="Пароль"
+          name="password"
+          rules={[{ required: true, message: requiredMessage }]}
+        >
+          <Input.Password />
+        </Form.Item>
+      )}
       <Form.Item label="Роли" name="roles">
         <Select
           mode="multiple"

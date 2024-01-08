@@ -21,10 +21,6 @@ function App() {
         <Route path={PATH.ROLES} element={<RolesPage />} />
         <Route path={PATH.STUDENTS} element={<StudentsPage />} />
         <Route path={PATH.DORMITORIES} element={<DormitoriesPage />} />
-        <Route
-          path={PATH.SETTLEMENT}
-          element={<Typography.Title>Поселение</Typography.Title>}
-        />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

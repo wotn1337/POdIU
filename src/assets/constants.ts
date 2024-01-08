@@ -9,3 +9,5 @@ export enum PATH {
   DORMITORIES = "/dormitories",
   SETTLEMENT = "/settlement",
 }
+
+export const requiredMessage = "Это поле обязательно для заполнения";

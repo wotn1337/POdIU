@@ -1,0 +1,20 @@
+.settlementModal {
+  width: 90vw !important;
+
+  .cyrillicName {
+    margin: 0;
+  }
+
+  .latinName {
+    display: block;
+  }
+
+  .filters {
+    width: 100%;
+    margin: 8px 0;
+
+    & > * {
+      flex: 1;
+    }
+  }
+}

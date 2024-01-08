@@ -1,32 +1,36 @@
 import { Form, Input, InputNumber } from "antd";
-import { createDormitory, setOpenCreateModal } from "app/features";
+import { createDormitory, setCreateModal, updateDormitory } from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { CreateModal } from "components/shared/create-modal";
 import s from "./dormitories.module.scss";
-
-const requiredMessage = "Это поле обязательно для заполнения";
+import { requiredMessage } from "assets/constants";
 
 export const CreateDormModal = () => {
   const dispatch = useDispatch();
-  const { openCreateModal, creating } = useSelector(
-    (state) => state.dormitories
-  );
+  const { createModal, creating } = useSelector((state) => state.dormitories);
+  const { open, defaultDorm } = createModal;
 
   return (
     <CreateModal
       openButtonProps={{
-        onClick: () => dispatch(setOpenCreateModal(true)),
+        onClick: () => dispatch(setCreateModal(true)),
         children: "Добавить общежитие",
       }}
       modalProps={{
         title: "Добавить общежитие",
-        open: openCreateModal,
-        onCancel: () => dispatch(setOpenCreateModal(false)),
+        open: open,
+        onCancel: () => dispatch(setCreateModal(false)),
       }}
       formProps={{
-        name: "create-role",
+        name: "create-dormitory",
         disabled: creating,
-        onFinish: (values) => dispatch(createDormitory(values)),
+        onFinish: (values) =>
+          dispatch(
+            defaultDorm
+              ? updateDormitory({ id: defaultDorm.id, ...values })
+              : createDormitory(values)
+          ),
+        initialValues: defaultDorm,
       }}
       submitButtonProps={{
         loading: creating,

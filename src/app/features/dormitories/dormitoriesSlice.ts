@@ -2,10 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { DormitoriesStateType } from "./types";
 import {
   createDormitory,
+  createRoom,
   deleteDormitory,
   deleteRoom,
   getDormRooms,
   getDormitories,
+  updateDormitory,
+  updateRoom,
 } from ".";
 
 const initialState: DormitoriesStateType = {
@@ -14,11 +17,21 @@ const initialState: DormitoriesStateType = {
   current_page: 1,
   per_page: 10,
   deletingIds: [],
-  openCreateModal: false,
+  createModal: {
+    open: false,
+  },
+  createRoomModal: {
+    open: false,
+  },
   creating: false,
+  creatingRoom: false,
   gettingRoomsDormIds: [],
   dormRooms: {},
   deletingRoomIds: [],
+  settlementModal: {
+    open: false,
+  },
+  loadingStudentIds: [],
 };
 
 const studentsSlice = createSlice({
@@ -31,14 +44,46 @@ const studentsSlice = createSlice({
     setPageSize: (state, { payload }) => {
       state.per_page = payload;
     },
-    setOpenCreateModal: (state, { payload }) => {
-      state.openCreateModal = payload;
+    setCreateModal: (state, { payload }) => {
+      state.createModal = payload;
+    },
+    setCreateRoomModal: (state, { payload }) => {
+      state.createRoomModal = payload;
     },
     setRoomsPage: (state, { payload }) => {
       state.dormRooms[payload.id].current_page = payload.page;
     },
     setRoomsPageSize: (state, { payload }) => {
       state.dormRooms[payload.id].per_page = payload.size;
+    },
+    setSettlementModal: (state, { payload }) => {
+      state.settlementModal = payload;
+    },
+    updateStudentRoom: (state, { payload }) => {
+      state.dormRooms[payload.dormId].rooms = state.dormRooms[
+        payload.dormId
+      ].rooms.map((room) => {
+        if (room.id === payload.roomId) {
+          return {
+            ...room,
+            empty_seats_count:
+              room.empty_seats_count + (payload.type === "set" ? -1 : 1),
+            students_count:
+              room.students_count + (payload.type === "set" ? 1 : -1),
+            students:
+              payload.type === "set"
+                ? [...(room.students ?? []), payload.student]
+                : room.students?.filter((s) => s.id !== payload.student.id),
+          };
+        }
+        return room;
+      });
+    },
+    addLoadingStudentId: (state, { payload }) => {
+      state.loadingStudentIds.push(payload);
+    },
+    removeLoadingStudentId: (state, { payload }) => {
+      state.loadingStudentIds.filter((id) => id !== payload);
     },
   },
   extraReducers: (builder) => {
@@ -73,9 +118,28 @@ const studentsSlice = createSlice({
     });
     builder.addCase(createDormitory.fulfilled, (state, { payload }) => {
       state.creating = false;
-      state.dormitories.push(payload.dormitory);
+      state.dormitories.push(payload.data);
+      state.createModal = { open: false };
     });
     builder.addCase(createDormitory.rejected, (state) => {
+      state.creating = false;
+    });
+
+    // update dormitory
+    builder.addCase(updateDormitory.pending, (state) => {
+      state.creating = true;
+    });
+    builder.addCase(updateDormitory.fulfilled, (state, { payload }) => {
+      state.creating = false;
+      state.dormitories = state.dormitories.map((dorm) => {
+        if (dorm.id === payload.data.id) {
+          return payload.data;
+        }
+        return dorm;
+      });
+      state.createModal = { open: false };
+    });
+    builder.addCase(updateDormitory.rejected, (state) => {
       state.creating = false;
     });
 
@@ -123,6 +187,81 @@ const studentsSlice = createSlice({
     builder.addCase(deleteRoom.rejected, (state, { meta: { arg } }) => {
       state.deletingRoomIds = state.deletingRoomIds.filter((id) => id !== arg);
     });
+
+    // create dormRoom
+    builder.addCase(createRoom.pending, (state) => {
+      state.creatingRoom = true;
+    });
+    builder.addCase(
+      createRoom.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        const { dorm, number_of_seats } = arg;
+        state.creatingRoom = false;
+        state.createRoomModal = { open: false };
+        if (state.dormRooms[dorm]) {
+          state.dormRooms[dorm].rooms.push({
+            ...payload.dorm_rooms,
+            empty_seats_count: number_of_seats,
+            students_count: 0,
+          });
+        } else {
+          state.dormRooms[dorm] = {
+            rooms: [payload.dorm_rooms],
+            current_page: 1,
+            per_page: 10,
+            total: 1,
+          };
+        }
+      }
+    );
+    builder.addCase(createRoom.rejected, (state) => {
+      state.creatingRoom = false;
+    });
+
+    // update dormRoom
+    builder.addCase(updateRoom.pending, (state) => {
+      state.creatingRoom = true;
+    });
+    builder.addCase(
+      updateRoom.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        console.log(arg);
+        const { dorm, oldDorm } = arg;
+        state.creatingRoom = false;
+        state.createRoomModal = { open: false };
+        if (dorm === oldDorm) {
+          state.dormRooms[dorm].rooms = state.dormRooms[dorm].rooms.map(
+            (room) => {
+              if (room.id === payload.dorm_rooms.id) {
+                return {
+                  ...room,
+                  number: payload.dorm_rooms.number,
+                  number_of_seats: payload.dorm_rooms.number_of_seats,
+                  comment: payload.dorm_rooms.comment,
+                };
+              }
+              return room;
+            }
+          );
+        } else {
+          state.dormRooms[oldDorm].rooms = state.dormRooms[
+            oldDorm
+          ]?.rooms.filter((room) => room.id !== payload.dorm_rooms.id);
+          if (state.dormRooms[dorm]) {
+            state.dormRooms[dorm].rooms.push(payload.dorm_rooms);
+          } else {
+            state.dormRooms[dorm] = {
+              rooms: [payload.dorm_rooms],
+              current_page: 1,
+              per_page: 10,
+            };
+          }
+        }
+      }
+    );
+    builder.addCase(updateRoom.rejected, (state) => {
+      state.creatingRoom = false;
+    });
   },
 });
 
@@ -130,9 +269,14 @@ const { actions, reducer } = studentsSlice;
 export const {
   setPage,
   setPageSize,
-  setOpenCreateModal,
+  setCreateModal,
+  setCreateRoomModal,
   setRoomsPage,
   setRoomsPageSize,
+  setSettlementModal,
+  updateStudentRoom,
+  addLoadingStudentId,
+  removeLoadingStudentId,
 } = actions;
 
 export default reducer;

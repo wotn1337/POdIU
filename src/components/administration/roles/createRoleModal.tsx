@@ -11,10 +11,9 @@ import { useDispatch, useSelector } from "app/store";
 import { CreateModal } from "components/shared/create-modal";
 import { useEffect } from "react";
 import { getFlatPermissions } from "../utils";
+import { requiredMessage } from "assets/constants";
 
 const { Option } = Select;
-
-const requiredMessage = "Это поле обязательно для заполнения";
 
 export const CreateRoleModal = () => {
   const dispatch = useDispatch();

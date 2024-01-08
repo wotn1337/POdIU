@@ -34,6 +34,27 @@ export const createUser = createAsyncThunk<CreateUserResponse, CreateUserData>(
   }
 );
 
+export const editUser = createAsyncThunk<CreateUserResponse, CreateUserData>(
+  "administration/editUser",
+  async ({ id, ...data }) => {
+    const response = await axiosInstance.patch<CreateUserResponse>(
+      `/api/v1/users/${id}`,
+      data
+    );
+    return response.data;
+  }
+);
+
+export const deleteUser = createAsyncThunk<WithMessage, number>(
+  "administration/deleteUser",
+  async (id) => {
+    const response = await axiosInstance.delete<CreateUserResponse>(
+      `/api/v1/users/${id}/delete`
+    );
+    return response.data;
+  }
+);
+
 export const getPermissions = createAsyncThunk<PermissionsResponse>(
   "administration/gerPermissions",
   async () => {

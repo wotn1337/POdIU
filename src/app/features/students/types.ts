@@ -3,35 +3,37 @@ import {
   PaginationParams,
   WithId,
   WithIdAndTitle,
+  WithMessage,
 } from "app/types";
-import { User } from "../administration/types";
+import { BaseDormRoom } from "..";
 
-export type DormRoom = WithId<{
-  number: string;
-  number_of_seats: number;
-  comment: string;
-  students_count: number;
-  empty_seats_count: number;
-  creator: User;
-  last_update_user: User;
-  created_at: string | null;
-  updated_at: string | null;
-}>;
-
-export type Student = WithId<{
+export type BaseStudent = WithId<{
   latin_name: string;
   cyrillic_name: string;
   is_family: boolean;
   telephone: string | null;
   eisu_id: string | null;
   comment: string | null;
-  gender?: WithIdAndTitle;
-  creator?: User;
-  last_update_user_id?: User;
-  country?: WithIdAndTitle;
-  academic_group?: WithIdAndTitle;
   created_at: string | null;
   updated_at: string | null;
+}>;
+
+export type Student = BaseStudent & {
+  gender?: WithIdAndTitle | null;
+  country?: WithIdAndTitle | null;
+  academic_group?: WithIdAndTitle | null;
+  dorm_room?: BaseDormRoom | null;
+};
+
+export type PostStudentData = BaseStudent & {
+  dorm_room_id?: number | null;
+  academic_group_id?: number;
+  gender_id?: number;
+  country_id?: number;
+};
+
+export type CreateStudentResponse = WithMessage<{
+  student: Student;
 }>;
 
 export type GetStudentsParams = PaginationParams<{
@@ -62,7 +64,14 @@ export type StudentsStateType = {
   current_page: number;
   total?: number;
   deletingIds: number[];
-  openCreateModal: boolean;
+  createModal: {
+    open: boolean;
+    defaultStudent?: Student;
+  };
+  settlementModal: {
+    open: boolean;
+    student?: Student;
+  };
   creating: boolean;
   countries: WithIdAndTitle[];
   loadingCountries: boolean;
@@ -70,5 +79,5 @@ export type StudentsStateType = {
   loadingGenders: boolean;
   academicGroups: WithIdAndTitle[];
   loadingAcademicGroups: boolean;
-  //rooms
+  updating: boolean;
 };

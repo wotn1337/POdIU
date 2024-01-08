@@ -64,7 +64,6 @@ export function TabledContent<T extends AnyObject>({
           <Table
             dataSource={data}
             className={s.tabledContent__content__table}
-            rowSelection={{ type: "checkbox" }}
             rowKey="id"
             scroll={{ x: "100%" }}
             pagination={{
