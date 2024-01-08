@@ -1,4 +1,4 @@
-import { WithMessage } from "app/types";
+import { WithId, WithMessage } from "app/types";
 
 export type Role = {
   id: number;
@@ -18,10 +18,11 @@ export type PermissionsResponse = {
   permissions: PermissionsRecord;
 };
 
-type BaseUserType = {
+type BaseUserType = WithId<{
   name: string;
   email: string;
-};
+  is_admin: boolean;
+}>;
 
 export type User = BaseUserType & {
   roles: Role[];
@@ -39,7 +40,10 @@ export type AdministrationStateType = {
   loading: boolean;
   creating: boolean;
   createMessage?: string;
-  createUserModalOpen: boolean;
+  createUserModal: {
+    open: boolean;
+    defaultUser?: User;
+  };
   createRoleModalOpen: boolean;
   permissionsLoading: boolean;
   permissions?: PermissionsRecord;
@@ -48,6 +52,7 @@ export type AdministrationStateType = {
   roles?: Role[];
   loadingRoles: boolean;
   deleteRolesIds: number[];
+  deleteUserIds: number[];
 };
 
 export type CreateUserResponse = WithMessage<{

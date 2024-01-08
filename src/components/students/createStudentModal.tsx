@@ -1,23 +1,31 @@
 import { Checkbox, Flex, Form, Input, Select } from "antd";
-import { getAcademicGroups, getCountries, getGenders } from "app/features";
-import { setOpenCreateModal } from "app/features/students/studentsSlice";
+import {
+  createStudent,
+  getAcademicGroups,
+  getCountries,
+  getGenders,
+  updateStudent,
+} from "app/features";
+import { setCreateModal } from "app/features/students/studentsSlice";
 import { useDispatch, useSelector } from "app/store";
+import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
 import { useEffect } from "react";
-
-const requiredMessage = "Это поле обязательно для заполнения";
 
 export const CreateStudentModal = () => {
   const dispatch = useDispatch();
   const {
-    openCreateModal,
+    createModal,
     countries,
     loadingCountries,
     genders,
     loadingGenders,
     academicGroups,
     loadingAcademicGroups,
+    creating,
+    updating,
   } = useSelector((state) => state.students);
+  const { open, defaultStudent } = createModal;
 
   useEffect(() => {
     dispatch(getCountries());
@@ -28,16 +36,38 @@ export const CreateStudentModal = () => {
   return (
     <CreateModal
       openButtonProps={{
-        children: "Добавить студента",
-        onClick: () => dispatch(setOpenCreateModal(true)),
+        children: `${defaultStudent ? "Изменить" : "Добавить"} студента`,
+        onClick: () => dispatch(setCreateModal({ open: true })),
       }}
       modalProps={{
-        open: openCreateModal,
-        title: "Добавить студента",
-        onCancel: () => dispatch(setOpenCreateModal(false)),
+        open: open,
+        title: `${defaultStudent ? "Изменить" : "Добавить"} студента`,
+        onCancel: () => dispatch(setCreateModal({ open: false })),
       }}
-      formProps={{}}
-      submitButtonProps={{}}
+      formProps={{
+        name: "create-student",
+        disabled: creating || updating,
+        onFinish: (values) =>
+          dispatch(
+            defaultStudent
+              ? updateStudent({ id: defaultStudent.id, ...values })
+              : createStudent(values)
+          ),
+        initialValues: defaultStudent
+          ? {
+              ...defaultStudent,
+              country_id: String(defaultStudent?.country?.id),
+              gender_id: String(defaultStudent?.gender?.id),
+              academic_group_id: String(defaultStudent?.academic_group?.id),
+            }
+          : {
+              is_family: false,
+            },
+      }}
+      submitButtonProps={{
+        loading: creating || updating,
+        children: defaultStudent ? "Изменить" : "Добавить",
+      }}
     >
       <Form.Item
         label="ФИО (Латиница)"

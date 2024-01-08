@@ -8,16 +8,33 @@ import {
   GetStudentsParams,
   GetStudentsResponse,
   GetGendersResponse,
+  PostStudentData,
+  CreateStudentResponse,
 } from "./types";
+
+export const createStudent = createAsyncThunk<
+  CreateStudentResponse,
+  PostStudentData
+>("students/createStudent", async (data) => {
+  const response = await axiosInstance.post<
+    PostStudentData,
+    AxiosResponse<CreateStudentResponse>
+  >(`/api/v1/students`, data);
+  return response.data;
+});
 
 export const getStudents = createAsyncThunk<
   GetStudentsResponse,
   GetStudentsParams
->("students/getStudents", async ({ per_page, page }) => {
+>("students/getStudents", async ({ per_page, page, with_dormitory }) => {
   const response = await axiosInstance.get<
     GetStudentsParams,
     AxiosResponse<GetStudentsResponse>
-  >(`/api/v1/students?page=${page}&per_page=${per_page}`);
+  >(
+    `/api/v1/students?page=${page}&per_page=${per_page}&with_dormitory=${Number(
+      with_dormitory
+    )}`
+  );
   return response.data;
 });
 
@@ -60,3 +77,14 @@ export const getAcademicGroups = createAsyncThunk<GetAcademicGroupsResponse>(
     return response.data;
   }
 );
+
+export const updateStudent = createAsyncThunk<
+  CreateStudentResponse,
+  PostStudentData
+>("students/updateStudents", async ({ id, telephone, ...data }) => {
+  const response = await axiosInstance.patch<
+    PostStudentData,
+    AxiosResponse<CreateStudentResponse>
+  >(`/api/v1/students/${id}`, data);
+  return response.data;
+});

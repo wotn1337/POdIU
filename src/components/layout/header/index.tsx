@@ -54,11 +54,6 @@ export const Header = () => {
       icon: <BankOutlined />,
     },
     {
-      label: <NavLink to={PATH.SETTLEMENT}>Поселение</NavLink>,
-      key: PATH.SETTLEMENT,
-      icon: <AuditOutlined />,
-    },
-    {
       label: user?.name,
       key: "user",
       icon: <UserOutlined />,

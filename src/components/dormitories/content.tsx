@@ -1,11 +1,12 @@
 import type { ColumnsType } from "antd/es/table";
+import { Dormitory, deleteDormitory, setCreateModal } from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
 import { DeleteButton } from "components/shared/delete-button";
 import { CreateDormModal } from "./createDormModal";
-import { Dormitory, deleteDormitory, getDormRooms } from "app/features";
-import { Spin } from "antd";
+import { CreateDormRoomModal } from "./createDormRoomModal";
 import { RoomsTable } from "./roomsTable";
+import { Button, Space } from "antd";
 
 export const DormitoriesContent = () => {
   const { loading, dormitories, dormRooms, gettingRoomsDormIds } = useSelector(
@@ -31,8 +32,18 @@ export const DormitoriesContent = () => {
     },
     {
       key: "actions",
-      render: (_, { id }) => (
-        <DeleteButton onClick={() => dispatch(deleteDormitory(id))} />
+      render: (_, dorm) => (
+        <Space>
+          <Button
+            type="primary"
+            onClick={() =>
+              dispatch(setCreateModal({ open: true, defaultDorm: dorm }))
+            }
+          >
+            Изменить
+          </Button>
+          <DeleteButton onClick={() => dispatch(deleteDormitory(dorm.id))} />
+        </Space>
       ),
     },
   ];
@@ -40,7 +51,10 @@ export const DormitoriesContent = () => {
   return (
     <TabledContent<Dormitory>
       pageTitle="Общежития"
-      actionButtons={<CreateDormModal />}
+      actionButtons={[
+        <CreateDormModal key={1} />,
+        <CreateDormRoomModal key={2} />,
+      ]}
       dataSource={dormitories}
       columns={columns}
       rowSelection={undefined}
@@ -54,11 +68,6 @@ export const DormitoriesContent = () => {
             dormId={id}
           />
         ),
-        onExpand: (expanded, { id }) => {
-          if (expanded) {
-            dispatch(getDormRooms({ dormId: id, page: 1, per_page: 10 }));
-          }
-        },
       }}
     />
   );

@@ -8,7 +8,9 @@ export const StudentsPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getStudents({ page: current_page, per_page }));
+    dispatch(
+      getStudents({ page: current_page, per_page, with_dormitory: true })
+    );
   }, [current_page, per_page]);
 
   return <StudentsPageContent />;

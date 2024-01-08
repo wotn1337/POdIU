@@ -4,6 +4,8 @@ import {
   createRole,
   createUser,
   deleteRole,
+  deleteUser,
+  editUser,
   getPermissions,
   getRoles,
   getUsers,
@@ -13,12 +15,15 @@ const initialState: AdministrationStateType = {
   users: [],
   loading: false,
   creating: false,
-  createUserModalOpen: false,
+  createUserModal: {
+    open: false,
+  },
   createRoleModalOpen: false,
   permissionsLoading: false,
   creatingRole: false,
   loadingRoles: false,
   deleteRolesIds: [],
+  deleteUserIds: [],
 };
 
 const administrationSlice = createSlice({
@@ -28,8 +33,8 @@ const administrationSlice = createSlice({
     clearCreateMessage: (state) => {
       state.createMessage = undefined;
     },
-    setOpenCreateUserPopover: (state, action) => {
-      state.createUserModalOpen = action.payload;
+    setCreateUserModal: (state, action) => {
+      state.createUserModal = action.payload;
     },
     setOpenCreateRolePopover: (state, action) => {
       state.createRoleModalOpen = action.payload;
@@ -59,10 +64,41 @@ const administrationSlice = createSlice({
       state.creating = false;
       state.users.push(action.payload.user);
       state.createMessage = action.payload.message;
-      state.createUserModalOpen = false;
+      state.createUserModal = { open: false };
     });
     builder.addCase(createUser.rejected, (state) => {
       state.creating = false;
+    });
+
+    // edit user
+    builder.addCase(editUser.pending, (state) => {
+      state.creating = true;
+    });
+    builder.addCase(editUser.fulfilled, (state, action) => {
+      state.creating = false;
+      state.users = state.users.map((user) => {
+        if (user.id === action.payload.user.id) {
+          return action.payload.user;
+        }
+        return user;
+      });
+      state.createMessage = action.payload.message;
+      state.createUserModal = { open: false };
+    });
+    builder.addCase(editUser.rejected, (state) => {
+      state.creating = false;
+    });
+
+    // delete user
+    builder.addCase(deleteUser.pending, (state, { meta: { arg } }) => {
+      state.deleteUserIds.push(arg);
+    });
+    builder.addCase(deleteUser.fulfilled, (state, { meta: { arg } }) => {
+      state.deleteUserIds = state.deleteUserIds.filter((id) => id !== arg);
+      state.users = state.users.filter((user) => user.id !== arg);
+    });
+    builder.addCase(deleteUser.rejected, (state, { meta: { arg } }) => {
+      state.deleteUserIds = state.deleteUserIds.filter((id) => id !== arg);
     });
 
     // get permissions
@@ -122,7 +158,7 @@ const administrationSlice = createSlice({
 const { actions, reducer } = administrationSlice;
 export const {
   clearCreateMessage,
-  setOpenCreateUserPopover,
+  setCreateUserModal,
   setOpenCreateRolePopover,
   clearCreateRoleMessage,
 } = actions;
