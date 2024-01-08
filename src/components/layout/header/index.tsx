@@ -1,6 +1,5 @@
 import {
   ApartmentOutlined,
-  AuditOutlined,
   BankOutlined,
   LoadingOutlined,
   LogoutOutlined,

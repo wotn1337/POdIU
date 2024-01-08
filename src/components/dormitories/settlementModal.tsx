@@ -1,16 +1,14 @@
 import { Modal, Typography } from "antd";
-import { useDispatch, useSelector } from "app/store";
-import { StudentsTable } from "components/shared";
-import { useState } from "react";
-import s from "./dormitories.module.scss";
 import {
-  getDormRooms,
-  getDormitories,
   setSettlementModal,
   updateStudent,
   updateStudentRoom,
 } from "app/features";
-import { CreateStudentResponse, Student } from "app/features/students/types";
+import { CreateStudentResponse } from "app/features/students/types";
+import { useDispatch, useSelector } from "app/store";
+import { StudentsTable } from "components/shared";
+import { useState } from "react";
+import s from "./dormitories.module.scss";
 
 export const SettlementModal = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);

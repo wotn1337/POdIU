@@ -1,17 +1,17 @@
+import { Button, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteStudent, getStudents } from "app/features";
+import { deleteStudent } from "app/features";
 import {
-  setSettlementModal,
+  setCreateModal,
   setPage,
   setPageSize,
-  setCreateModal,
+  setSettlementModal,
 } from "app/features/students/studentsSlice";
 import { Student } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
 import { DeleteButton } from "components/shared/delete-button";
 import { CreateStudentModal } from "./createStudentModal";
-import { Button, Space } from "antd";
 import { SettlementModal } from "./settlementModal";
 
 export const StudentsPageContent = () => {

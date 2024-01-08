@@ -1,15 +1,14 @@
-import { Typography } from "antd";
 import { PATH } from "assets/constants";
 import { Layout } from "components/layout";
 import {
-  LoginPage,
-  UsersPage,
   DormitoriesPage,
+  LoginPage,
   PageNotFound,
-  StudentsPage,
   RolesPage,
+  StudentsPage,
+  UsersPage,
 } from "pages";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
