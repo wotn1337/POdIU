@@ -1,6 +1,9 @@
 import { Button, Space, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { setCreateUserModal } from "app/features/administration/administrationSlice";
+import {
+  setCreateUserModal,
+  setUsersMeta,
+} from "app/features/administration/administrationSlice";
 import { User } from "app/features/administration/types";
 import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
@@ -10,10 +13,11 @@ import { DeleteButton } from "components/shared/delete-button";
 import { deleteUser } from "app/features";
 
 export const UsersPageContent = () => {
-  const { users, loading, deleteUserIds } = useSelector(
+  const { users, loading, deleteUserIds, usersMeta } = useSelector(
     (state) => state.administration
   );
   const dispatch = useDispatch();
+  const { current_page, per_page, total } = usersMeta;
 
   const columns: ColumnsType<User> = [
     {
@@ -79,7 +83,14 @@ export const UsersPageContent = () => {
       dataSource={users}
       columns={columns}
       loading={loading}
-      pagination={{ defaultPageSize: 10 }}
+      pagination={{
+        defaultPageSize: 10,
+        pageSize: per_page,
+        current: current_page,
+        total,
+        onChange: (current_page, per_page) =>
+          dispatch(setUsersMeta({ current_page, per_page })),
+      }}
     />
   );
 };

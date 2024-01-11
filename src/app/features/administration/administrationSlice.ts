@@ -24,6 +24,10 @@ const initialState: AdministrationStateType = {
   loadingRoles: false,
   deleteRolesIds: [],
   deleteUserIds: [],
+  usersMeta: {
+    current_page: 1,
+    per_page: 10,
+  },
 };
 
 const administrationSlice = createSlice({
@@ -42,6 +46,9 @@ const administrationSlice = createSlice({
     clearCreateRoleMessage: (state) => {
       state.createRoleMessage = undefined;
     },
+    setUsersMeta: (state, { payload }) => {
+      state.usersMeta = { ...state.usersMeta, ...payload };
+    },
   },
   extraReducers: (builder) => {
     // get users
@@ -50,7 +57,8 @@ const administrationSlice = createSlice({
     });
     builder.addCase(getUsers.fulfilled, (state, { payload }) => {
       state.loading = false;
-      state.users = payload;
+      state.users = payload.users;
+      state.usersMeta = { ...state.usersMeta, total: payload.meta.total };
     });
     builder.addCase(getUsers.rejected, (state) => {
       state.loading = false;
@@ -161,6 +169,7 @@ export const {
   setCreateUserModal,
   setOpenCreateRolePopover,
   clearCreateRoleMessage,
+  setUsersMeta,
 } = actions;
 
 export default reducer;

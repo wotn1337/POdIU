@@ -1,4 +1,4 @@
-import { WithId, WithMessage } from "app/types";
+import { PaginationMeta, WithId, WithMessage } from "app/types";
 
 export type Role = {
   id: number;
@@ -53,6 +53,11 @@ export type AdministrationStateType = {
   loadingRoles: boolean;
   deleteRolesIds: number[];
   deleteUserIds: number[];
+  usersMeta: {
+    per_page: number;
+    current_page: number;
+    total?: number;
+  };
 };
 
 export type CreateUserResponse = WithMessage<{
@@ -70,4 +75,9 @@ export type CreateRoleResponse = WithMessage<{
 
 export type RolesResponse = {
   roles: Role[];
+};
+
+export type GetUserResponse = {
+  users: User[];
+  meta: PaginationMeta;
 };

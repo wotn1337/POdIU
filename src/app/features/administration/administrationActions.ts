@@ -1,25 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "app/api";
+import { PaginationParams, WithMessage } from "app/types";
 import {
   CreateRoleData,
   CreateRoleResponse,
   CreateUserData,
   CreateUserResponse,
+  GetUserResponse,
   PermissionsResponse,
   RolesResponse,
-  User,
 } from "./types";
-import { WithMessage } from "app/types";
 
-type Response = {
-  users: User[];
-};
-
-export const getUsers = createAsyncThunk<User[]>(
+export const getUsers = createAsyncThunk<GetUserResponse, PaginationParams>(
   "administration/getUsers",
-  async () => {
-    const response = await axiosInstance.get<Response>("/api/v1/users");
-    return response.data.users;
+  async ({ page, per_page }) => {
+    const response = await axiosInstance.get<GetUserResponse>(
+      `/api/v1/users?page=${page}&per_page=${per_page}`
+    );
+    return response.data;
   }
 );
 
@@ -79,7 +77,7 @@ export const createRole = createAsyncThunk<CreateRoleResponse, CreateRoleData>(
 export const getRoles = createAsyncThunk<RolesResponse>(
   "administration/getRoles",
   async () => {
-    const response = await axiosInstance.get<RolesResponse>("/api/v1/roles");
+    const response = await axiosInstance.get<RolesResponse>(`/api/v1/roles`);
     return response.data;
   }
 );
