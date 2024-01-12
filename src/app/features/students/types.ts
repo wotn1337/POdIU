@@ -6,6 +6,7 @@ import {
   WithMessage,
 } from "app/types";
 import { BaseDormRoom } from "..";
+import { SortOrder } from "antd/es/table/interface";
 
 export type BaseStudent = WithId<{
   latin_name: string;
@@ -25,6 +26,18 @@ export type Student = BaseStudent & {
   dorm_room?: BaseDormRoom | null;
 };
 
+export type Filters = {
+  gender_id?: number;
+  latin_name?: string;
+  cyrillic_name?: string;
+  countries?: number[];
+};
+
+export type Sorters = {
+  latin_name?: SortOrder;
+  cyrillic_name?: SortOrder;
+};
+
 export type PostStudentData = BaseStudent & {
   dorm_room_id?: number | null;
   academic_group_id?: number;
@@ -38,6 +51,8 @@ export type CreateStudentResponse = WithMessage<{
 
 export type GetStudentsParams = PaginationParams<{
   with_dormitory?: boolean;
+  filters: Filters;
+  sorters: Sorters;
 }>;
 
 export type GetStudentsResponse = {
@@ -80,4 +95,6 @@ export type StudentsStateType = {
   academicGroups: WithIdAndTitle[];
   loadingAcademicGroups: boolean;
   updating: boolean;
+  filters: Filters;
+  sorters: Sorters;
 };

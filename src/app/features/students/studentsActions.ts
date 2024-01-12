@@ -26,17 +26,34 @@ export const createStudent = createAsyncThunk<
 export const getStudents = createAsyncThunk<
   GetStudentsResponse,
   GetStudentsParams
->("students/getStudents", async ({ per_page, page, with_dormitory }) => {
-  const response = await axiosInstance.get<
-    GetStudentsParams,
-    AxiosResponse<GetStudentsResponse>
-  >(
-    `/api/v1/students?page=${page}&per_page=${per_page}&with_dormitory=${Number(
-      with_dormitory
-    )}`
-  );
-  return response.data;
-});
+>(
+  "students/getStudents",
+  async ({ per_page, page, with_dormitory, filters, sorters }) => {
+    const filterParams = Object.entries(filters)
+      .filter(([_, value]) => value !== undefined)
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => `${key}[]=${v}`).join("&");
+        }
+        return `${key}=${value}`;
+      });
+    const sorterParams = Object.entries(sorters).map(([key, value]) => {
+      return `sort_by[column]=${key}&sort_by[direction]=${value?.replace(
+        "end",
+        ""
+      )}`;
+    });
+    const response = await axiosInstance.get<
+      GetStudentsParams,
+      AxiosResponse<GetStudentsResponse>
+    >(
+      `/api/v1/students?page=${page}&per_page=${per_page}&with_dormitory=${Number(
+        with_dormitory
+      )}&${filterParams.join("&")}&${sorterParams.join("&")}`
+    );
+    return response.data;
+  }
+);
 
 export const deleteStudent = createAsyncThunk<WithMessage, number>(
   "students/deleteStudent",

@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Input, Layout, Space, Table, Typography } from "antd";
+import { Empty, Input, Layout, Space, Table, Typography } from "antd";
 import { AnyObject } from "antd/es/_util/type";
 import type { TableProps } from "antd/es/table";
 import { ContentWrapper } from "components/shared";
@@ -67,11 +67,24 @@ export function TabledContent<T extends AnyObject>({
             className={s.tabledContent__content__table}
             rowKey="id"
             scroll={{ x: "100%" }}
+            locale={{
+              filterReset: "Сбросить",
+              emptyText: (
+                <Empty
+                  description="Нет данных"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              ),
+              triggerAsc: "Отсортировать по возрастанию",
+              triggerDesc: "Отсортировать по убыванию",
+              cancelSort: "Сбросить сортировку",
+            }}
             pagination={
               props.pagination
                 ? {
                     ...props.pagination,
-                    pageSizeOptions: [5, 10, 20, 50],
+                    defaultPageSize: 10,
+                    pageSizeOptions: [5, 10, 20, 50, 100],
                     showSizeChanger: true,
                     showTotal: (total, range) =>
                       `Показано ${range.join(" - ")} (всего ${total})`,

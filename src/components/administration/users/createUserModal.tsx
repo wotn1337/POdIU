@@ -60,9 +60,8 @@ export const CreateUserModal = () => {
         initialValues: {
           is_admin: false,
           ...defaultUser,
-          permissions: getFlatPermissions(defaultUser?.permissions).map(
-            (p) => p.id
-          ),
+          permissions: defaultUser?.permissions.map((p) => String(p.id)),
+          roles: defaultUser?.roles.map((r) => String(r.id)),
         },
       }}
       submitButtonProps={{
@@ -113,8 +112,10 @@ export const CreateUserModal = () => {
           placeholder="Выберите права"
           loading={permissionsLoading}
         >
-          {getFlatPermissions(permissions).map((perm) => (
-            <Option key={perm.id}>{perm.title}</Option>
+          {permissions?.map((perm) => (
+            <Option key={perm.id}>
+              {perm.model} - {perm.title}
+            </Option>
           ))}
         </Select>
       </Form.Item>

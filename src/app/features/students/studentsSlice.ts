@@ -30,6 +30,8 @@ const initialState: StudentsStateType = {
     open: false,
   },
   updating: false,
+  filters: {},
+  sorters: {},
 };
 
 const studentsSlice = createSlice({
@@ -47,6 +49,12 @@ const studentsSlice = createSlice({
     },
     setSettlementModal: (state, { payload }) => {
       state.settlementModal = payload;
+    },
+    setFilters: (state, { payload }) => {
+      state.filters = payload;
+    },
+    setSorters: (state, { payload }) => {
+      state.sorters = payload;
     },
   },
   extraReducers: (builder) => {
@@ -146,7 +154,13 @@ const studentsSlice = createSlice({
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setPage, setPageSize, setCreateModal, setSettlementModal } =
-  actions;
+export const {
+  setPage,
+  setPageSize,
+  setCreateModal,
+  setSettlementModal,
+  setFilters,
+  setSorters,
+} = actions;
 
 export default reducer;

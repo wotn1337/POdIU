@@ -82,8 +82,10 @@ export const CreateRoleModal = () => {
           placeholder="Выберите права"
           loading={permissionsLoading}
         >
-          {getFlatPermissions(permissions).map((perm) => (
-            <Option key={perm.id}>{perm.title}</Option>
+          {permissions?.map((perm) => (
+            <Option key={perm.id}>
+              {perm.model} - {perm.title}
+            </Option>
           ))}
         </Select>
       </Form.Item>

@@ -17,6 +17,7 @@ export const RolesPageContent = () => {
       key: "title",
       dataIndex: "title",
       title: "Название",
+      sorter: (a, b) => a.title.localeCompare(b.title),
     },
     {
       key: "actions",

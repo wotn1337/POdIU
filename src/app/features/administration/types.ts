@@ -1,21 +1,16 @@
-import { PaginationMeta, WithId, WithMessage } from "app/types";
+import { PaginationMeta, WithId, WithIdAndTitle, WithMessage } from "app/types";
 
 export type Role = {
   id: number;
   title: string;
-  created_at: string;
-  updated_at: string;
 };
 
-export type Permission = {
-  id: number;
-  title: string;
-};
-
-export type PermissionsRecord = Record<"Пользователь" | "Роль", Permission[]>;
+export type Permission = WithIdAndTitle<{
+  model: string;
+}>;
 
 export type PermissionsResponse = {
-  permissions: PermissionsRecord;
+  permissions: Permission[];
 };
 
 type BaseUserType = WithId<{
@@ -26,7 +21,7 @@ type BaseUserType = WithId<{
 
 export type User = BaseUserType & {
   roles: Role[];
-  permissions: PermissionsRecord;
+  permissions: Permission[];
 };
 
 export type CreateUserData = BaseUserType & {
@@ -46,7 +41,7 @@ export type AdministrationStateType = {
   };
   createRoleModalOpen: boolean;
   permissionsLoading: boolean;
-  permissions?: PermissionsRecord;
+  permissions?: Permission[];
   creatingRole: boolean;
   createRoleMessage?: string;
   roles?: Role[];

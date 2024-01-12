@@ -7,15 +7,13 @@ import {
 import { User } from "app/features/administration/types";
 import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
-import { getFlatPermissions } from "../utils";
 import { CreateUserModal } from "./createUserModal";
 import { DeleteButton } from "components/shared/delete-button";
 import { deleteUser } from "app/features";
 
 export const UsersPageContent = () => {
-  const { users, loading, deleteUserIds, usersMeta } = useSelector(
-    (state) => state.administration
-  );
+  const { users, loading, deleteUserIds, usersMeta, roles, permissions } =
+    useSelector((state) => state.administration);
   const dispatch = useDispatch();
   const { current_page, per_page, total } = usersMeta;
 
@@ -24,16 +22,24 @@ export const UsersPageContent = () => {
       key: "name",
       dataIndex: "name",
       title: "Имя пользователя",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      filters: users.map((u) => ({ text: u.name, value: u.id })),
+      onFilter: (id, record) => record.id === id,
     },
     {
       key: "email",
       dataIndex: "email",
       title: "Электронная почта",
+      filters: users.map((u) => ({ text: u.email, value: u.id })),
+      onFilter: (id, record) => record.id === id,
     },
     {
       key: "roles",
       dataIndex: "roles",
       title: "Роли",
+      filters: roles?.map((r) => ({ text: r.title, value: r.id })),
+      onFilter: (id, record) =>
+        record.roles.map((r) => r.id).includes(Number(id)),
       render: (roles: User["roles"]) => (
         <Space size={4} wrap>
           {roles.map((role) => (
@@ -46,10 +52,18 @@ export const UsersPageContent = () => {
       key: "permissions",
       dataIndex: "permissions",
       title: "Права",
+      filters: permissions?.map((p) => ({
+        text: `${p.model} - ${p.title}`,
+        value: p.id,
+      })),
+      onFilter: (id, record) =>
+        record.permissions.map((p) => p.id).includes(Number(id)),
       render: (permissions: User["permissions"]) => (
         <Space size={4} wrap>
-          {getFlatPermissions(permissions).map((perm) => (
-            <Tag key={perm.id}>{perm.title}</Tag>
+          {permissions.map((perm) => (
+            <Tag key={perm.id}>
+              {perm.model} - {perm.title}
+            </Tag>
           ))}
         </Space>
       ),
@@ -84,7 +98,6 @@ export const UsersPageContent = () => {
       columns={columns}
       loading={loading}
       pagination={{
-        defaultPageSize: 10,
         pageSize: per_page,
         current: current_page,
         total,
