@@ -34,6 +34,7 @@ const initialState: DormitoriesStateType = {
   loadingStudentIds: [],
   filters: {},
   sorters: {},
+  messages: [],
 };
 
 const studentsSlice = createSlice({
@@ -92,6 +93,12 @@ const studentsSlice = createSlice({
     },
     setSorters: (state, { payload }) => {
       state.sorters = payload;
+    },
+    setRoomCreatingErrors: (state, { payload }) => {
+      state.createRoomModal.errors = payload;
+    },
+    setMessages: (state, { payload }) => {
+      state.messages = payload;
     },
   },
   extraReducers: (builder) => {
@@ -203,6 +210,7 @@ const studentsSlice = createSlice({
     builder.addCase(
       createRoom.fulfilled,
       (state, { meta: { arg }, payload }) => {
+        state.messages.push(payload.message);
         const { dorm, number_of_seats } = arg;
         state.creatingRoom = false;
         state.createRoomModal = { open: false };
@@ -222,8 +230,9 @@ const studentsSlice = createSlice({
         }
       }
     );
-    builder.addCase(createRoom.rejected, (state) => {
+    builder.addCase(createRoom.rejected, (state, { payload }) => {
       state.creatingRoom = false;
+      state.createRoomModal.errors = payload?.errors;
     });
 
     // update dormRoom
@@ -233,11 +242,11 @@ const studentsSlice = createSlice({
     builder.addCase(
       updateRoom.fulfilled,
       (state, { meta: { arg }, payload }) => {
-        console.log(arg);
         const { dorm, oldDorm } = arg;
+        state.messages.push(payload.message);
         state.creatingRoom = false;
         state.createRoomModal = { open: false };
-        if (dorm === oldDorm) {
+        if (dorm == oldDorm) {
           state.dormRooms[dorm].rooms = state.dormRooms[dorm].rooms.map(
             (room) => {
               if (room.id === payload.dorm_rooms.id) {
@@ -267,8 +276,9 @@ const studentsSlice = createSlice({
         }
       }
     );
-    builder.addCase(updateRoom.rejected, (state) => {
+    builder.addCase(updateRoom.rejected, (state, { payload }) => {
       state.creatingRoom = false;
+      state.createRoomModal.errors = payload?.errors;
     });
   },
 });
@@ -287,6 +297,8 @@ export const {
   removeLoadingStudentId,
   setFilters,
   setSorters,
+  setRoomCreatingErrors,
+  setMessages,
 } = actions;
 
 export default reducer;

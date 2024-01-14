@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "app/api";
-import { WithMessage } from "app/types";
-import { AxiosResponse } from "axios";
+import { ErrorsResponse, WithMessage } from "app/types";
+import { Axios, AxiosError, AxiosResponse } from "axios";
 import {
   CreateDormitory,
   CreateDormitoryResponse,
@@ -108,24 +108,42 @@ export const deleteRoom = createAsyncThunk<WithMessage, number>(
   }
 );
 
-export const createRoom = createAsyncThunk<CreateRoomResponse, CreateRoomData>(
-  "dormitories/createRoom",
-  async ({ dorm, ...data }) => {
+export const createRoom = createAsyncThunk<
+  CreateRoomResponse,
+  CreateRoomData,
+  { rejectValue: ErrorsResponse | undefined }
+>("dormitories/createRoom", async ({ dorm, ...data }, { rejectWithValue }) => {
+  try {
     const response = await axiosInstance.post<
       CreateRoomData,
       AxiosResponse<CreateRoomResponse>
     >(`/api/v1/dormitories/${dorm}/dorm-rooms`, data);
     return response.data;
+  } catch (e) {
+    const error = e as AxiosError<ErrorsResponse>;
+    return rejectWithValue(error.response?.data);
   }
-);
+});
 
-export const updateRoom = createAsyncThunk<CreateRoomResponse, UpdateRoomData>(
+export const updateRoom = createAsyncThunk<
+  CreateRoomResponse,
+  UpdateRoomData,
+  { rejectValue: ErrorsResponse | undefined }
+>(
   "dormitories/updateRoom",
-  async ({ id, dorm, oldDorm, ...data }) => {
-    const response = await axiosInstance.patch<
-      UpdateRoomData,
-      AxiosResponse<CreateRoomResponse>
-    >(`/api/v1/dormitories/dorm-rooms/${id}`, { dormitory_id: dorm, ...data });
-    return response.data;
+  async ({ id, dorm, oldDorm, ...data }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch<
+        UpdateRoomData,
+        AxiosResponse<CreateRoomResponse>
+      >(`/api/v1/dormitories/dorm-rooms/${id}`, {
+        dormitory_id: dorm,
+        ...data,
+      });
+      return response.data;
+    } catch (e) {
+      const error = e as AxiosError<ErrorsResponse>;
+      return rejectWithValue(error.response?.data);
+    }
   }
 );

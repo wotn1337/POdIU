@@ -147,7 +147,7 @@ export const StudentsTable: React.FC<Props> = ({
       dataSource={students}
       columns={columns}
       loading={loading}
-      rowSelection={{ type: "radio" }}
+      rowSelection={{ ...props.rowSelection, type: "radio" }}
       rowKey="id"
       scroll={{ x: "100%" }}
       onChange={(_, tableFilters, sorter) => {

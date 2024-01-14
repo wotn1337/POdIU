@@ -1,5 +1,5 @@
 import { Button, Flex, Form, Typography } from "antd";
-import { login } from "app/features/auth/authActions";
+import { login, logout } from "app/features/auth/authActions";
 import { useDispatch, useSelector } from "app/store";
 import { WarningIcon } from "assets/images";
 import { Input } from "components/shared";

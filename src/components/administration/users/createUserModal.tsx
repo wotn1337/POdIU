@@ -55,7 +55,11 @@ export const CreateUserModal = () => {
         name: "create-user",
         disabled: creating,
         onFinish: (values) =>
-          dispatch(defaultUser ? editUser(values) : createUser(values)),
+          dispatch(
+            defaultUser
+              ? editUser({ id: defaultUser.id, ...values })
+              : createUser(values)
+          ),
         initialValues: {
           is_admin: false,
           ...defaultUser,

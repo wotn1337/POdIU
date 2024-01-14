@@ -10,6 +10,7 @@ import {
   getRoles,
   getUsers,
 } from "./administrationActions";
+import { stat } from "fs";
 
 const initialState: AdministrationStateType = {
   users: [],
@@ -28,6 +29,7 @@ const initialState: AdministrationStateType = {
     current_page: 1,
     per_page: 10,
   },
+  messages: [],
 };
 
 const administrationSlice = createSlice({
@@ -48,6 +50,9 @@ const administrationSlice = createSlice({
     },
     setUsersMeta: (state, { payload }) => {
       state.usersMeta = { ...state.usersMeta, ...payload };
+    },
+    setMessages: (state, { payload }) => {
+      state.messages = payload;
     },
   },
   extraReducers: (builder) => {
@@ -170,6 +175,7 @@ export const {
   setOpenCreateRolePopover,
   clearCreateRoleMessage,
   setUsersMeta,
+  setMessages,
 } = actions;
 
 export default reducer;

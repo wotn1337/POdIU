@@ -22,3 +22,8 @@ export type PaginationMeta = {
   per_page: number;
   total: number;
 };
+
+export type ErrorsResponse = {
+  errors?: Record<string, string[]>;
+  message?: string;
+};

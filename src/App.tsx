@@ -1,3 +1,5 @@
+import { setLogin, setLogout } from "app/features/auth/authSlice";
+import { useDispatch } from "app/store";
 import { PATH } from "assets/constants";
 import { Layout } from "components/layout";
 import {
@@ -8,9 +10,28 @@ import {
   StudentsPage,
   UsersPage,
 } from "pages";
+import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
+  const [cookies] = useCookies();
+  const user = localStorage.getItem("user");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      dispatch(setLogin(JSON.parse(user)));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!cookies["XSRF-TOKEN"]) {
+      dispatch(setLogout());
+      localStorage.removeItem("user");
+    }
+  }, [cookies]);
+
   return (
     <Routes>
       <Route path={PATH.LOGIN} element={<LoginPage />} />

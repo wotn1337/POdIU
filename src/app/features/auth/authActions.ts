@@ -19,7 +19,7 @@ export const login = createAsyncThunk<LoginResponse, LoginUserData>(
         email,
         password,
       });
-      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
       console.log(error);

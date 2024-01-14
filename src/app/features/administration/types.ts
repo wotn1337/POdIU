@@ -3,6 +3,7 @@ import { PaginationMeta, WithId, WithIdAndTitle, WithMessage } from "app/types";
 export type Role = {
   id: number;
   title: string;
+  permissions: Permission[];
 };
 
 export type Permission = WithIdAndTitle<{
@@ -53,6 +54,7 @@ export type AdministrationStateType = {
     current_page: number;
     total?: number;
   };
+  messages: string[];
 };
 
 export type CreateUserResponse = WithMessage<{

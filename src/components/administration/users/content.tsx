@@ -10,12 +10,16 @@ import { TabledContent } from "components/shared";
 import { CreateUserModal } from "./createUserModal";
 import { DeleteButton } from "components/shared/delete-button";
 import { deleteUser } from "app/features";
+import { CheckCircleTwoTone } from "@ant-design/icons";
+import { useUserPermissions } from "hooks/useUserPermissions";
+import { useEffect } from "react";
 
 export const UsersPageContent = () => {
   const { users, loading, deleteUserIds, usersMeta, roles, permissions } =
     useSelector((state) => state.administration);
   const dispatch = useDispatch();
   const { current_page, per_page, total } = usersMeta;
+  const { users: perms } = useUserPermissions();
 
   const columns: ColumnsType<User> = [
     {
@@ -69,31 +73,44 @@ export const UsersPageContent = () => {
       ),
     },
     {
+      key: "is_admin",
+      dataIndex: "is_admin",
+      title: "Админ",
+      render: (value) => value && <CheckCircleTwoTone twoToneColor="#52c41a" />,
+    },
+  ];
+
+  if (perms.update || perms.delete) {
+    columns.push({
       key: "actions",
       title: "Действия",
       render: (_, user) => (
         <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              dispatch(setCreateUserModal({ open: true, defaultUser: user }))
-            }
-          >
-            Изменить
-          </Button>
-          <DeleteButton
-            onClick={() => dispatch(deleteUser(user.id))}
-            loading={deleteUserIds.includes(user.id)}
-          />
+          {perms.update && (
+            <Button
+              type="primary"
+              onClick={() =>
+                dispatch(setCreateUserModal({ open: true, defaultUser: user }))
+              }
+            >
+              Изменить
+            </Button>
+          )}
+          {perms.delete && (
+            <DeleteButton
+              onClick={() => dispatch(deleteUser(user.id))}
+              loading={deleteUserIds.includes(user.id)}
+            />
+          )}
         </Space>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <TabledContent<User>
       pageTitle="Пользователи"
-      actionButtons={<CreateUserModal />}
+      actionButtons={perms.create ? <CreateUserModal /> : undefined}
       dataSource={users}
       columns={columns}
       loading={loading}

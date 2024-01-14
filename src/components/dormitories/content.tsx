@@ -99,17 +99,6 @@ export const DormitoriesContent = () => {
             })
           );
         }
-        // dispatch(
-        //   setFilters({
-        //     ...filters,
-        //     address: tableFilters["address"]
-        //       ? tableFilters["address"][0]
-        //       : undefined,
-        //     number: tableFilters["number"]
-        //       ? tableFilters["number"][0]
-        //       : undefined,
-        //   })
-        // );
       }}
       expandable={{
         rowExpandable: () => true,

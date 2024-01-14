@@ -17,6 +17,7 @@ import { useRef } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
+import { useUserPermissions } from "hooks/useUserPermissions";
 
 export const StudentsPageContent = () => {
   const {
@@ -32,6 +33,7 @@ export const StudentsPageContent = () => {
     sorters,
   } = useSelector((state) => state.students);
   const dispatch = useDispatch();
+  const { students: perms } = useUserPermissions();
   const searchInput = useRef<InputRef>(null);
 
   const columns: ColumnsType<Student> = [
@@ -100,41 +102,52 @@ export const StudentsPageContent = () => {
       dataIndex: "comment",
       title: "Комментарий",
     },
-    {
+  ];
+
+  if (perms.update || perms.delete) {
+    columns.push({
       key: "actions",
       title: "Действия",
       render: (_, student) => (
         <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              dispatch(setSettlementModal({ open: true, student }))
-            }
-          >
-            Поселить
-          </Button>
-          <Button
-            onClick={() =>
-              dispatch(setCreateModal({ open: true, defaultStudent: student }))
-            }
-          >
-            Изменить
-          </Button>
-          <DeleteButton
-            onClick={() => dispatch(deleteStudent(student.id))}
-            loading={deletingIds.includes(student.id)}
-          />
+          {perms.update && (
+            <Button
+              type="primary"
+              onClick={() =>
+                dispatch(setSettlementModal({ open: true, student }))
+              }
+            >
+              Поселить
+            </Button>
+          )}
+          {perms.update && (
+            <Button
+              onClick={() =>
+                dispatch(
+                  setCreateModal({ open: true, defaultStudent: student })
+                )
+              }
+            >
+              Изменить
+            </Button>
+          )}
+          {perms.delete && (
+            <DeleteButton
+              onClick={() => dispatch(deleteStudent(student.id))}
+              loading={deletingIds.includes(student.id)}
+            />
+          )}
         </Space>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <>
       <SettlementModal />
       <TabledContent<Student>
         pageTitle="Студенты"
-        actionButtons={<CreateStudentModal />}
+        actionButtons={perms.create ? <CreateStudentModal /> : undefined}
         dataSource={students}
         columns={columns}
         loading={loading}

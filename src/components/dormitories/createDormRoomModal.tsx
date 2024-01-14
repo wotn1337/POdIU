@@ -1,5 +1,10 @@
 import { Form, Input, InputNumber, Select } from "antd";
-import { createRoom, setCreateRoomModal, updateRoom } from "app/features";
+import {
+  createRoom,
+  setCreateRoomModal,
+  setRoomCreatingErrors,
+  updateRoom,
+} from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
@@ -10,7 +15,7 @@ export const CreateDormRoomModal = () => {
   const { createRoomModal, creatingRoom, dormitories, loading } = useSelector(
     (state) => state.dormitories
   );
-  const { open, defaultRoom, defaultDorm } = createRoomModal;
+  const { open, defaultRoom, defaultDorm, errors } = createRoomModal;
 
   return (
     <CreateModal
@@ -63,17 +68,33 @@ export const CreateDormRoomModal = () => {
         name="number"
         label="Номер"
         rules={[{ required: true, message: requiredMessage }]}
+        validateStatus={errors?.number && "error"}
+        help={errors?.number}
       >
-        <InputNumber className={s.numberInput} min={1} />
+        <InputNumber
+          className={s.numberInput}
+          min={1}
+          onChange={() =>
+            dispatch(setRoomCreatingErrors({ ...errors, number: undefined }))
+          }
+        />
       </Form.Item>
       <Form.Item
         name="number_of_seats"
         label="Количество мест"
         rules={[{ required: true, message: requiredMessage }]}
+        validateStatus={errors?.number_of_seats && "error"}
+        help={errors?.number_of_seats}
       >
         <InputNumber className={s.numberInput} min={1} />
       </Form.Item>
-      <Form.Item name="comment" label="Комментарий">
+      <Form.Item
+        name="comment"
+        label="Комментарий"
+        validateStatus={errors?.comment && "error"}
+        help={errors?.comment}
+        rules={[{ required: true, message: requiredMessage }]}
+      >
         <Input.TextArea />
       </Form.Item>
     </CreateModal>

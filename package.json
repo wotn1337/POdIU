@@ -16,15 +16,16 @@
     "axios": "^1.6.2",
     "classnames": "^2.3.2",
     "react": "^18.2.0",
+    "react-cookie": "^7.0.1",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.18.0",
     "sass": "^1.69.5"
   },
   "devDependencies": {
+    "@types/node": "^20.10.4",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",

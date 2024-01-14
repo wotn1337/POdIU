@@ -125,6 +125,12 @@ export type DormitoriesStateType = {
     open: boolean;
     defaultRoom?: DormRoom;
     defaultDorm?: number;
+    errors?: {
+      dorm?: string[];
+      number?: string[];
+      number_of_seats?: string[];
+      comment?: string[];
+    };
   };
   creating: boolean;
   creatingRoom: boolean;
@@ -139,4 +145,5 @@ export type DormitoriesStateType = {
   loadingStudentIds: number[];
   filters: Filters;
   sorters: Sorters;
+  messages: string[];
 };
