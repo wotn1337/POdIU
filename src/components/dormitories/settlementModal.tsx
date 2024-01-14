@@ -13,9 +13,8 @@ import s from "./dormitories.module.scss";
 export const SettlementModal = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const dispatch = useDispatch();
-  const {
-    settlementModal: { open, dorm, room },
-  } = useSelector((state) => state.dormitories);
+  const { settlementModal } = useSelector((state) => state.dormitories);
+  const { open, dorm, room } = settlementModal;
   const { students } = useSelector((state) => state.students);
 
   const onSettlement = () => {
@@ -69,6 +68,7 @@ export const SettlementModal = () => {
           selectedRowKeys,
           onChange: setSelectedRowKeys,
         }}
+        settlementState={settlementModal}
       />
     </Modal>
   );

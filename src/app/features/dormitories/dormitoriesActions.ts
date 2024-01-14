@@ -18,13 +18,36 @@ import {
 export const getDormitories = createAsyncThunk<
   GetDormitoriesResponse,
   GetDormitoriesParams
->("dormitories/getDormitories", async ({ per_page, page }) => {
-  const response = await axiosInstance.get<
-    GetDormitoriesParams,
-    AxiosResponse<GetDormitoriesResponse>
-  >(`/api/v1/dormitories?page=${page}&per_page=${per_page}`);
-  return response.data;
-});
+>(
+  "dormitories/getDormitories",
+  async ({ per_page, page, filters, sorters }) => {
+    const filterParams = Object.entries(filters)
+      .filter(([_, value]) => value !== undefined)
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => `${key}[]=${v}`).join("&");
+        }
+        return `${key}=${value}`;
+      });
+    const sorterParams = Object.entries(sorters)
+      .filter(([_, value]) => value !== undefined)
+      .map(([key, value]) => {
+        return `sort_by[column]=${key}&sort_by[direction]=${value?.replace(
+          "end",
+          ""
+        )}`;
+      });
+    const response = await axiosInstance.get<
+      GetDormitoriesParams,
+      AxiosResponse<GetDormitoriesResponse>
+    >(
+      `/api/v1/dormitories?page=${page}&per_page=${per_page}&${filterParams.join(
+        "&"
+      )}&${sorterParams.join("&")}`
+    );
+    return response.data;
+  }
+);
 
 export const deleteDormitory = createAsyncThunk<WithMessage, number>(
   "dormitories/deleteDormitory",

@@ -32,6 +32,8 @@ const initialState: DormitoriesStateType = {
     open: false,
   },
   loadingStudentIds: [],
+  filters: {},
+  sorters: {},
 };
 
 const studentsSlice = createSlice({
@@ -84,6 +86,15 @@ const studentsSlice = createSlice({
     },
     removeLoadingStudentId: (state, { payload }) => {
       state.loadingStudentIds.filter((id) => id !== payload);
+    },
+    setFilters: (state, { payload }) => {
+      state.filters = payload;
+    },
+    setSorters: (state, { payload }) => {
+      state.sorters = payload;
+    },
+    clearState: (state) => {
+      state = initialState;
     },
   },
   extraReducers: (builder) => {
@@ -277,6 +288,9 @@ export const {
   updateStudentRoom,
   addLoadingStudentId,
   removeLoadingStudentId,
+  setFilters,
+  setSorters,
+  clearState,
 } = actions;
 
 export default reducer;

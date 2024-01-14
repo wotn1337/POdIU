@@ -37,12 +37,14 @@ export const getStudents = createAsyncThunk<
         }
         return `${key}=${value}`;
       });
-    const sorterParams = Object.entries(sorters).map(([key, value]) => {
-      return `sort_by[column]=${key}&sort_by[direction]=${value?.replace(
-        "end",
-        ""
-      )}`;
-    });
+    const sorterParams = Object.entries(sorters)
+      .filter(([_, value]) => value !== undefined)
+      .map(([key, value]) => {
+        return `sort_by[column]=${key}&sort_by[direction]=${value?.replace(
+          "end",
+          ""
+        )}`;
+      });
     const response = await axiosInstance.get<
       GetStudentsParams,
       AxiosResponse<GetStudentsResponse>

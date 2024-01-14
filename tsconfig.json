@@ -25,7 +25,8 @@
       "assets/*": ["assets/*"],
       "pages/*": ["pages/*"],
       "hooks/*": ["hooks/*"],
-      "app/*": ["app/*"]
+      "app/*": ["app/*"],
+      "utils/*": ["utils/*"],
     }
   },
   "include": ["src"],

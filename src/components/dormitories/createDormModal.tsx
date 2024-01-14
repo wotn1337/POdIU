@@ -13,13 +13,13 @@ export const CreateDormModal = () => {
   return (
     <CreateModal
       openButtonProps={{
-        onClick: () => dispatch(setCreateModal(true)),
+        onClick: () => dispatch(setCreateModal({ open: true })),
         children: "Добавить общежитие",
       }}
       modalProps={{
-        title: "Добавить общежитие",
+        title: `${defaultDorm ? "Изменить" : "Добавить"} общежитие`,
         open: open,
-        onCancel: () => dispatch(setCreateModal(false)),
+        onCancel: () => dispatch(setCreateModal({ open: false })),
       }}
       formProps={{
         name: "create-dormitory",
@@ -34,7 +34,7 @@ export const CreateDormModal = () => {
       }}
       submitButtonProps={{
         loading: creating,
-        children: "Добавить",
+        children: defaultDorm ? "Изменить" : "Добавить",
       }}
     >
       <Form.Item

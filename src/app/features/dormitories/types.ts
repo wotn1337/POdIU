@@ -6,6 +6,7 @@ import {
 } from "app/types";
 import { User } from "../administration/types";
 import { Student } from "../students/types";
+import { SortOrder } from "antd/es/table/interface";
 
 export type Dormitory = WithId<{
   number: string;
@@ -17,8 +18,20 @@ export type Dormitory = WithId<{
   updated_at: string | null;
 }>;
 
+export type Filters = {
+  address?: string;
+  number?: number;
+};
+
+export type Sorters = {
+  number?: SortOrder;
+  address?: SortOrder;
+};
+
 export type GetDormitoriesParams = PaginationParams<{
   with_user_info?: boolean;
+  filters: Filters;
+  sorters: Sorters;
 }>;
 
 export type GetDormitoriesResponse = {
@@ -124,4 +137,6 @@ export type DormitoriesStateType = {
     room?: DormRoom;
   };
   loadingStudentIds: number[];
+  filters: Filters;
+  sorters: Sorters;
 };
