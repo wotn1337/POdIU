@@ -12,7 +12,6 @@ import { DeleteButton } from "components/shared/delete-button";
 import { deleteUser } from "app/features";
 import { CheckCircleTwoTone } from "@ant-design/icons";
 import { useUserPermissions } from "hooks/useUserPermissions";
-import { useEffect } from "react";
 
 export const UsersPageContent = () => {
   const { users, loading, deleteUserIds, usersMeta, roles, permissions } =

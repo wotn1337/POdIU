@@ -1,4 +1,3 @@
-import { Result } from "antd";
 import { getUsers } from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { UsersPageContent } from "components/administration";

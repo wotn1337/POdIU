@@ -10,7 +10,6 @@ import {
   getRoles,
   getUsers,
 } from "./administrationActions";
-import { stat } from "fs";
 
 const initialState: AdministrationStateType = {
   users: [],

@@ -1,4 +1,4 @@
-import { Permission, User } from "app/features/administration/types";
+import { User } from "app/features/administration/types";
 import { useSelector } from "app/store";
 
 type CrudPermissions = {
@@ -27,11 +27,6 @@ const hasPermission = (
 
 export const useUserPermissions = () => {
   const { user } = useSelector((state) => state.auth);
-  const rolesPermissions = user?.roles.map((r) => r.permissions).flat(1);
-  const permissions = [
-    ...(user?.permissions ?? []),
-    ...(rolesPermissions ?? []),
-  ];
 
   const users: CrudPermissions = {
     create: hasPermission("Пользователь", "Создание", user),

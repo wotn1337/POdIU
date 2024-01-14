@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "app/api";
 import { ErrorsResponse, WithMessage } from "app/types";
-import { Axios, AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import {
   CreateDormitory,
   CreateDormitoryResponse,
