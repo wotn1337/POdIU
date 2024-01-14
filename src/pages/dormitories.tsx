@@ -1,4 +1,4 @@
-import { clearState, getDormitories } from "app/features/dormitories";
+import { getDormitories } from "app/features/dormitories";
 import { useDispatch, useSelector } from "app/store";
 import { DormitoriesContent } from "components/dormitories";
 import { useEffect } from "react";
@@ -13,9 +13,6 @@ export const DormitoriesPage = () => {
     dispatch(
       getDormitories({ page: current_page, per_page, filters, sorters })
     );
-    return () => {
-      dispatch(clearState());
-    };
   }, [current_page, per_page, filters, sorters]);
 
   return <DormitoriesContent />;

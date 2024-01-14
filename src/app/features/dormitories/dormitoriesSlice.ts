@@ -93,9 +93,6 @@ const studentsSlice = createSlice({
     setSorters: (state, { payload }) => {
       state.sorters = payload;
     },
-    clearState: (state) => {
-      state = initialState;
-    },
   },
   extraReducers: (builder) => {
     // get dormitories
@@ -290,7 +287,6 @@ export const {
   removeLoadingStudentId,
   setFilters,
   setSorters,
-  clearState,
 } = actions;
 
 export default reducer;

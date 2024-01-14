@@ -16,6 +16,9 @@ export const SettlementModal = () => {
   const { settlementModal, updating, loadingGenders, genders } = useSelector(
     (state) => state.students
   );
+  const { filters: dormFilters, sorters: dormSorters } = useSelector(
+    (state) => state.dormitories
+  );
   const {
     dormitories,
     loading: loadingDormitories,
@@ -39,7 +42,14 @@ export const SettlementModal = () => {
   };
 
   useEffect(() => {
-    dispatch(getDormitories({ page: 1, per_page: 100 }));
+    dispatch(
+      getDormitories({
+        page: 1,
+        per_page: 100,
+        filters: dormFilters,
+        sorters: dormSorters,
+      })
+    );
   }, []);
 
   useEffect(() => {

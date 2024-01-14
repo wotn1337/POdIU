@@ -1,4 +1,4 @@
-import { User } from "app/types";
+import { User } from "../administration/types";
 
 export type StateType = {
   loading: boolean;

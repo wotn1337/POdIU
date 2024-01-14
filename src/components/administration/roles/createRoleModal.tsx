@@ -8,10 +8,9 @@ import {
   setOpenCreateRolePopover,
 } from "app/features/administration/administrationSlice";
 import { useDispatch, useSelector } from "app/store";
+import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
 import { useEffect } from "react";
-import { getFlatPermissions } from "../utils";
-import { requiredMessage } from "assets/constants";
 
 const { Option } = Select;
 

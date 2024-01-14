@@ -91,7 +91,7 @@ export const DormitoriesContent = () => {
       columns={columns}
       rowSelection={undefined}
       loading={loading}
-      onChange={(_, tableFilters, sorter) => {
+      onChange={(_, __, sorter) => {
         if (!Array.isArray(sorter)) {
           dispatch(
             setSorters({
