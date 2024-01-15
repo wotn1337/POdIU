@@ -15,6 +15,7 @@ import { RoomsTable } from "./roomsTable";
 import { Button, InputRef, Space } from "antd";
 import { useRef } from "react";
 import { getColumnSearchProps } from "utils";
+import { useUserPermissions } from "hooks/useUserPermissions";
 
 export const DormitoriesContent = () => {
   const {
@@ -26,6 +27,8 @@ export const DormitoriesContent = () => {
     sorters,
   } = useSelector((state) => state.dormitories);
   const dispatch = useDispatch();
+  const { dormitories: perms } = useUserPermissions();
+  const actions = [];
   const searchInput = useRef<InputRef>(null);
 
   const columns: ColumnsType<Dormitory> = [
@@ -62,31 +65,42 @@ export const DormitoriesContent = () => {
       dataIndex: "comment",
       title: "Комментарий",
     },
-    {
+  ];
+
+  if (perms.update || perms.delete) {
+    columns.push({
       key: "actions",
       render: (_, dorm) => (
         <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              dispatch(setCreateModal({ open: true, defaultDorm: dorm }))
-            }
-          >
-            Изменить
-          </Button>
-          <DeleteButton onClick={() => dispatch(deleteDormitory(dorm.id))} />
+          {perms.update && (
+            <Button
+              type="primary"
+              onClick={() =>
+                dispatch(setCreateModal({ open: true, defaultDorm: dorm }))
+              }
+            >
+              Изменить
+            </Button>
+          )}
+          {perms.delete && (
+            <DeleteButton onClick={() => dispatch(deleteDormitory(dorm.id))} />
+          )}
         </Space>
       ),
-    },
-  ];
+    });
+  }
+
+  if (perms.create) {
+    actions.push(<CreateDormModal key={1} />);
+  }
+  if (perms.update) {
+    actions.push(<CreateDormRoomModal key={2} />);
+  }
 
   return (
     <TabledContent<Dormitory>
       pageTitle="Общежития"
-      actionButtons={[
-        <CreateDormModal key={1} />,
-        <CreateDormRoomModal key={2} />,
-      ]}
+      actionButtons={actions}
       dataSource={dormitories}
       columns={columns}
       rowSelection={undefined}

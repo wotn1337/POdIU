@@ -13,11 +13,14 @@ import {
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useUserPermissions } from "./hooks";
+import { Forbidden } from "components/shared/Forbidden";
 
 function App() {
   const [cookies] = useCookies();
   const user = localStorage.getItem("user");
   const dispatch = useDispatch();
+  const { students, dormitories, roles, users } = useUserPermissions();
 
   useEffect(() => {
     if (user) {
@@ -37,10 +40,39 @@ function App() {
       <Route path={PATH.LOGIN} element={<LoginPage />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to={PATH.USERS} />} />
-        <Route index path={PATH.USERS} element={<UsersPage />} />
-        <Route path={PATH.ROLES} element={<RolesPage />} />
-        <Route path={PATH.STUDENTS} element={<StudentsPage />} />
-        <Route path={PATH.DORMITORIES} element={<DormitoriesPage />} />
+        <Route
+          index
+          path={PATH.USERS}
+          element={
+            <Forbidden access={users.read}>
+              <UsersPage />
+            </Forbidden>
+          }
+        />
+        <Route
+          path={PATH.ROLES}
+          element={
+            <Forbidden access={roles.read}>
+              <RolesPage />
+            </Forbidden>
+          }
+        />
+        <Route
+          path={PATH.STUDENTS}
+          element={
+            <Forbidden access={students.read}>
+              <StudentsPage />
+            </Forbidden>
+          }
+        />
+        <Route
+          path={PATH.DORMITORIES}
+          element={
+            <Forbidden access={dormitories.read}>
+              <DormitoriesPage />
+            </Forbidden>
+          }
+        />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

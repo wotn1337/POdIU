@@ -42,8 +42,24 @@ export const useUserPermissions = () => {
     delete: hasPermission("Студенты", "Удаление", user),
   };
 
+  const dormitories: CrudPermissions = {
+    create: hasPermission("Общежитие", "Создание", user),
+    read: hasPermission("Общежитие", "Просмотр", user),
+    update: hasPermission("Общежитие", "Обновление", user),
+    delete: hasPermission("Общежитие", "Удаление", user),
+  };
+
+  const roles: CrudPermissions = {
+    create: hasPermission("Роль", "Создание", user),
+    read: hasPermission("Роль", "Просмотр", user),
+    update: hasPermission("Роль", "Обновление", user),
+    delete: hasPermission("Роль", "Удаление", user),
+  };
+
   return {
     users,
     students,
+    dormitories,
+    roles,
   };
 };
