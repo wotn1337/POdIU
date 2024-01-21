@@ -1,4 +1,4 @@
-import { Button, Space, Table } from "antd";
+import { Button, Empty, Space, Table } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import {
   DormRoom,
@@ -17,37 +17,10 @@ import {
 import { CreateStudentResponse, Student } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
 import { DeleteButton } from "components/shared/delete-button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import s from "./dormitories.module.scss";
 import { SettlementModal } from "./settlementModal";
-
-const baseColumns: ColumnsType<DormRoom> = [
-  {
-    key: "number",
-    dataIndex: "number",
-    title: "Номер комнаты",
-  },
-  {
-    key: "number_of_seats",
-    dataIndex: "number_of_seats",
-    title: "Кол-во мест",
-  },
-  {
-    key: "empty_seats_count",
-    dataIndex: "empty_seats_count",
-    title: "Свободных мест",
-  },
-  {
-    key: "students_count",
-    dataIndex: "students_count",
-    title: "Кол-во студентов",
-  },
-  {
-    key: "comment",
-    dataIndex: "comment",
-    title: "Комментарий",
-  },
-];
+import { SortOrder } from "antd/es/table/interface";
 
 type Props = {
   dormId: number;
@@ -69,6 +42,39 @@ export const RoomsTable: React.FC<Props> = ({
     (state) => state.dormitories
   );
   const dorm = dormitories.find((d) => d.id === dormId);
+  const [sorters, setSorters] = useState<{
+    [x: string]: SortOrder | undefined;
+  }>({});
+
+  const baseColumns: ColumnsType<DormRoom> = [
+    {
+      key: "number",
+      dataIndex: "number",
+      title: "Номер комнаты",
+      sortOrder: sorters.number,
+      sorter: () => 0,
+    },
+    {
+      key: "number_of_seats",
+      dataIndex: "number_of_seats",
+      title: "Кол-во мест",
+    },
+    {
+      key: "empty_seats_count",
+      dataIndex: "empty_seats_count",
+      title: "Свободных мест",
+    },
+    {
+      key: "students_count",
+      dataIndex: "students_count",
+      title: "Кол-во студентов",
+    },
+    {
+      key: "comment",
+      dataIndex: "comment",
+      title: "Комментарий",
+    },
+  ];
 
   const columns: ColumnsType<DormRoom> = withActions
     ? [
@@ -200,9 +206,10 @@ export const RoomsTable: React.FC<Props> = ({
         page: roomsInfo?.current_page ?? 1,
         per_page: roomsInfo?.per_page ?? 10,
         with_students: true,
+        sorters,
       })
     );
-  }, [roomsInfo?.current_page, roomsInfo?.per_page]);
+  }, [roomsInfo?.current_page, roomsInfo?.per_page, sorters]);
 
   return (
     <>
@@ -223,6 +230,18 @@ export const RoomsTable: React.FC<Props> = ({
               }
             : undefined
         }
+        locale={{
+          filterReset: "Сбросить",
+          emptyText: (
+            <Empty
+              description="Нет данных"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          ),
+          triggerAsc: "Отсортировать по возрастанию",
+          triggerDesc: "Отсортировать по убыванию",
+          cancelSort: "Сбросить сортировку",
+        }}
         pagination={{
           className: s.roomsTable__pagination,
           current: roomsInfo?.current_page,
@@ -235,6 +254,13 @@ export const RoomsTable: React.FC<Props> = ({
             dispatch(setRoomsPage({ id: dormId, page }));
             dispatch(setRoomsPageSize({ id: dormId, size: pageSize }));
           },
+        }}
+        onChange={(_, __, sorter) => {
+          if (!Array.isArray(sorter)) {
+            setSorters({
+              [String(sorter.columnKey)]: sorter.order,
+            });
+          }
         }}
         rowKey="id"
         expandable={{

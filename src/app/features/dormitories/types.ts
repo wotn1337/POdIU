@@ -28,6 +28,10 @@ export type Sorters = {
   address?: SortOrder;
 };
 
+export type RoomsSorters = {
+  number?: SortOrder;
+};
+
 export type GetDormitoriesParams = PaginationParams<{
   with_user_info?: boolean;
   filters: Filters;
@@ -79,6 +83,7 @@ export type GetDormRoomsParams = {
   is_family?: boolean;
   only_available_dorm_rooms?: boolean;
   with_students?: boolean;
+  sorters: RoomsSorters;
 };
 
 export type GetDormRoomsResponse = {

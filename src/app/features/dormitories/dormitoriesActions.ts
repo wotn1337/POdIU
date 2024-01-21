@@ -84,17 +84,29 @@ export const createDormitory = createAsyncThunk<
 export const getDormRooms = createAsyncThunk<
   GetDormRoomsResponse,
   GetDormRoomsParams
->("dormitories/getDormRooms", async ({ dormId, ...params }) => {
+>("dormitories/getDormRooms", async ({ dormId, sorters, ...params }) => {
   const queryParams = Object.entries(params)
     .filter(([_, value]) => value !== undefined)
     .map(
       ([key, value]) =>
         `${key}=${typeof value === "boolean" ? Number(value) : value}`
     );
+  const sorterParams = Object.entries(sorters)
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => {
+      return `sort_by[column]=${key}&sort_by[direction]=${value?.replace(
+        "end",
+        ""
+      )}`;
+    });
   const response = await axiosInstance.get<
     GetDormRoomsParams,
     AxiosResponse<GetDormRoomsResponse>
-  >(`/api/v1/dormitories/${dormId}/dorm-rooms?${queryParams.join("&")}`);
+  >(
+    `/api/v1/dormitories/${dormId}/dorm-rooms?${queryParams.join(
+      "&"
+    )}&${sorterParams.join("&")}`
+  );
   return response.data;
 });
 
