@@ -1,10 +1,10 @@
 import { Checkbox, Flex, Modal, Select, Space, Typography } from "antd";
+import { getDormitories, updateStudent } from "app/features";
 import { setSettlementModal } from "app/features/students/studentsSlice";
 import { useDispatch, useSelector } from "app/store";
-import s from "./students.module.scss";
-import { useEffect, useState } from "react";
-import { getDormRooms, getDormitories, updateStudent } from "app/features";
 import { RoomsTable } from "components/dormitories";
+import { useEffect, useState } from "react";
+import s from "./students.module.scss";
 
 export const SettlementModal = () => {
   const [dormId, setDormId] = useState<number>();
@@ -51,22 +51,6 @@ export const SettlementModal = () => {
       })
     );
   }, []);
-
-  useEffect(() => {
-    if (dormId) {
-      dispatch(
-        getDormRooms({
-          dormId,
-          page: 1,
-          per_page: 10,
-          gender_id: gender,
-          is_family: isFamily,
-          only_available_dorm_rooms: onlyAvailable,
-          with_students: true,
-        })
-      );
-    }
-  }, [dormId, gender, isFamily, onlyAvailable]);
 
   return (
     <Modal
@@ -128,6 +112,9 @@ export const SettlementModal = () => {
       {dormId && (
         <RoomsTable
           dormId={dormId}
+          gender={gender}
+          isFamily={isFamily}
+          onlyAvailable={onlyAvailable}
           loading={gettingRoomsDormIds.includes(dormId)}
           roomsInfo={dormRooms[dormId]}
           withActions={false}

@@ -23,7 +23,10 @@ import { SettlementModal } from "./settlementModal";
 import { SortOrder } from "antd/es/table/interface";
 
 type Props = {
-  dormId: number;
+  dormId: number | undefined;
+  gender?: number;
+  isFamily?: boolean;
+  onlyAvailable?: boolean;
   loading: boolean;
   roomsInfo?: RoomsInfo;
   withActions?: boolean;
@@ -36,6 +39,9 @@ export const RoomsTable: React.FC<Props> = ({
   dormId,
   withActions = true,
   selection,
+  gender,
+  isFamily,
+  onlyAvailable,
 }) => {
   const dispatch = useDispatch();
   const { deletingRoomIds, dormitories, loadingStudentIds } = useSelector(
@@ -200,16 +206,28 @@ export const RoomsTable: React.FC<Props> = ({
   ];
 
   useEffect(() => {
-    dispatch(
-      getDormRooms({
-        dormId,
-        page: roomsInfo?.current_page ?? 1,
-        per_page: roomsInfo?.per_page ?? 10,
-        with_students: true,
-        sorters,
-      })
-    );
-  }, [roomsInfo?.current_page, roomsInfo?.per_page, sorters]);
+    if (dormId) {
+      dispatch(
+        getDormRooms({
+          dormId,
+          page: roomsInfo?.current_page ?? 1,
+          per_page: roomsInfo?.per_page ?? 10,
+          gender_id: gender,
+          is_family: isFamily,
+          only_available_dorm_rooms: onlyAvailable,
+          with_students: true,
+          sorters,
+        })
+      );
+    }
+  }, [
+    roomsInfo?.current_page,
+    roomsInfo?.per_page,
+    sorters,
+    gender,
+    isFamily,
+    onlyAvailable,
+  ]);
 
   return (
     <>
