@@ -8,6 +8,7 @@ import {
   CreateUserResponse,
   GetUserResponse,
   PermissionsResponse,
+  Role,
   RolesResponse,
 } from "./types";
 
@@ -68,6 +69,17 @@ export const createRole = createAsyncThunk<CreateRoleResponse, CreateRoleData>(
   async (data) => {
     const response = await axiosInstance.post<CreateRoleResponse>(
       "/api/v1/roles/create",
+      data
+    );
+    return response.data;
+  }
+);
+
+export const updateRole = createAsyncThunk<CreateRoleResponse, Role>(
+  "administration/updateRole",
+  async ({ id, ...data }) => {
+    const response = await axiosInstance.patch<CreateRoleResponse>(
+      `/api/v1/roles/${id}`,
       data
     );
     return response.data;

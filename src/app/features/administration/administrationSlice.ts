@@ -9,6 +9,7 @@ import {
   getPermissions,
   getRoles,
   getUsers,
+  updateRole,
 } from "./administrationActions";
 
 const initialState: AdministrationStateType = {
@@ -18,7 +19,7 @@ const initialState: AdministrationStateType = {
   createUserModal: {
     open: false,
   },
-  createRoleModalOpen: false,
+  createRoleModal: { open: false },
   permissionsLoading: false,
   creatingRole: false,
   loadingRoles: false,
@@ -29,6 +30,7 @@ const initialState: AdministrationStateType = {
     per_page: 10,
   },
   messages: [],
+  roles: [],
 };
 
 const administrationSlice = createSlice({
@@ -41,9 +43,6 @@ const administrationSlice = createSlice({
     setCreateUserModal: (state, action) => {
       state.createUserModal = action.payload;
     },
-    setOpenCreateRolePopover: (state, action) => {
-      state.createRoleModalOpen = action.payload;
-    },
     clearCreateRoleMessage: (state) => {
       state.createRoleMessage = undefined;
     },
@@ -52,6 +51,9 @@ const administrationSlice = createSlice({
     },
     setMessages: (state, { payload }) => {
       state.messages = payload;
+    },
+    setCreateRoleModal: (state, { payload }) => {
+      state.createRoleModal = payload;
     },
   },
   extraReducers: (builder) => {
@@ -131,13 +133,29 @@ const administrationSlice = createSlice({
     });
     builder.addCase(createRole.fulfilled, (state, { payload }) => {
       state.creatingRole = false;
-      state.createRoleModalOpen = false;
+      state.createRoleModal = { open: false };
       state.createRoleMessage = payload.message;
-      state.roles = state.roles
-        ? [...state.roles, payload.role]
-        : [payload.role];
+      state.roles = [...state.roles, payload.role];
     });
     builder.addCase(createRole.rejected, (state) => {
+      state.creatingRole = false;
+    });
+
+    // update role
+    builder.addCase(updateRole.pending, (state) => {
+      state.creatingRole = true;
+    });
+    builder.addCase(updateRole.fulfilled, (state) => {
+      state.creatingRole = false;
+      state.createRoleModal = { open: false };
+      // state.roles = state.roles.map((role) => {
+      //   if (role.id === arg.id) {
+      //     return { ...payload.role };
+      //   }
+      //   return role;
+      // });
+    });
+    builder.addCase(updateRole.rejected, (state) => {
       state.creatingRole = false;
     });
 
@@ -171,10 +189,10 @@ const { actions, reducer } = administrationSlice;
 export const {
   clearCreateMessage,
   setCreateUserModal,
-  setOpenCreateRolePopover,
   clearCreateRoleMessage,
   setUsersMeta,
   setMessages,
+  setCreateRoleModal,
 } = actions;
 
 export default reducer;

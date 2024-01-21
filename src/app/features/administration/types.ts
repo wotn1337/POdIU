@@ -40,12 +40,15 @@ export type AdministrationStateType = {
     open: boolean;
     defaultUser?: User;
   };
-  createRoleModalOpen: boolean;
+  createRoleModal: {
+    open: boolean;
+    defaultRole?: Role;
+  };
   permissionsLoading: boolean;
   permissions?: Permission[];
   creatingRole: boolean;
   createRoleMessage?: string;
-  roles?: Role[];
+  roles: Role[];
   loadingRoles: boolean;
   deleteRolesIds: number[];
   deleteUserIds: number[];

@@ -1,11 +1,13 @@
+import { UnknownAction } from "@reduxjs/toolkit";
 import { Form, Input, Select, message } from "antd";
 import {
   createRole,
   getPermissions,
+  updateRole,
 } from "app/features/administration/administrationActions";
 import {
   clearCreateRoleMessage,
-  setOpenCreateRolePopover,
+  setCreateRoleModal,
 } from "app/features/administration/administrationSlice";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
@@ -21,7 +23,7 @@ export const CreateRoleModal = () => {
     permissions,
     createRoleMessage,
     creatingRole,
-    createRoleModalOpen,
+    createRoleModal: { open, defaultRole },
   } = useSelector((state) => state.administration);
 
   useEffect(() => {
@@ -39,22 +41,33 @@ export const CreateRoleModal = () => {
   return (
     <CreateModal
       openButtonProps={{
-        onClick: () => dispatch(setOpenCreateRolePopover(true)),
-        children: "Добавить роль",
+        onClick: () => dispatch(setCreateRoleModal({ open: true })),
+        children: `${defaultRole ? "Изменить" : "Добавить"} роль`,
       }}
       modalProps={{
-        title: "Добавить роль",
-        open: createRoleModalOpen,
-        onCancel: () => dispatch(setOpenCreateRolePopover(false)),
+        title: `${defaultRole ? "Изменить" : "Добавить"} роль`,
+        open: open,
+        onCancel: () => dispatch(setCreateRoleModal({ open: false })),
       }}
       formProps={{
         name: "create-role",
         disabled: creatingRole,
-        onFinish: (values) => dispatch(createRole(values)),
+        onFinish: (values) =>
+          dispatch(
+            (defaultRole
+              ? updateRole({ id: defaultRole.id, ...values })
+              : createRole(values)) as unknown as UnknownAction
+          ),
+        initialValues: defaultRole
+          ? {
+              ...defaultRole,
+              permissions: defaultRole.permissions.map((p) => String(p.id)),
+            }
+          : undefined,
       }}
       submitButtonProps={{
         loading: creatingRole,
-        children: "Добавить",
+        children: defaultRole ? "Изменить" : "Добавить",
       }}
     >
       <Form.Item
