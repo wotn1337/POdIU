@@ -14,7 +14,7 @@ const initialState: StudentsStateType = {
   loading: false,
   students: [],
   current_page: 1,
-  per_page: 10,
+  per_page: 5,
   createModal: {
     open: false,
   },

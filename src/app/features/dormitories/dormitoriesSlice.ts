@@ -15,7 +15,7 @@ const initialState: DormitoriesStateType = {
   loading: false,
   dormitories: [],
   current_page: 1,
-  per_page: 10,
+  per_page: 5,
   deletingIds: [],
   createModal: {
     open: false,

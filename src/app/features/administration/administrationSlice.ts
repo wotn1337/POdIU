@@ -27,7 +27,7 @@ const initialState: AdministrationStateType = {
   deleteUserIds: [],
   usersMeta: {
     current_page: 1,
-    per_page: 10,
+    per_page: 5,
   },
   messages: [],
   roles: [],

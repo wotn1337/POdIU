@@ -29,7 +29,7 @@ export const RolesPageContent = () => {
       title: "Права",
       render: (permissions: Role["permissions"]) => (
         <Space size={4} wrap>
-          {permissions.map((perm) => (
+          {permissions?.map((perm) => (
             <Tag key={perm.id}>
               {perm.model} - {perm.title}
             </Tag>

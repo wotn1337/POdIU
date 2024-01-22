@@ -170,6 +170,7 @@ export const StudentsTable: React.FC<Props> = ({
       }}
       pagination={{
         ...props.pagination,
+        defaultPageSize: 5,
         pageSizeOptions: [5, 10, 20, 50, 100],
         showSizeChanger: true,
         total,

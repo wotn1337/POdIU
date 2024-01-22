@@ -262,6 +262,7 @@ export const RoomsTable: React.FC<Props> = ({
         }}
         pagination={{
           className: s.roomsTable__pagination,
+          pageSizeOptions: [5, 10, 20, 50, 100],
           current: roomsInfo?.current_page,
           pageSize: roomsInfo?.per_page,
           total: roomsInfo?.total,
