@@ -44,7 +44,12 @@ export function TabledContent<T extends AnyObject>({
     <ContentWrapper>
       <Layout className={className}>
         <Header className={s.tabledContent__header}>
-          <Space size={30} align="center" className={s.titleWrapper}>
+          <Space
+            size={30}
+            align="center"
+            className={s.titleWrapper}
+            wrap={true}
+          >
             {pageTitle && (
               <Typography.Title className={s.title}>
                 {pageTitle}

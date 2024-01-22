@@ -145,16 +145,19 @@ const administrationSlice = createSlice({
     builder.addCase(updateRole.pending, (state) => {
       state.creatingRole = true;
     });
-    builder.addCase(updateRole.fulfilled, (state) => {
-      state.creatingRole = false;
-      state.createRoleModal = { open: false };
-      // state.roles = state.roles.map((role) => {
-      //   if (role.id === arg.id) {
-      //     return { ...payload.role };
-      //   }
-      //   return role;
-      // });
-    });
+    builder.addCase(
+      updateRole.fulfilled,
+      (state, { meta: { arg }, payload }) => {
+        state.creatingRole = false;
+        state.createRoleModal = { open: false };
+        state.roles = state.roles.map((role) => {
+          if (role.id === arg.id) {
+            return { ...payload.role };
+          }
+          return role;
+        });
+      }
+    );
     builder.addCase(updateRole.rejected, (state) => {
       state.creatingRole = false;
     });
