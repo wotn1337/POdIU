@@ -9,7 +9,6 @@ import s from "./students.module.scss";
 export const SettlementModal = () => {
   const [dormId, setDormId] = useState<number>();
   const [onlyAvailable, setAvailable] = useState<boolean>(true);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const dispatch = useDispatch();
   const { settlementModal, updating, loadingGenders, genders } = useSelector(
     (state) => state.students
@@ -24,6 +23,9 @@ export const SettlementModal = () => {
     dormRooms,
   } = useSelector((state) => state.dormitories);
   const { open, student } = settlementModal;
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(
+    student?.dorm_room?.id ? [student.dorm_room.id] : []
+  );
   const [isFamily, setIsFamily] = useState<boolean>(false);
   const [gender, setGender] = useState<string | undefined>(
     String(student?.gender?.id)
@@ -57,6 +59,7 @@ export const SettlementModal = () => {
   useEffect(() => {
     setGender(String(student?.gender?.id));
     setIsFamily(!!student?.is_family);
+    setSelectedRowKeys(student?.dorm_room?.id ? [student.dorm_room.id] : []);
   }, [student]);
 
   return (
