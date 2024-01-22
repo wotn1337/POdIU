@@ -8,9 +8,7 @@ import s from "./students.module.scss";
 
 export const SettlementModal = () => {
   const [dormId, setDormId] = useState<number>();
-  const [gender, setGender] = useState<number>();
-  const [isFamily, setIsFamily] = useState<boolean>(false);
-  const [onlyAvailable, setAvailable] = useState<boolean>(false);
+  const [onlyAvailable, setAvailable] = useState<boolean>(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const dispatch = useDispatch();
   const { settlementModal, updating, loadingGenders, genders } = useSelector(
@@ -26,6 +24,10 @@ export const SettlementModal = () => {
     dormRooms,
   } = useSelector((state) => state.dormitories);
   const { open, student } = settlementModal;
+  const [isFamily, setIsFamily] = useState<boolean>(false);
+  const [gender, setGender] = useState<string | undefined>(
+    String(student?.gender?.id)
+  );
 
   const onSettlement = () => {
     if (student) {
@@ -51,6 +53,11 @@ export const SettlementModal = () => {
       })
     );
   }, []);
+
+  useEffect(() => {
+    setGender(String(student?.gender?.id));
+    setIsFamily(!!student?.is_family);
+  }, [student]);
 
   return (
     <Modal
@@ -112,7 +119,7 @@ export const SettlementModal = () => {
       {dormId && (
         <RoomsTable
           dormId={dormId}
-          gender={gender}
+          gender={Number(gender)}
           isFamily={isFamily}
           onlyAvailable={onlyAvailable}
           loading={gettingRoomsDormIds.includes(dormId)}
