@@ -10,8 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Layout as AntdLayout, Menu, MenuProps } from "antd";
 import { useLogoutMutation } from "app/features";
-import { logout } from "app/features/auth/authActions";
-import { useDispatch, useSelector } from "app/store";
+import { useSelector } from "app/store";
 import { PATH } from "assets/constants";
 import { Logo } from "assets/images";
 import { useCurrentPage } from "hooks/useCurrentPage";
@@ -24,7 +23,6 @@ export const Header = () => {
   const currentPage = useCurrentPage();
   const { user } = useSelector((state) => state.auth);
   const [logout, { isLoading }] = useLogoutMutation();
-  const dispatch = useDispatch();
 
   const items: MenuProps["items"] = [
     {
