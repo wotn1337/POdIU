@@ -1,7 +1,6 @@
-import { setLogin, setLogout } from "app/features/auth/authSlice";
-import { useDispatch } from "app/store";
 import { PATH } from "assets/constants";
 import { Layout } from "components/layout";
+import { Forbidden } from "components/shared/Forbidden";
 import {
   DormitoriesPage,
   LoginPage,
@@ -10,53 +9,19 @@ import {
   StudentsPage,
   UsersPage,
 } from "pages";
-import { useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useUserPermissions } from "./hooks";
-import { Forbidden } from "components/shared/Forbidden";
 
 function App() {
-  const [cookies] = useCookies();
-  const user = localStorage.getItem("user");
-  const dispatch = useDispatch();
-  const { students, dormitories, roles, users } = useUserPermissions();
-
-  useEffect(() => {
-    if (user) {
-      dispatch(setLogin(JSON.parse(user)));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!cookies["XSRF-TOKEN"]) {
-      dispatch(setLogout());
-      localStorage.removeItem("user");
-    }
-  }, [cookies]);
+  const { students, dormitories } = useUserPermissions();
 
   return (
     <Routes>
       <Route path={PATH.LOGIN} element={<LoginPage />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to={PATH.USERS} />} />
-        <Route
-          index
-          path={PATH.USERS}
-          element={
-            <Forbidden access={users.read}>
-              <UsersPage />
-            </Forbidden>
-          }
-        />
-        <Route
-          path={PATH.ROLES}
-          element={
-            <Forbidden access={roles.read}>
-              <RolesPage />
-            </Forbidden>
-          }
-        />
+        <Route index path={PATH.USERS} element={<UsersPage />} />
+        <Route path={PATH.ROLES} element={<RolesPage />} />
         <Route
           path={PATH.STUDENTS}
           element={

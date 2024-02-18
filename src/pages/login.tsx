@@ -4,9 +4,9 @@ import { LoginPageContent } from "components/login";
 import { Navigate } from "react-router-dom";
 
 export const LoginPage = () => {
-  const { loggedIn } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
-  if (loggedIn) {
+  if (user) {
     return <Navigate to={PATH.MAIN} />;
   }
 

@@ -7,6 +7,7 @@ import {
   updateStudent,
 } from "app/features";
 import { setCreateModal } from "app/features/students/studentsSlice";
+import { PostStudentData } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
@@ -34,11 +35,7 @@ export const CreateStudentModal = () => {
   }, []);
 
   return (
-    <CreateModal
-      openButtonProps={{
-        children: `${defaultStudent ? "Изменить" : "Добавить"} студента`,
-        onClick: () => dispatch(setCreateModal({ open: true })),
-      }}
+    <CreateModal<PostStudentData>
       modalProps={{
         open: open,
         title: `${defaultStudent ? "Изменить" : "Добавить"} студента`,
@@ -49,9 +46,7 @@ export const CreateStudentModal = () => {
         disabled: creating || updating,
         onFinish: (values) =>
           dispatch(
-            defaultStudent
-              ? updateStudent({ id: defaultStudent.id, ...values })
-              : createStudent(values)
+            defaultStudent ? updateStudent(values) : createStudent(values)
           ),
         initialValues: defaultStudent
           ? {

@@ -7,13 +7,14 @@ import {
 import authReducer from "./features/auth/authSlice";
 import studentsReducer from "./features/students/studentsSlice";
 import dormitoriesReducer from "./features/dormitories/dormitoriesSlice";
-import { permissionsApi, rolesApi, usersApi } from "./features";
+import { authApi, permissionsApi, rolesApi, usersApi } from "./features";
 import rolesReducer from "./features/roles/rolesSlice";
 import usersReducer from "./features/users/usersSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    [authApi.reducerPath]: authApi.reducer,
     students: studentsReducer,
     dormitories: dormitoriesReducer,
     [rolesApi.reducerPath]: rolesApi.reducer,
@@ -24,6 +25,7 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
+      authApi.middleware,
       rolesApi.middleware,
       permissionsApi.middleware,
       usersApi.middleware

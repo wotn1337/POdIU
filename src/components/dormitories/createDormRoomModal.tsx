@@ -1,5 +1,6 @@
 import { Form, Input, InputNumber, Select } from "antd";
 import {
+  UpdateRoomData,
   createRoom,
   setCreateRoomModal,
   setRoomCreatingErrors,
@@ -18,11 +19,7 @@ export const CreateDormRoomModal = () => {
   const { open, defaultRoom, defaultDorm, errors } = createRoomModal;
 
   return (
-    <CreateModal
-      openButtonProps={{
-        onClick: () => dispatch(setCreateRoomModal({ open: true })),
-        children: `${defaultRoom ? "Изменить" : "Добавить"} комнату`,
-      }}
+    <CreateModal<UpdateRoomData>
       modalProps={{
         title: `${defaultRoom ? "Изменить" : "Добавить"} комнату`,
         open: open,
@@ -32,15 +29,7 @@ export const CreateDormRoomModal = () => {
         name: "create-room",
         disabled: creatingRoom,
         onFinish: (values) =>
-          dispatch(
-            defaultRoom
-              ? updateRoom({
-                  id: defaultRoom.id,
-                  oldDorm: defaultDorm,
-                  ...values,
-                })
-              : createRoom(values)
-          ),
+          dispatch(defaultRoom ? updateRoom(values) : createRoom(values)),
         initialValues: {
           dorm: defaultDorm ? String(defaultDorm) : undefined,
           ...defaultRoom,

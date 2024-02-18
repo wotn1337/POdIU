@@ -31,6 +31,7 @@ export const StudentsPageContent = () => {
     genders,
     countries,
     sorters,
+    createModal,
   } = useSelector((state) => state.students);
   const dispatch = useDispatch();
   const { students: perms } = useUserPermissions();
@@ -145,9 +146,17 @@ export const StudentsPageContent = () => {
   return (
     <>
       <SettlementModal />
+      {createModal.open && <CreateStudentModal />}
       <TabledContent<Student>
         pageTitle="Студенты"
-        actionButtons={perms.create ? <CreateStudentModal /> : undefined}
+        actionButtons={
+          perms.create ? (
+            <Button
+              children="Добавить студента"
+              onClick={() => dispatch(setCreateModal({ open: true }))}
+            />
+          ) : undefined
+        }
         dataSource={students}
         columns={columns}
         loading={loading}

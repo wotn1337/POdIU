@@ -6,7 +6,6 @@ import {
   RoleTags,
   RolesResponse,
   CreateRoleResponse,
-  Role,
   UpdateRoleData,
 } from "./types";
 

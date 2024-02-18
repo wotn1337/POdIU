@@ -4,9 +4,9 @@ import {
   WithId,
   WithMessage,
 } from "app/types";
-import { User } from "../administration/types";
 import { Student } from "../students/types";
 import { SortOrder } from "antd/es/table/interface";
+import { User } from "../users";
 
 export type Dormitory = WithId<{
   number: string;

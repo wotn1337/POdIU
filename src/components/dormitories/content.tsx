@@ -1,21 +1,22 @@
+import { Button, InputRef, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   Dormitory,
   deleteDormitory,
   setCreateModal,
+  setCreateRoomModal,
   setFilters,
   setSorters,
 } from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { TabledContent } from "components/shared";
 import { DeleteButton } from "components/shared/delete-button";
-import { CreateDormModal } from "./createDormModal";
-import { CreateDormRoomModal } from "./createDormRoomModal";
-import { RoomsTable } from "./roomsTable";
-import { Button, InputRef, Space } from "antd";
+import { useUserPermissions } from "hooks/useUserPermissions";
 import { useRef } from "react";
 import { getColumnSearchProps } from "utils";
-import { useUserPermissions } from "hooks/useUserPermissions";
+import { CreateDormModal } from "./createDormModal";
+import { RoomsTable } from "./roomsTable";
+import { CreateDormRoomModal } from "./createDormRoomModal";
 
 export const DormitoriesContent = () => {
   const {
@@ -23,6 +24,8 @@ export const DormitoriesContent = () => {
     dormitories,
     dormRooms,
     gettingRoomsDormIds,
+    createModal,
+    createRoomModal,
     filters,
     sorters,
   } = useSelector((state) => state.dormitories);
@@ -91,39 +94,57 @@ export const DormitoriesContent = () => {
   }
 
   if (perms.create) {
-    actions.push(<CreateDormModal key={1} />);
+    // actions.push(<CreateDormModal key={1} />);
+    actions.push(
+      <Button
+        key={1}
+        onClick={() => dispatch(setCreateModal({ open: true }))}
+        children="Добавить общежитие"
+      />
+    );
   }
   if (perms.update) {
-    actions.push(<CreateDormRoomModal key={2} />);
+    // actions.push(<CreateDormRoomModal key={2} />);
+    actions.push(
+      <Button
+        key={2}
+        onClick={() => dispatch(setCreateRoomModal({ open: true }))}
+        children="Добавить комнату"
+      />
+    );
   }
 
   return (
-    <TabledContent<Dormitory>
-      pageTitle="Общежития"
-      actionButtons={actions}
-      dataSource={dormitories}
-      columns={columns}
-      rowSelection={undefined}
-      loading={loading}
-      onChange={(_, __, sorter) => {
-        if (!Array.isArray(sorter)) {
-          dispatch(
-            setSorters({
-              [String(sorter.columnKey)]: sorter.order,
-            })
-          );
-        }
-      }}
-      expandable={{
-        rowExpandable: () => true,
-        expandedRowRender: ({ id }) => (
-          <RoomsTable
-            loading={gettingRoomsDormIds.includes(id)}
-            roomsInfo={dormRooms[id]}
-            dormId={id}
-          />
-        ),
-      }}
-    />
+    <>
+      {createModal.open && <CreateDormModal />}
+      {createRoomModal.open && <CreateDormRoomModal />}
+      <TabledContent<Dormitory>
+        pageTitle="Общежития"
+        actionButtons={actions}
+        dataSource={dormitories}
+        columns={columns}
+        rowSelection={undefined}
+        loading={loading}
+        onChange={(_, __, sorter) => {
+          if (!Array.isArray(sorter)) {
+            dispatch(
+              setSorters({
+                [String(sorter.columnKey)]: sorter.order,
+              })
+            );
+          }
+        }}
+        expandable={{
+          rowExpandable: () => true,
+          expandedRowRender: ({ id }) => (
+            <RoomsTable
+              loading={gettingRoomsDormIds.includes(id)}
+              roomsInfo={dormRooms[id]}
+              dormId={id}
+            />
+          ),
+        }}
+      />
+    </>
   );
 };

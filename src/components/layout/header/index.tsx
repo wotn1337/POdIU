@@ -9,6 +9,7 @@ import {
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Layout as AntdLayout, Menu, MenuProps } from "antd";
+import { useLogoutMutation } from "app/features";
 import { logout } from "app/features/auth/authActions";
 import { useDispatch, useSelector } from "app/store";
 import { PATH } from "assets/constants";
@@ -21,7 +22,8 @@ const { Header: AntdHeader } = AntdLayout;
 
 export const Header = () => {
   const currentPage = useCurrentPage();
-  const { user, loading } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
+  const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useDispatch();
 
   const items: MenuProps["items"] = [
@@ -60,9 +62,9 @@ export const Header = () => {
         {
           label: "Выйти",
           key: "logout",
-          onClick: () => dispatch(logout()),
-          disabled: loading,
-          icon: loading ? <LoadingOutlined /> : <LogoutOutlined />,
+          onClick: () => logout(),
+          disabled: isLoading,
+          icon: isLoading ? <LoadingOutlined /> : <LogoutOutlined />,
         },
       ],
     },

@@ -8,9 +8,9 @@ import s from "./layout.module.scss";
 const { Content } = AntdLayout;
 
 export const Layout: React.FC = () => {
-  const { loggedIn } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
-  if (!loggedIn) {
+  if (!user) {
     return <Navigate to={PATH.LOGIN} />;
   }
 

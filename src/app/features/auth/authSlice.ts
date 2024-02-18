@@ -1,60 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { login, logout } from "./authActions";
-import { StateType } from "./types";
+import { authApi } from ".";
+import { AuthStateType } from "./types";
+import { getInitialUser } from "./utils";
 
-const initialState: StateType = {
-  loading: false,
-  error: null,
-  loggedIn: false,
+const initialState: AuthStateType = {
+  user: getInitialUser(),
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    setLogin: (state, action) => {
-      state.loggedIn = true;
-      state.user = action.payload;
-    },
-    setLogout: (state) => {
-      state.loggedIn = false;
-      state.user = undefined;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     // login
-    builder.addCase(login.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(login.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.loggedIn = true;
-      state.user = payload.user;
-    });
-    builder.addCase(login.rejected, (state, payload) => {
-      state.loading = false;
-      state.error = payload.error.message?.toString();
-    });
-
+    builder.addMatcher(
+      authApi.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        state.user = payload.user;
+        localStorage.setItem("user", JSON.stringify(payload.user));
+      }
+    );
     // logout
-    builder.addCase(logout.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(logout.fulfilled, (state) => {
-      state.loading = false;
-      state.loggedIn = false;
+    builder.addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
       state.user = undefined;
-    });
-    builder.addCase(logout.rejected, (state, payload) => {
-      state.loading = false;
-      state.error = payload.error.message?.toString();
+      localStorage.clear();
     });
   },
 });
 
 const { actions, reducer } = authSlice;
-export const { setLogin, setLogout } = actions;
+export const {} = actions;
 
 export default reducer;

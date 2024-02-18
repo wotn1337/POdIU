@@ -1,5 +1,10 @@
 import { Form, Input, InputNumber } from "antd";
-import { createDormitory, setCreateModal, updateDormitory } from "app/features";
+import {
+  UpdateDorm,
+  createDormitory,
+  setCreateModal,
+  updateDormitory,
+} from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { CreateModal } from "components/shared/create-modal";
 import s from "./dormitories.module.scss";
@@ -11,11 +16,7 @@ export const CreateDormModal = () => {
   const { open, defaultDorm } = createModal;
 
   return (
-    <CreateModal
-      openButtonProps={{
-        onClick: () => dispatch(setCreateModal({ open: true })),
-        children: "Добавить общежитие",
-      }}
+    <CreateModal<UpdateDorm>
       modalProps={{
         title: `${defaultDorm ? "Изменить" : "Добавить"} общежитие`,
         open: open,
@@ -26,9 +27,7 @@ export const CreateDormModal = () => {
         disabled: creating,
         onFinish: (values) =>
           dispatch(
-            defaultDorm
-              ? updateDormitory({ id: defaultDorm.id, ...values })
-              : createDormitory(values)
+            defaultDorm ? updateDormitory(values) : createDormitory(values)
           ),
         initialValues: defaultDorm,
       }}

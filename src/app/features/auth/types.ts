@@ -1,20 +1,17 @@
-import { User } from "../administration/types";
-
-export type StateType = {
-  loading: boolean;
-  user?: User;
-  error: string | null | undefined;
-  loggedIn: boolean;
-};
+import { WithMessage } from "app/types";
+import { User } from "../users";
 
 export type LoginUserData = {
   email: string;
   password: string;
 };
 
-export type LoginResponse = {
-  message: string;
+export type LoginResponse = WithMessage<{
   user: User;
-};
+}>;
 
 export type LogoutResponse = LoginResponse;
+
+export type AuthStateType = {
+  user?: User;
+};

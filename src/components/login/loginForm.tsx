@@ -1,6 +1,9 @@
 import { Button, Flex, Form, Typography } from "antd";
-import { login } from "app/features/auth/authActions";
-import { useDispatch, useSelector } from "app/store";
+import {
+  LoginUserData,
+  useLazyGetCsrfQuery,
+  useLoginMutation,
+} from "app/features";
 import { WarningIcon } from "assets/images";
 import { Input } from "components/shared";
 import s from "./login.module.scss";
@@ -13,15 +16,20 @@ type FieldType = {
 };
 
 export const LoginForm = () => {
-  const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
+  const [login, { isLoading }] = useLoginMutation();
+  const [getCsrf] = useLazyGetCsrfQuery();
+
+  const onLogin = (values: LoginUserData) => {
+    getCsrf().then(() => login(values));
+  };
 
   return (
-    <Form
+    <Form<LoginUserData>
       name="login"
       className={s.loginForm}
       layout="vertical"
-      onFinish={(values) => dispatch(login(values))}
+      onFinish={onLogin}
+      disabled={isLoading}
     >
       <Form.Item<FieldType>
         label="Email"
@@ -32,7 +40,7 @@ export const LoginForm = () => {
         ]}
         className={s.loginForm__item}
       >
-        <Input placeholder="Введите email" disabled={loading} />
+        <Input placeholder="Введите email" />
       </Form.Item>
       <Form.Item<FieldType>
         label="Пароль"
@@ -40,11 +48,7 @@ export const LoginForm = () => {
         rules={[{ required: true, message: "Введите пароль" }]}
         className={s.loginForm__item}
       >
-        <Input
-          type="password"
-          placeholder="Введите пароль"
-          disabled={loading}
-        />
+        <Input type="password" placeholder="Введите пароль" />
       </Form.Item>
       <Flex className={s.infoMessage} gap={14} align="flex-start">
         <img src={WarningIcon} />
@@ -55,7 +59,7 @@ export const LoginForm = () => {
           type="primary"
           htmlType="submit"
           className={s.submitButton}
-          loading={loading}
+          loading={isLoading}
         >
           Войти
         </Button>
