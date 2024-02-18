@@ -1,14 +1,13 @@
-import { getRoles } from "app/features";
-import { useDispatch } from "app/store";
 import { RolesPageContent } from "components/administration";
-import { useEffect } from "react";
+import { Forbidden } from "components/shared";
+import { useUserPermissions } from "hooks";
 
 export const RolesPage = () => {
-  const dispatch = useDispatch();
+  const { roles } = useUserPermissions();
 
-  useEffect(() => {
-    dispatch(getRoles());
-  }, []);
-
-  return <RolesPageContent />;
+  return (
+    <Forbidden access={roles.read}>
+      <RolesPageContent />;
+    </Forbidden>
+  );
 };

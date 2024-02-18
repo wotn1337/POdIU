@@ -1,24 +1,36 @@
+import { CheckCircleTwoTone } from "@ant-design/icons";
 import { Button, Space, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import {
+  User,
   setCreateUserModal,
-  setUsersMeta,
-} from "app/features/administration/administrationSlice";
-import { User } from "app/features/administration/types";
+  useDeleteUserMutation,
+  useGetPermissionsQuery,
+  useGetRolesQuery,
+  useGetUsersQuery,
+} from "app/features";
 import { useDispatch, useSelector } from "app/store";
-import { TabledContent } from "components/shared";
-import { CreateUserModal } from "./createUserModal";
-import { DeleteButton } from "components/shared/delete-button";
-import { deleteUser } from "app/features";
-import { CheckCircleTwoTone } from "@ant-design/icons";
+import { PaginationParams } from "app/types";
+import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks/useUserPermissions";
+import { useState } from "react";
+import { CreateUserModal } from "./createUserModal";
 
 export const UsersPageContent = () => {
-  const { users, loading, deleteUserIds, usersMeta, roles, permissions } =
-    useSelector((state) => state.administration);
-  const dispatch = useDispatch();
-  const { current_page, per_page, total } = usersMeta;
   const { users: perms } = useUserPermissions();
+  const { deleteUserIds, createUserModal } = useSelector(
+    (state) => state.users
+  );
+  const { data: roles } = useGetRolesQuery();
+  const { data: permissions } = useGetPermissionsQuery();
+  const dispatch = useDispatch();
+  const [paginationParams, setPaginationParams] = useState<PaginationParams>({
+    page: 1,
+    per_page: 10,
+  });
+  const { data, isLoading, isFetching } = useGetUsersQuery(paginationParams);
+  const [deleteUser] = useDeleteUserMutation();
+  const loading = isLoading || isFetching;
 
   const columns: ColumnsType<User> = [
     {
@@ -26,14 +38,14 @@ export const UsersPageContent = () => {
       dataIndex: "name",
       title: "Имя пользователя",
       sorter: (a, b) => a.name.localeCompare(b.name),
-      filters: users.map((u) => ({ text: u.name, value: u.id })),
+      filters: data?.users.map((u) => ({ text: u.name, value: u.id })),
       onFilter: (id, record) => record.id === id,
     },
     {
       key: "email",
       dataIndex: "email",
       title: "Электронная почта",
-      filters: users.map((u) => ({ text: u.email, value: u.id })),
+      filters: data?.users.map((u) => ({ text: u.email, value: u.id })),
       onFilter: (id, record) => record.id === id,
     },
     {
@@ -84,42 +96,42 @@ export const UsersPageContent = () => {
       key: "actions",
       title: "Действия",
       render: (_, user) => (
-        <Space>
-          {perms.update && (
-            <Button
-              type="primary"
-              onClick={() =>
-                dispatch(setCreateUserModal({ open: true, defaultUser: user }))
-              }
-            >
-              Изменить
-            </Button>
-          )}
-          {perms.delete && (
-            <DeleteButton
-              onClick={() => dispatch(deleteUser(user.id))}
-              loading={deleteUserIds.includes(user.id)}
-            />
-          )}
-        </Space>
+        <TableActionButtons
+          onUpdate={() =>
+            dispatch(setCreateUserModal({ open: true, defaultUser: user }))
+          }
+          onDelete={() => deleteUser(user.id)}
+          deleting={deleteUserIds.includes(user.id)}
+          hasDelete={perms.delete}
+          hasUpdate={perms.update}
+        />
       ),
     });
   }
 
   return (
-    <TabledContent<User>
-      pageTitle="Пользователи"
-      actionButtons={perms.create ? <CreateUserModal /> : undefined}
-      dataSource={users}
-      columns={columns}
-      loading={loading}
-      pagination={{
-        pageSize: per_page,
-        current: current_page,
-        total,
-        onChange: (current_page, per_page) =>
-          dispatch(setUsersMeta({ current_page, per_page })),
-      }}
-    />
+    <>
+      {createUserModal.open && <CreateUserModal />}
+      <TabledContent<User>
+        pageTitle="Пользователи"
+        actionButtons={
+          perms.create ? (
+            <Button
+              onClick={() => dispatch(setCreateUserModal({ open: true }))}
+              children="Добавить пользователя"
+            />
+          ) : undefined
+        }
+        dataSource={data?.users}
+        columns={columns}
+        loading={loading}
+        pagination={{
+          pageSize: paginationParams.per_page,
+          current: paginationParams.page,
+          total: data?.meta.total,
+          onChange: (page, per_page) => setPaginationParams({ page, per_page }),
+        }}
+      />
+    </>
   );
 };

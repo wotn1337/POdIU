@@ -1,4 +1,4 @@
-import { User } from "app/features/administration/types";
+import { User } from "app/features";
 import { useSelector } from "app/store";
 
 type CrudPermissions = {

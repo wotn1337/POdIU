@@ -1,51 +1,40 @@
-import { Checkbox, Form, Input, Select, message } from "antd";
+import { Checkbox, Form, Input, Select } from "antd";
 import {
-  createUser,
-  editUser,
-  getPermissions,
-  getRoles,
-} from "app/features/administration/administrationActions";
-import {
-  clearCreateMessage,
+  CreateUserData,
   setCreateUserModal,
-} from "app/features/administration/administrationSlice";
+  useCreateUserMutation,
+  useGetPermissionsQuery,
+  useGetRolesQuery,
+  useUpdateUserMutation,
+} from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
-import { useEffect } from "react";
 
 const { Option } = Select;
 
 export const CreateUserModal = () => {
   const dispatch = useDispatch();
+  const { data: roles, isLoading: rolesLoading } = useGetRolesQuery();
+  const { data: permissions, isLoading: permissionsLoading } =
+    useGetPermissionsQuery();
   const {
-    creating,
-    createMessage,
-    createUserModal,
-    loadingRoles,
-    roles,
-    permissionsLoading,
-    permissions,
-  } = useSelector((state) => state.administration);
-  const { open, defaultUser } = createUserModal;
+    createUserModal: { open, defaultUser },
+  } = useSelector((state) => state.users);
+  const [createUser, { isLoading: creating }] = useCreateUserMutation();
+  const [updateUser, { isLoading: updating }] = useUpdateUserMutation();
+  const loading = creating || updating;
 
-  useEffect(() => {
-    if (createMessage) {
-      message.success(createMessage).then(() => dispatch(clearCreateMessage()));
+  const onFinish = (values: CreateUserData) => {
+    if (defaultUser) {
+      updateUser({ id: defaultUser.id, ...values });
+    } else {
+      createUser(values);
     }
-  }, [createMessage]);
-
-  useEffect(() => {
-    dispatch(getRoles());
-    dispatch(getPermissions());
-  }, []);
+  };
 
   return (
-    <CreateModal
-      openButtonProps={{
-        onClick: () => dispatch(setCreateUserModal({ open: true })),
-        children: `${defaultUser ? "Изменить" : "Добавить"} пользователя`,
-      }}
+    <CreateModal<CreateUserData>
       modalProps={{
         title: `${defaultUser ? "Изменить" : "Добавить"} пользователя`,
         open: open,
@@ -53,13 +42,8 @@ export const CreateUserModal = () => {
       }}
       formProps={{
         name: "create-user",
-        disabled: creating,
-        onFinish: (values) =>
-          dispatch(
-            defaultUser
-              ? editUser({ id: defaultUser.id, ...values })
-              : createUser(values)
-          ),
+        disabled: loading,
+        onFinish,
         initialValues: {
           is_admin: false,
           ...defaultUser,
@@ -68,7 +52,7 @@ export const CreateUserModal = () => {
         },
       }}
       submitButtonProps={{
-        loading: creating,
+        loading: loading,
         children: defaultUser ? "Изменить" : "Добавить",
       }}
     >
@@ -102,7 +86,7 @@ export const CreateUserModal = () => {
         <Select
           mode="multiple"
           placeholder="Выберите роли"
-          loading={loadingRoles}
+          loading={rolesLoading}
         >
           {roles?.map((role) => (
             <Option key={role.id}>{role.title}</Option>

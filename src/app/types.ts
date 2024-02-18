@@ -23,7 +23,18 @@ export type PaginationMeta = {
   total: number;
 };
 
+export type WithPaginationMeta<T = {}> = T & {
+  meta: PaginationMeta;
+};
+
 export type ErrorsResponse = {
   errors?: Record<string, string[]>;
   message?: string;
 };
+
+export enum METHOD {
+  GET = "GET",
+  POST = "POST",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+}

@@ -1,20 +1,24 @@
-import { ColumnsType } from "antd/es/table";
-import { deleteRole } from "app/features";
-import { Role } from "app/features/administration/types";
-import { useDispatch, useSelector } from "app/store";
-import { TabledContent } from "components/shared";
-import { DeleteButton } from "components/shared/delete-button";
-import { CreateRoleModal } from "./createRoleModal";
-import { useUserPermissions } from "hooks/useUserPermissions";
 import { Button, Space, Tag } from "antd";
-import { setCreateRoleModal } from "app/features/administration/administrationSlice";
+import { ColumnsType } from "antd/es/table";
+import {
+  useDeleteRoleMutation,
+  useGetRolesQuery,
+  setCreateRoleModal,
+  Role,
+} from "app/features/roles";
+import { useDispatch, useSelector } from "app/store";
+import { TableActionButtons, TabledContent } from "components/shared";
+import { useUserPermissions } from "hooks/useUserPermissions";
+import { CreateRoleModal } from "./createRoleModal";
 
 export const RolesPageContent = () => {
-  const { roles, loadingRoles, deleteRolesIds } = useSelector(
-    (state) => state.administration
-  );
   const dispatch = useDispatch();
   const { roles: perms } = useUserPermissions();
+  const { data: roles, isLoading } = useGetRolesQuery();
+  const [deleteRole] = useDeleteRoleMutation();
+  const { deleteRoleIds, createRoleModal } = useSelector(
+    (state) => state.roles
+  );
 
   const columns: ColumnsType<Role> = [
     {
@@ -44,36 +48,37 @@ export const RolesPageContent = () => {
       key: "actions",
       title: "Действия",
       render: (_, role) => (
-        <Space>
-          {perms.update && (
-            <Button
-              type="primary"
-              onClick={() =>
-                dispatch(setCreateRoleModal({ open: true, defaultRole: role }))
-              }
-            >
-              Изменить
-            </Button>
-          )}
-          {perms.delete && (
-            <DeleteButton
-              onClick={() => dispatch(deleteRole(role.id))}
-              loading={deleteRolesIds.includes(role.id)}
-            />
-          )}
-        </Space>
+        <TableActionButtons
+          onUpdate={() =>
+            dispatch(setCreateRoleModal({ open: true, defaultRole: role }))
+          }
+          onDelete={() => deleteRole(role.id)}
+          deleting={deleteRoleIds.includes(role.id)}
+          hasDelete={perms.delete}
+          hasUpdate={perms.update}
+        />
       ),
     });
   }
 
   return (
-    <TabledContent<Role>
-      pageTitle="Роли"
-      actionButtons={perms.create ? <CreateRoleModal /> : undefined}
-      dataSource={roles}
-      columns={columns}
-      loading={loadingRoles}
-      pagination={false}
-    />
+    <>
+      {createRoleModal.open && <CreateRoleModal />}
+      <TabledContent<Role>
+        pageTitle="Роли"
+        actionButtons={
+          perms.create ? (
+            <Button
+              onClick={() => dispatch(setCreateRoleModal({ open: true }))}
+              children="Добавить роль"
+            />
+          ) : undefined
+        }
+        dataSource={roles}
+        columns={columns}
+        loading={isLoading}
+        pagination={false}
+      />
+    </>
   );
 };

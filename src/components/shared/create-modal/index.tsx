@@ -3,20 +3,18 @@ import classNames from "classnames";
 import { PropsWithChildren } from "react";
 import s from "./createModal.module.scss";
 
-type Props = PropsWithChildren<{
-  openButtonProps: ButtonProps;
+type Props<T> = PropsWithChildren<{
   submitButtonProps: ButtonProps;
-  formProps: FormProps;
+  formProps: FormProps<T>;
   modalProps: ModalProps;
 }>;
 
-export const CreateModal: React.FC<Props> = ({
-  openButtonProps,
+export function CreateModal<T>({
   modalProps,
   formProps,
   submitButtonProps,
   children,
-}) => {
+}: Props<T>) {
   const formClasses = classNames(s.createForm, formProps.className);
   const submitButtonClasses = classNames(
     s.submitButton,
@@ -24,22 +22,19 @@ export const CreateModal: React.FC<Props> = ({
   );
 
   return (
-    <>
-      <Button {...openButtonProps} />
-      <Modal footer={null} destroyOnClose getContainer={false} {...modalProps}>
-        <Form className={formClasses} {...formProps}>
-          {children}
-          <Form.Item className={s.submitButtonWrapper}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className={submitButtonClasses}
-              children="Добавить"
-              {...submitButtonProps}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
+    <Modal footer={null} destroyOnClose getContainer={false} {...modalProps}>
+      <Form<T> className={formClasses} {...formProps}>
+        {children}
+        <Form.Item className={s.submitButtonWrapper}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className={submitButtonClasses}
+            children="Добавить"
+            {...submitButtonProps}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
-};
+}

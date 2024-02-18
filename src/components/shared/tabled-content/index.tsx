@@ -88,7 +88,6 @@ export function TabledContent<T extends AnyObject>({
               props.pagination
                 ? {
                     ...props.pagination,
-                    defaultPageSize: 5,
                     pageSizeOptions: [5, 10, 20, 50, 100],
                     showSizeChanger: true,
                     showTotal: (total, range) =>

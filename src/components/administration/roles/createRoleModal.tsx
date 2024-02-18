@@ -1,49 +1,38 @@
-import { UnknownAction } from "@reduxjs/toolkit";
-import { Form, Input, Select, message } from "antd";
+import { Form, Input, Select } from "antd";
 import {
-  createRole,
-  getPermissions,
-  updateRole,
-} from "app/features/administration/administrationActions";
-import {
-  clearCreateRoleMessage,
+  CreateRoleData,
   setCreateRoleModal,
-} from "app/features/administration/administrationSlice";
+  useGetPermissionsQuery,
+  useCreateRoleMutation,
+  useUpdateRoleMutation,
+} from "app/features";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
-import { useEffect } from "react";
 
 const { Option } = Select;
 
 export const CreateRoleModal = () => {
+  const [createRole, { isLoading: creating }] = useCreateRoleMutation();
+  const [updateRole, { isLoading: updating }] = useUpdateRoleMutation();
+  const loading = creating || updating;
+  const { data: permissions, isLoading: permissionsLoading } =
+    useGetPermissionsQuery();
   const dispatch = useDispatch();
   const {
-    permissionsLoading,
-    permissions,
-    createRoleMessage,
-    creatingRole,
     createRoleModal: { open, defaultRole },
-  } = useSelector((state) => state.administration);
+  } = useSelector((state) => state.roles);
 
-  useEffect(() => {
-    dispatch(getPermissions());
-  }, []);
-
-  useEffect(() => {
-    if (createRoleMessage) {
-      message
-        .success(createRoleMessage)
-        .then(() => dispatch(clearCreateRoleMessage()));
+  const onFinish = (values: CreateRoleData) => {
+    if (defaultRole) {
+      updateRole({ id: defaultRole.id, ...values });
+    } else {
+      createRole(values);
     }
-  }, [createRoleMessage]);
+  };
 
   return (
-    <CreateModal
-      openButtonProps={{
-        onClick: () => dispatch(setCreateRoleModal({ open: true })),
-        children: `${defaultRole ? "Изменить" : "Добавить"} роль`,
-      }}
+    <CreateModal<CreateRoleData>
       modalProps={{
         title: `${defaultRole ? "Изменить" : "Добавить"} роль`,
         open: open,
@@ -51,13 +40,8 @@ export const CreateRoleModal = () => {
       }}
       formProps={{
         name: "create-role",
-        disabled: creatingRole,
-        onFinish: (values) =>
-          dispatch(
-            (defaultRole
-              ? updateRole({ id: defaultRole.id, ...values })
-              : createRole(values)) as unknown as UnknownAction
-          ),
+        disabled: loading,
+        onFinish,
         initialValues: defaultRole
           ? {
               ...defaultRole,
@@ -66,8 +50,8 @@ export const CreateRoleModal = () => {
           : undefined,
       }}
       submitButtonProps={{
-        loading: creatingRole,
         children: defaultRole ? "Изменить" : "Добавить",
+        loading,
       }}
     >
       <Form.Item
