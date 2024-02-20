@@ -1,66 +1,80 @@
-import { Button, InputRef, Space } from "antd";
+import { Button, InputRef } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   Dormitory,
-  deleteDormitory,
-  setCreateModal,
+  setCreateDormitoryModal,
   setCreateRoomModal,
-  setFilters,
-  setSorters,
+  useDeleteDormitoryMutation,
+  useGetDormitoriesQuery,
 } from "app/features";
 import { useDispatch, useSelector } from "app/store";
-import { TabledContent } from "components/shared";
-import { DeleteButton } from "components/shared/delete-button";
+import { Filters, PaginationParams, Sorters } from "app/types";
+import {
+  RoomsTable,
+  TableActionButtons,
+  TabledContent,
+} from "components/shared";
 import { useUserPermissions } from "hooks/useUserPermissions";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
-import { CreateDormModal } from "./createDormModal";
-import { RoomsTable } from "./roomsTable";
-import { CreateDormRoomModal } from "./createDormRoomModal";
+import { CreateDormitoryModal } from "./createDormitoryModal";
+import { CreateRoomModal } from "./createRoomModal";
 
 export const DormitoriesContent = () => {
-  const {
-    loading,
-    dormitories,
-    dormRooms,
-    gettingRoomsDormIds,
-    createModal,
-    createRoomModal,
-    filters,
-    sorters,
-  } = useSelector((state) => state.dormitories);
-  const dispatch = useDispatch();
   const { dormitories: perms } = useUserPermissions();
+  const dispatch = useDispatch();
+  const { createDormitoryModal, deletingDormitoryIds } = useSelector(
+    (state) => state.dormitories
+  );
+  const { createRoomModal } = useSelector((state) => state.rooms);
   const actions = [];
   const searchInput = useRef<InputRef>(null);
+  const [paginationParams, setPaginationParams] = useState<PaginationParams>({
+    page: 1,
+    per_page: 10,
+  });
+  const [filters, setFilters] = useState<Filters>();
+  const [sorters, setSorters] = useState<Sorters>();
+  const { data, isLoading, isFetching } = useGetDormitoriesQuery({
+    ...paginationParams,
+    filters,
+    sorters,
+    with_user_info: false,
+  });
+  const loading = isLoading || isFetching;
+  const [deleteDormitory] = useDeleteDormitoryMutation();
 
   const columns: ColumnsType<Dormitory> = [
     {
       key: "number",
       dataIndex: "number",
       title: "Номер общежития",
-      filters: dormitories.map((d) => ({ text: d.number, value: d.number })),
+      filters: data?.dormitories.map((d) => ({
+        text: d.number,
+        value: d.number,
+      })),
       filterMultiple: false,
-      sortOrder: sorters.number,
+      sortOrder: sorters?.number,
       sorter: () => 0,
       ...getColumnSearchProps({
         searchInput,
-        onFilter: (value) =>
-          dispatch(setFilters({ ...filters, number: value })),
+        onFilter: (value) => setFilters({ ...filters, number: value }),
       }),
     },
     {
       key: "address",
       dataIndex: "address",
       title: "Адрес",
-      filters: dormitories.map((d) => ({ text: d.address, value: d.address })),
+      filters: data?.dormitories.map((d) => ({
+        text: d.address,
+        value: d.address,
+      })),
       filterMultiple: false,
-      sortOrder: sorters.address,
+      sortOrder: sorters?.address,
       sorter: () => 0,
       ...getColumnSearchProps({
         searchInput,
-        onFilter: (value) =>
-          dispatch(setFilters({ ...filters, address: value })),
+        onFilter: (value) => setFilters({ ...filters, address: value }),
       }),
     },
     {
@@ -74,37 +88,35 @@ export const DormitoriesContent = () => {
     columns.push({
       key: "actions",
       render: (_, dorm) => (
-        <Space>
-          {perms.update && (
-            <Button
-              type="primary"
-              onClick={() =>
-                dispatch(setCreateModal({ open: true, defaultDorm: dorm }))
-              }
-            >
-              Изменить
-            </Button>
-          )}
-          {perms.delete && (
-            <DeleteButton onClick={() => dispatch(deleteDormitory(dorm.id))} />
-          )}
-        </Space>
+        <TableActionButtons
+          deleting={deletingDormitoryIds.includes(dorm.id)}
+          hasDelete={perms.delete}
+          hasUpdate={perms.update}
+          onDelete={() => deleteDormitory(dorm.id)}
+          onUpdate={() =>
+            dispatch(
+              setCreateDormitoryModal({
+                open: true,
+                defaultDormitory: dorm,
+              })
+            )
+          }
+        />
       ),
     });
   }
 
   if (perms.create) {
-    // actions.push(<CreateDormModal key={1} />);
     actions.push(
       <Button
         key={1}
-        onClick={() => dispatch(setCreateModal({ open: true }))}
+        onClick={() => dispatch(setCreateDormitoryModal({ open: true }))}
         children="Добавить общежитие"
       />
     );
   }
+
   if (perms.update) {
-    // actions.push(<CreateDormRoomModal key={2} />);
     actions.push(
       <Button
         key={2}
@@ -116,33 +128,32 @@ export const DormitoriesContent = () => {
 
   return (
     <>
-      {createModal.open && <CreateDormModal />}
-      {createRoomModal.open && <CreateDormRoomModal />}
+      {createDormitoryModal.open && <CreateDormitoryModal />}
+      {createRoomModal.open && <CreateRoomModal />}
       <TabledContent<Dormitory>
         pageTitle="Общежития"
         actionButtons={actions}
-        dataSource={dormitories}
+        dataSource={data?.dormitories}
         columns={columns}
         rowSelection={undefined}
         loading={loading}
+        pagination={{
+          current: paginationParams.page,
+          pageSize: paginationParams.per_page,
+          total: data?.meta.total,
+          onChange: (page, per_page) => setPaginationParams({ page, per_page }),
+        }}
         onChange={(_, __, sorter) => {
           if (!Array.isArray(sorter)) {
-            dispatch(
-              setSorters({
-                [String(sorter.columnKey)]: sorter.order,
-              })
-            );
+            setSorters({
+              [String(sorter.columnKey)]: sorter.order,
+            });
           }
         }}
         expandable={{
           rowExpandable: () => true,
-          expandedRowRender: ({ id }) => (
-            <RoomsTable
-              loading={gettingRoomsDormIds.includes(id)}
-              roomsInfo={dormRooms[id]}
-              dormId={id}
-            />
-          ),
+          expandedRowRender: ({ id }) => <RoomsTable dormId={id} />,
+          expandRowByClick: true,
         }}
       />
     </>

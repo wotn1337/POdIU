@@ -1,65 +1,68 @@
-import { Button, InputRef, Space } from "antd";
+import { Button, InputRef } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { deleteStudent } from "app/features";
 import {
-  setCreateModal,
-  setFilters,
-  setPage,
-  setPageSize,
-  setSettlementModal,
-  setSorters,
-} from "app/features/students/studentsSlice";
+  setCreateStudentModal,
+  useDeleteStudentMutation,
+  useGetCountriesQuery,
+  useGetGendersQuery,
+  useGetStudentsQuery,
+} from "app/features";
 import { Student } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
-import { TabledContent } from "components/shared";
-import { DeleteButton } from "components/shared/delete-button";
-import { useRef } from "react";
+import { Filters, PaginationParams, Sorters } from "app/types";
+import { TableActionButtons, TabledContent } from "components/shared";
+import { useUserPermissions } from "hooks/useUserPermissions";
+import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
-import { useUserPermissions } from "hooks/useUserPermissions";
+import { getOnChange } from "./utils";
 
 export const StudentsPageContent = () => {
-  const {
-    students,
-    loading,
-    current_page,
-    total,
-    per_page,
-    deletingIds,
-    filters,
-    genders,
-    countries,
-    sorters,
-    createModal,
-  } = useSelector((state) => state.students);
+  const { deletingStudentIds, createStudentModal } = useSelector(
+    (state) => state.students
+  );
   const dispatch = useDispatch();
   const { students: perms } = useUserPermissions();
   const searchInput = useRef<InputRef>(null);
+  const [paginationParams, setPaginationParams] = useState<PaginationParams>({
+    page: 1,
+    per_page: 10,
+  });
+  const [filters, setFilters] = useState<Filters>();
+  const [sorters, setSorters] = useState<Sorters>();
+  const { data, isLoading, isFetching } = useGetStudentsQuery({
+    ...paginationParams,
+    with_dormitory: true,
+    filters,
+    sorters,
+  });
+  const loading = isFetching || isLoading;
+  const { data: genders } = useGetGendersQuery();
+  const { data: countries } = useGetCountriesQuery();
+  const [deleteStudent] = useDeleteStudentMutation();
 
   const columns: ColumnsType<Student> = [
     {
       key: "cyrillic_name",
       dataIndex: "cyrillic_name",
       title: "ФИО (Кириллица)",
-      sortOrder: sorters.cyrillic_name,
+      sortOrder: sorters?.cyrillic_name,
       sorter: () => 0,
       ...getColumnSearchProps({
         searchInput,
-        onFilter: (value) =>
-          dispatch(setFilters({ ...filters, cyrillic_name: value })),
+        onFilter: (value) => setFilters({ ...filters, cyrillic_name: value }),
       }),
     },
     {
       key: "latin_name",
       dataIndex: "latin_name",
       title: "ФИО (Латиница)",
-      sortOrder: sorters.latin_name,
+      sortOrder: sorters?.latin_name,
       sorter: () => 0,
       ...getColumnSearchProps({
         searchInput,
-        onFilter: (value) =>
-          dispatch(setFilters({ ...filters, latin_name: value })),
+        onFilter: (value) => setFilters({ ...filters, latin_name: value }),
       }),
     },
     {
@@ -67,7 +70,7 @@ export const StudentsPageContent = () => {
       dataIndex: "gender",
       title: "Пол",
       render: (value) => value?.title,
-      filters: genders.map((g) => ({ text: g.title, value: g.id })),
+      filters: genders?.map((g) => ({ text: g.title, value: g.id })),
       filterMultiple: false,
     },
     {
@@ -80,7 +83,7 @@ export const StudentsPageContent = () => {
       dataIndex: "country",
       title: "Страна",
       render: (value) => value?.title,
-      filters: countries.map((c) => ({ text: c.title, value: c.id })),
+      filters: countries?.map((c) => ({ text: c.title, value: c.id })),
     },
     {
       key: "eisu_id",
@@ -110,35 +113,28 @@ export const StudentsPageContent = () => {
       key: "actions",
       title: "Действия",
       render: (_, student) => (
-        <Space>
+        <TableActionButtons
+          deleting={deletingStudentIds.includes(student.id)}
+          hasDelete={perms.delete}
+          hasUpdate={perms.update}
+          onDelete={() => deleteStudent(student.id)}
+          onUpdate={() =>
+            dispatch(
+              setCreateStudentModal({ open: true, defaultStudent: student })
+            )
+          }
+        >
           {perms.update && (
             <Button
               type="primary"
-              onClick={() =>
-                dispatch(setSettlementModal({ open: true, student }))
-              }
+              // onClick={() =>
+              //   dispatch(setSettlementModal({ open: true, student }))
+              // }
             >
               Поселить
             </Button>
           )}
-          {perms.update && (
-            <Button
-              onClick={() =>
-                dispatch(
-                  setCreateModal({ open: true, defaultStudent: student })
-                )
-              }
-            >
-              Изменить
-            </Button>
-          )}
-          {perms.delete && (
-            <DeleteButton
-              onClick={() => dispatch(deleteStudent(student.id))}
-              loading={deletingIds.includes(student.id)}
-            />
-          )}
-        </Space>
+        </TableActionButtons>
       ),
     });
   }
@@ -146,46 +142,26 @@ export const StudentsPageContent = () => {
   return (
     <>
       <SettlementModal />
-      {createModal.open && <CreateStudentModal />}
+      {createStudentModal.open && <CreateStudentModal />}
       <TabledContent<Student>
         pageTitle="Студенты"
         actionButtons={
           perms.create ? (
             <Button
               children="Добавить студента"
-              onClick={() => dispatch(setCreateModal({ open: true }))}
+              onClick={() => dispatch(setCreateStudentModal({ open: true }))}
             />
           ) : undefined
         }
-        dataSource={students}
+        dataSource={data?.students}
         columns={columns}
         loading={loading}
-        onChange={(_, tableFilters, sorter) => {
-          if (!Array.isArray(sorter)) {
-            dispatch(
-              setSorters({
-                [String(sorter.columnKey)]: sorter.order,
-              })
-            );
-          }
-          dispatch(
-            setFilters({
-              ...filters,
-              gender_id: tableFilters["gender"]
-                ? tableFilters["gender"][0]
-                : undefined,
-              countries: tableFilters["country"] ?? undefined,
-            })
-          );
-        }}
+        onChange={getOnChange({ filters, setFilters, setSorters })}
         pagination={{
-          current: current_page,
-          pageSize: per_page,
-          total,
-          onChange: (page, pageSize) => {
-            dispatch(setPage(page));
-            dispatch(setPageSize(pageSize));
-          },
+          current: paginationParams.page,
+          pageSize: paginationParams.per_page,
+          total: data?.meta.total,
+          onChange: (page, per_page) => setPaginationParams({ page, per_page }),
         }}
       />
     </>

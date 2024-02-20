@@ -1,6 +1,6 @@
 export * from "./login";
 export * from "./usersPage";
 export * from "./dormitories";
-export * from "./students";
+export * from "./studentsPage";
 export * from "./pageNotFound";
 export * from "./rolesPage";

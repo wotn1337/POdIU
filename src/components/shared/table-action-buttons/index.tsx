@@ -1,14 +1,14 @@
 import { Button, Space } from "antd";
 import { DeleteButton } from "../delete-button";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
-type Props = {
+type Props = PropsWithChildren<{
   onUpdate: () => void;
   onDelete: () => void;
   deleting: boolean;
   hasUpdate: boolean;
   hasDelete: boolean;
-};
+}>;
 
 export const TableActionButtons: React.FC<Props> = ({
   deleting,
@@ -16,10 +16,12 @@ export const TableActionButtons: React.FC<Props> = ({
   hasUpdate,
   onDelete,
   onUpdate,
+  children,
 }) => (
   <Space>
+    {children}
     {hasUpdate && (
-      <Button type="primary" onClick={onUpdate}>
+      <Button type={children ? "default" : "primary"} onClick={onUpdate}>
         Изменить
       </Button>
     )}

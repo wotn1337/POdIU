@@ -7,28 +7,53 @@ import {
 import authReducer from "./features/auth/authSlice";
 import studentsReducer from "./features/students/studentsSlice";
 import dormitoriesReducer from "./features/dormitories/dormitoriesSlice";
-import { authApi, permissionsApi, rolesApi, usersApi } from "./features";
+import {
+  academicGroupsApi,
+  authApi,
+  countriesApi,
+  dormitoriesApi,
+  permissionsApi,
+  rolesApi,
+  roomsApi,
+  studentsApi,
+  usersApi,
+} from "./features";
 import rolesReducer from "./features/roles/rolesSlice";
 import usersReducer from "./features/users/usersSlice";
+import roomsReducer from "./features/rooms/roomsSlice";
+import { gendersApi } from "./features/genders/gendersApi";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    [authApi.reducerPath]: authApi.reducer,
     students: studentsReducer,
     dormitories: dormitoriesReducer,
-    [rolesApi.reducerPath]: rolesApi.reducer,
     roles: rolesReducer,
-    [permissionsApi.reducerPath]: permissionsApi.reducer,
     users: usersReducer,
+    rooms: roomsReducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [studentsApi.reducerPath]: studentsApi.reducer,
+    [rolesApi.reducerPath]: rolesApi.reducer,
+    [permissionsApi.reducerPath]: permissionsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
+    [gendersApi.reducerPath]: gendersApi.reducer,
+    [countriesApi.reducerPath]: countriesApi.reducer,
+    [academicGroupsApi.reducerPath]: academicGroupsApi.reducer,
+    [dormitoriesApi.reducerPath]: dormitoriesApi.reducer,
+    [roomsApi.reducerPath]: roomsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
       authApi.middleware,
       rolesApi.middleware,
       permissionsApi.middleware,
-      usersApi.middleware
+      usersApi.middleware,
+      studentsApi.middleware,
+      gendersApi.middleware,
+      countriesApi.middleware,
+      academicGroupsApi.middleware,
+      dormitoriesApi.middleware,
+      roomsApi.middleware
     ),
 });
 

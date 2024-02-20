@@ -1,3 +1,5 @@
+import { FilterValue, Key, SortOrder } from "antd/es/table/interface";
+
 export type WithMessage<T = {}> = T & {
   message: string;
 };
@@ -38,3 +40,6 @@ export enum METHOD {
   PATCH = "PATCH",
   DELETE = "DELETE",
 }
+
+export type Filters = Record<string, boolean | Key | undefined | FilterValue>;
+export type Sorters = Record<string, SortOrder | undefined>;

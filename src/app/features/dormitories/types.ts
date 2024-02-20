@@ -1,22 +1,29 @@
+import { SortOrder } from "antd/es/table/interface";
 import {
-  PaginationMeta,
   PaginationParams,
   WithId,
   WithMessage,
+  WithPaginationMeta,
 } from "app/types";
-import { Student } from "../students/types";
-import { SortOrder } from "antd/es/table/interface";
 import { User } from "../users";
 
-export type Dormitory = WithId<{
+export const DormitoryTag = "Dormitory";
+export const DormitoryTags = [DormitoryTag];
+
+export type BaseDormitory = {
   number: string;
   address: string;
   comment: string;
-  creator: User;
-  last_update_user: User;
-  created_at: string | null;
-  updated_at: string | null;
-}>;
+};
+
+export type Dormitory = WithId<
+  BaseDormitory & {
+    creator: User;
+    last_update_user: User;
+    created_at: string | null;
+    updated_at: string | null;
+  }
+>;
 
 export type Filters = {
   address?: string;
@@ -34,121 +41,26 @@ export type RoomsSorters = {
 
 export type GetDormitoriesParams = PaginationParams<{
   with_user_info?: boolean;
-  filters: Filters;
-  sorters: Sorters;
+  filters?: Filters;
+  sorters?: Sorters;
 }>;
 
-export type GetDormitoriesResponse = {
+export type GetDormitoriesResponse = WithPaginationMeta<{
   dormitories: Dormitory[];
-  meta: PaginationMeta;
-};
-
-export type CreateDormitory = {
-  number: string;
-  address: string;
-  comment: string;
-};
-
-export type UpdateDorm = WithId<{
-  number: string;
-  address: string;
-  comment: string;
 }>;
+
+export type CreateDormitoryData = BaseDormitory;
 
 export type CreateDormitoryResponse = WithMessage<{
   data: Dormitory;
 }>;
 
-export type BaseDormRoom = WithId<{
-  number: string;
-  number_of_seats: number;
-  comment: string;
-  created_at: string | null;
-  updated_at: string | null;
-}>;
-
-export type DormRoom = BaseDormRoom & {
-  students_count: number;
-  empty_seats_count: number;
-  creator: User;
-  last_update_user: User;
-  students?: Student[];
-};
-
-export type GetDormRoomsParams = {
-  dormId: number;
-  page: number;
-  per_page: number;
-  gender_id?: number;
-  is_family?: boolean;
-  only_available_dorm_rooms?: boolean;
-  with_students?: boolean;
-  sorters: RoomsSorters;
-};
-
-export type GetDormRoomsResponse = {
-  dorm_rooms: DormRoom[];
-  meta: PaginationMeta;
-};
-
-export type RoomsInfo = {
-  per_page: number;
-  current_page: number;
-  total?: number;
-  rooms: DormRoom[];
-};
-
-export type CreateRoomData = {
-  dorm: number;
-  number: number;
-  number_of_seats: number;
-  comment?: string;
-};
-
-export type UpdateRoomData = WithId<
-  CreateRoomData & {
-    oldDorm: number;
-  }
->;
-
-export type CreateRoomResponse = WithMessage<{
-  dorm_rooms: DormRoom;
-}>;
+export type UpdateDormitoryData = WithId<BaseDormitory>;
 
 export type DormitoriesStateType = {
-  loading: boolean;
-  dormitories: Dormitory[];
-  per_page: number;
-  current_page: number;
-  total?: number;
-  deletingIds: number[];
-  createModal: {
+  deletingDormitoryIds: number[];
+  createDormitoryModal: {
     open: boolean;
-    defaultDorm?: Dormitory;
+    defaultDormitory?: Dormitory;
   };
-  createRoomModal: {
-    open: boolean;
-    defaultRoom?: DormRoom;
-    defaultDorm?: number;
-    errors?: {
-      dorm?: string[];
-      number?: string[];
-      number_of_seats?: string[];
-      comment?: string[];
-    };
-  };
-  creating: boolean;
-  creatingRoom: boolean;
-  gettingRoomsDormIds: number[];
-  dormRooms: Record<number, RoomsInfo>;
-  deletingRoomIds: number[];
-  settlementModal: {
-    open: boolean;
-    dorm?: Dormitory;
-    room?: DormRoom;
-  };
-  loadingStudentIds: number[];
-  filters: Filters;
-  sorters: Sorters;
-  messages: string[];
 };

@@ -1,14 +1,17 @@
+import { SortOrder } from "antd/es/table/interface";
 import {
-  PaginationMeta,
   PaginationParams,
   WithId,
   WithIdAndTitle,
   WithMessage,
+  WithPaginationMeta,
 } from "app/types";
-import { BaseDormRoom } from "..";
-import { SortOrder } from "antd/es/table/interface";
+import { BaseDormRoom, Country, Gender } from "..";
 
-export type BaseStudent = WithId<{
+export const StudentTag = "Student";
+export const StudentTags = [StudentTag];
+
+export type BaseStudent = {
   latin_name: string;
   cyrillic_name: string;
   is_family: boolean;
@@ -17,14 +20,15 @@ export type BaseStudent = WithId<{
   comment: string | null;
   created_at: string | null;
   updated_at: string | null;
-}>;
-
-export type Student = BaseStudent & {
-  gender?: WithIdAndTitle | null;
-  country?: WithIdAndTitle | null;
-  academic_group?: WithIdAndTitle | null;
-  dorm_room?: BaseDormRoom | null;
 };
+
+export type Student = BaseStudent &
+  WithId<{
+    gender?: Gender | null;
+    country?: Country | null;
+    academic_group?: WithIdAndTitle | null;
+    dorm_room?: BaseDormRoom | null;
+  }>;
 
 export type Filters = {
   gender_id?: number;
@@ -45,41 +49,25 @@ export type PostStudentData = BaseStudent & {
   country_id?: number;
 };
 
+export type UpdateStudentData = WithId<PostStudentData>;
+
 export type CreateStudentResponse = WithMessage<{
   student: Student;
 }>;
 
 export type GetStudentsParams = PaginationParams<{
   with_dormitory?: boolean;
-  filters: Filters;
-  sorters: Sorters;
+  filters?: Filters;
+  sorters?: Sorters;
 }>;
 
-export type GetStudentsResponse = {
+export type GetStudentsResponse = WithPaginationMeta<{
   students: Student[];
-  meta: PaginationMeta;
-};
-
-export type GetCountriesResponse = {
-  countries: WithIdAndTitle[];
-};
-
-export type GetGendersResponse = {
-  genders: WithIdAndTitle[];
-};
-
-export type GetAcademicGroupsResponse = {
-  academic_groups: WithIdAndTitle[];
-};
+}>;
 
 export type StudentsStateType = {
-  loading: boolean;
-  students: Student[];
-  per_page: number;
-  current_page: number;
-  total?: number;
-  deletingIds: number[];
-  createModal: {
+  deletingStudentIds: number[];
+  createStudentModal: {
     open: boolean;
     defaultStudent?: Student;
   };
@@ -87,14 +75,4 @@ export type StudentsStateType = {
     open: boolean;
     student?: Student;
   };
-  creating: boolean;
-  countries: WithIdAndTitle[];
-  loadingCountries: boolean;
-  genders: WithIdAndTitle[];
-  loadingGenders: boolean;
-  academicGroups: WithIdAndTitle[];
-  loadingAcademicGroups: boolean;
-  updating: boolean;
-  filters: Filters;
-  sorters: Sorters;
 };

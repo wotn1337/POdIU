@@ -22,7 +22,3 @@ export const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-export const getToken = async () => {
-  return await axiosInstance.get("/sanctum/csrf-cookie");
-};

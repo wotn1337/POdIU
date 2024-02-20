@@ -1,53 +1,50 @@
 import { Checkbox, Flex, Form, Input, Select } from "antd";
 import {
-  createStudent,
-  getAcademicGroups,
-  getCountries,
-  getGenders,
-  updateStudent,
+  setCreateStudentModal,
+  useCreateStudentMutation,
+  useGetAcademicGroupsQuery,
+  useGetCountriesQuery,
+  useGetGendersQuery,
+  useUpdateStudentMutation,
 } from "app/features";
-import { setCreateModal } from "app/features/students/studentsSlice";
 import { PostStudentData } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
 import { requiredMessage } from "assets/constants";
 import { CreateModal } from "components/shared/create-modal";
-import { useEffect } from "react";
 
 export const CreateStudentModal = () => {
   const dispatch = useDispatch();
   const {
-    createModal,
-    countries,
-    loadingCountries,
-    genders,
-    loadingGenders,
-    academicGroups,
-    loadingAcademicGroups,
-    creating,
-    updating,
+    createStudentModal: { open, defaultStudent },
   } = useSelector((state) => state.students);
-  const { open, defaultStudent } = createModal;
+  const { data: genders, isLoading: gendersLoading } = useGetGendersQuery();
+  const { data: countries, isLoading: countriesLoading } =
+    useGetCountriesQuery();
+  const { data: academicGroups, isLoading: academicGroupsLoading } =
+    useGetAcademicGroupsQuery();
+  const [createStudent, { isLoading: creating }] = useCreateStudentMutation();
+  const [updateStudent, { isLoading: updating }] = useUpdateStudentMutation();
+  const loading = creating || updating;
 
-  useEffect(() => {
-    dispatch(getCountries());
-    dispatch(getGenders());
-    dispatch(getAcademicGroups());
-  }, []);
+  const onFinish = (values: PostStudentData) => {
+    if (defaultStudent) {
+      updateStudent({ id: defaultStudent.id, ...values });
+    } else {
+      createStudent(values);
+    }
+  };
 
   return (
     <CreateModal<PostStudentData>
       modalProps={{
         open: open,
         title: `${defaultStudent ? "Изменить" : "Добавить"} студента`,
-        onCancel: () => dispatch(setCreateModal({ open: false })),
+        onCancel: () => dispatch(setCreateStudentModal({ open: false })),
       }}
       formProps={{
         name: "create-student",
-        disabled: creating || updating,
-        onFinish: (values) =>
-          dispatch(
-            defaultStudent ? updateStudent(values) : createStudent(values)
-          ),
+        disabled: loading,
+        onFinish,
         initialValues: defaultStudent
           ? {
               ...defaultStudent,
@@ -60,7 +57,7 @@ export const CreateStudentModal = () => {
             },
       }}
       submitButtonProps={{
-        loading: creating || updating,
+        loading,
         children: defaultStudent ? "Изменить" : "Добавить",
       }}
     >
@@ -85,16 +82,16 @@ export const CreateStudentModal = () => {
         <Input />
       </Form.Item>
       <Form.Item label="Страна" name="country_id">
-        <Select loading={loadingCountries}>
-          {countries.map((country) => (
+        <Select loading={countriesLoading}>
+          {countries?.map((country) => (
             <Select.Option key={country.id}>{country.title}</Select.Option>
           ))}
         </Select>
       </Form.Item>
       <Flex justify="space-between" gap={10}>
         <Form.Item label="Пол" name="gender_id" style={{ flex: 1 }}>
-          <Select loading={loadingGenders}>
-            {genders.map((gender) => (
+          <Select loading={gendersLoading}>
+            {genders?.map((gender) => (
               <Select.Option key={gender.id}>{gender.title}</Select.Option>
             ))}
           </Select>
@@ -104,8 +101,8 @@ export const CreateStudentModal = () => {
         </Form.Item>
       </Flex>
       <Form.Item label="Группа" name="academic_group_id">
-        <Select loading={loadingAcademicGroups}>
-          {academicGroups.map((group) => (
+        <Select loading={academicGroupsLoading}>
+          {academicGroups?.map((group) => (
             <Select.Option key={group.id}>{group.title}</Select.Option>
           ))}
         </Select>
