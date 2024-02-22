@@ -5,18 +5,17 @@ import { studentsApi } from ".";
 const initialState: StudentsStateType = {
   createStudentModal: { open: false },
   deletingStudentIds: [],
-  settlementModal: { open: false },
 };
 
 const studentsSlice = createSlice({
   name: "students",
   initialState,
   reducers: {
-    setSettlementModal: (state, { payload }) => {
-      state.settlementModal = payload;
-    },
     setCreateStudentModal: (state, { payload }) => {
       state.createStudentModal = payload;
+    },
+    setSettlementStudent: (state, { payload }) => {
+      state.settlementStudent = payload;
     },
   },
   extraReducers: (builder) => {
@@ -32,6 +31,7 @@ const studentsSlice = createSlice({
       studentsApi.endpoints.updateStudent.matchFulfilled,
       (state) => {
         state.createStudentModal = { open: false };
+        state.settlementStudent = undefined;
       }
     );
     // delete student
@@ -57,6 +57,6 @@ const studentsSlice = createSlice({
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setCreateStudentModal } = actions;
+export const { setCreateStudentModal, setSettlementStudent } = actions;
 
 export default reducer;

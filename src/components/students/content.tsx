@@ -2,6 +2,7 @@ import { Button, InputRef } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   setCreateStudentModal,
+  setSettlementStudent,
   useDeleteStudentMutation,
   useGetCountriesQuery,
   useGetGendersQuery,
@@ -12,17 +13,16 @@ import { useDispatch, useSelector } from "app/store";
 import { Filters, PaginationParams, Sorters } from "app/types";
 import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks/useUserPermissions";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
 import { getOnChange } from "./utils";
 
 export const StudentsPageContent = () => {
-  const { deletingStudentIds, createStudentModal } = useSelector(
-    (state) => state.students
-  );
   const dispatch = useDispatch();
+  const { deletingStudentIds, createStudentModal, settlementStudent } =
+    useSelector((state) => state.students);
   const { students: perms } = useUserPermissions();
   const searchInput = useRef<InputRef>(null);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
@@ -127,9 +127,7 @@ export const StudentsPageContent = () => {
           {perms.update && (
             <Button
               type="primary"
-              // onClick={() =>
-              //   dispatch(setSettlementModal({ open: true, student }))
-              // }
+              onClick={() => dispatch(setSettlementStudent(student))}
             >
               Поселить
             </Button>
@@ -141,7 +139,12 @@ export const StudentsPageContent = () => {
 
   return (
     <>
-      <SettlementModal />
+      {settlementStudent && (
+        <SettlementModal
+          student={settlementStudent}
+          onCancel={() => dispatch(setSettlementStudent(undefined))}
+        />
+      )}
       {createStudentModal.open && <CreateStudentModal />}
       <TabledContent<Student>
         pageTitle="Студенты"

@@ -16,29 +16,12 @@ type Props<T> = TableProps<T> & {
 };
 
 export function TabledContent<T extends AnyObject>({
-  dataSource,
   pageTitle,
   actionButtons,
   layoutClassName,
   ...props
 }: Props<T>) {
-  const [data, setData] = useState(dataSource);
-  const [searchValue, setSearchInput] = useState<string>();
   const className = classNames(s.tabledContent, layoutClassName);
-
-  useEffect(() => {
-    setData(
-      dataSource?.filter((item) =>
-        Object.values(item).some((value) =>
-          value.toString().includes(searchValue ?? "")
-        )
-      )
-    );
-  }, [searchValue]);
-
-  useEffect(() => {
-    setData(dataSource);
-  }, [dataSource]);
 
   return (
     <ContentWrapper>
@@ -57,18 +40,10 @@ export function TabledContent<T extends AnyObject>({
             )}
             {actionButtons}
           </Space>
-          <Input
-            placeholder="Искать..."
-            prefix={<SearchOutlined className={s.searchInput__icon} />}
-            className={s.searchInput}
-            value={searchValue}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
         </Header>
         <Content className={s.tabledContent__content}>
           <Table
             {...props}
-            dataSource={data}
             className={s.tabledContent__content__table}
             rowKey="id"
             scroll={{ x: "100%" }}

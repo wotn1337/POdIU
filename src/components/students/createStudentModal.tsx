@@ -48,9 +48,15 @@ export const CreateStudentModal = () => {
         initialValues: defaultStudent
           ? {
               ...defaultStudent,
-              country_id: String(defaultStudent?.country?.id),
-              gender_id: String(defaultStudent?.gender?.id),
-              academic_group_id: String(defaultStudent?.academic_group?.id),
+              country_id: defaultStudent.country
+                ? String(defaultStudent.country.id)
+                : undefined,
+              gender_id: defaultStudent.gender
+                ? String(defaultStudent.gender.id)
+                : undefined,
+              academic_group_id: defaultStudent.academic_group
+                ? String(defaultStudent.academic_group.id)
+                : undefined,
             }
           : {
               is_family: false,

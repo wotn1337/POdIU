@@ -1,8 +1,9 @@
-import { Empty, Table } from "antd";
+import { Button, Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   Sorters,
   setCreateRoomModal,
+  setSettlementModalByRoom,
   useDeleteRoomMutation,
   useGetRoomsQuery,
 } from "app/features";
@@ -13,12 +14,25 @@ import { useState } from "react";
 import { TableActionButtons } from "../table-action-buttons";
 import { useDispatch, useSelector } from "app/store";
 import { StudentsTable } from "..";
+import { TableRowSelection } from "antd/es/table/interface";
 
 type Props = {
   dormId: number;
+  actions?: boolean;
+  selection?: TableRowSelection<Room>;
+  onlyAvailable?: boolean;
+  isFamily?: boolean;
+  gender?: number;
 };
 
-export const RoomsTable: React.FC<Props> = ({ dormId }) => {
+export const RoomsTable: React.FC<Props> = ({
+  dormId,
+  actions = true,
+  selection,
+  onlyAvailable,
+  isFamily,
+  gender,
+}) => {
   const { dormitories: perms } = useUserPermissions();
   const dispatch = useDispatch();
   const { deletingRoomIds } = useSelector((state) => state.rooms);
@@ -37,6 +51,9 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
     ...paginationParams,
     with_students: true,
     dormId,
+    only_available_dorm_rooms: onlyAvailable,
+    is_family: isFamily,
+    gender_id: gender,
   });
   const loading = isLoading || isFetching;
 
@@ -70,7 +87,7 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
     },
   ];
 
-  if (perms.update || perms.delete) {
+  if (actions && (perms.update || perms.delete)) {
     columns.push({
       key: "actions",
       render: (_, room) => (
@@ -88,52 +105,21 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
               })
             )
           }
-        />
+        >
+          <Button
+            type="primary"
+            disabled={room.empty_seats_count === 0}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(setSettlementModalByRoom({ room }));
+            }}
+          >
+            Поселить
+          </Button>
+        </TableActionButtons>
       ),
     });
   }
-
-  // const columns: ColumnsType<DormRoom> = withActions
-  //   ? [
-  //       ...baseColumns,
-  //       {
-  //         key: "actions",
-  //         title: "Действия",
-  //         render: (_, room) => (
-  //           <Space>
-  //             <Button
-  //               type="primary"
-  //               disabled={room.empty_seats_count === 0}
-  //               onClick={() =>
-  //                 dispatch(setSettlementModal({ open: true, dorm, room }))
-  //               }
-  //             >
-  //               Поселить
-  //             </Button>
-  //             <Button
-  //               onClick={() =>
-  //                 dispatch(
-  //                   setCreateRoomModal({
-  //                     open: true,
-  //                     defaultRoom: room,
-  //                     defaultDorm: dorm?.id,
-  //                   })
-  //                 )
-  //               }
-  //             >
-  //               Изменить
-  //             </Button>
-  //             <DeleteButton
-  //               onClick={() => dispatch(deleteRoom(room.id))}
-  //               loading={deletingRoomIds.includes(room.id)}
-  //             />
-  //           </Space>
-  //         ),
-  //       },
-  //     ]
-  //   : baseColumns;
-
-  // const studentColumns: ColumnsType<Student & { roomId: number }> = [
   //   {
   //     key: "cyrillic_name",
   //     dataIndex: "cyrillic_name",
@@ -246,16 +232,16 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
       columns={columns}
       loading={loading}
       scroll={{ x: "100%" }}
-      // rowSelection={
-      //   selection
-      //     ? {
-      //         ...selection,
-      //         getCheckboxProps: ({ empty_seats_count }) => ({
-      //           disabled: empty_seats_count === 0,
-      //         }),
-      //       }
-      //     : undefined
-      // }
+      rowSelection={
+        selection
+          ? {
+              ...selection,
+              getCheckboxProps: ({ empty_seats_count }) => ({
+                disabled: empty_seats_count === 0,
+              }),
+            }
+          : undefined
+      }
       locale={{
         filterReset: "Сбросить",
         emptyText: (
@@ -269,7 +255,6 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
         cancelSort: "Сбросить сортировку",
       }}
       pagination={{
-        // className: s.roomsTable__pagination,
         pageSizeOptions: [5, 10, 20, 50, 100],
         current: paginationParams.page,
         pageSize: paginationParams.per_page,
@@ -290,7 +275,7 @@ export const RoomsTable: React.FC<Props> = ({ dormId }) => {
       expandable={{
         rowExpandable: ({ students_count }) => students_count !== 0,
         expandRowByClick: true,
-        expandedRowRender: ({ students, id }) => (
+        expandedRowRender: ({ students }) => (
           <StudentsTable dataSource={students} />
         ),
       }}

@@ -10,6 +10,7 @@ import {
   UpdateStudentData,
 } from "./types";
 import { METHOD, WithMessage } from "app/types";
+import { RoomTag } from "../rooms/types";
 
 export const studentsApi = createApi({
   reducerPath: "studentsApi",
@@ -37,7 +38,10 @@ export const studentsApi = createApi({
         method: METHOD.PATCH,
         body,
       }),
-      invalidatesTags: StudentTags,
+      invalidatesTags: (_, __, { dorm_room_id }) => [
+        ...StudentTags,
+        { type: RoomTag, dorm_room_id },
+      ],
     }),
     deleteStudent: builder.mutation<WithMessage, number>({
       query: (id) => ({

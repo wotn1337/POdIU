@@ -5,7 +5,6 @@ import {
   WithMessage,
   WithPaginationMeta,
 } from "app/types";
-import { Dormitory } from "../dormitories";
 import { Student } from "../students/types";
 import { User } from "../users";
 
@@ -73,4 +72,5 @@ export type RoomsStateType = {
     defaultDorm?: number;
     defaultRoom?: Room;
   };
+  settlementModal?: { room: Room };
 };

@@ -9,6 +9,7 @@ import {
   GetRoomsResponse,
   GetRoomsParams,
   UpdateRoomResponse,
+  RoomTag,
 } from "./types";
 import { getFilterParams, getSorterParams } from "app/utils";
 
@@ -22,7 +23,10 @@ export const roomsApi = createApi({
         `${dormId}/dorm-rooms?page=${page}&per_page=${per_page}&${getFilterParams(
           params
         )}&${getSorterParams(sorters)}`,
-      providesTags: RoomTags,
+      providesTags: (_, __, { dormId }) => [
+        ...RoomTags,
+        { type: RoomTag, dorm_room_id: dormId },
+      ],
     }),
     createRoom: builder.mutation<CreateRoomResponse, CreateRoomData>({
       query: ({ dormitory_id, ...body }) => ({
@@ -53,6 +57,7 @@ export const roomsApi = createApi({
 export const {
   useCreateRoomMutation,
   useGetRoomsQuery,
+  useLazyGetRoomsQuery,
   useUpdateRoomMutation,
   useDeleteRoomMutation,
 } = roomsApi;

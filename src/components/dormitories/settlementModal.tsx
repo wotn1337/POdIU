@@ -1,76 +1,89 @@
 import { Modal, Typography } from "antd";
+import { TableRowSelection } from "antd/es/table/interface";
 import {
-  setSettlementModal,
-  // updateStudent,
-  updateStudentRoom,
+  setSettlementModalByRoom,
+  useUpdateStudentMutation,
 } from "app/features";
-import { CreateStudentResponse } from "app/features/students/types";
-import { useDispatch, useSelector } from "app/store";
+import { Room } from "app/features/rooms/types";
+import { Student } from "app/features/students/types";
+import { useDispatch } from "app/store";
 import { StudentsTable } from "components/shared";
 import { useState } from "react";
 import s from "./dormitories.module.scss";
 
-export const SettlementModal = () => {
-  // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  // const dispatch = useDispatch();
-  // const { settlementModal } = useSelector((state) => state.dormitories);
-  // const { open, dorm, room } = settlementModal;
-  // // const { students } = useSelector((state) => state.students);
+type Props = {
+  room: Room;
+  onCancel: () => void;
+};
 
-  // const onSettlement = () => {
-  //   const student = students.find((s) => s.id === selectedRowKeys[0]);
-  //   if (student) {
-  //     dispatch(
-  //       updateStudent({
-  //         ...student,
-  //         gender_id: student.gender?.id,
-  //         academic_group_id: student.academic_group?.id,
-  //         country_id: student.country?.id,
-  //         dorm_room_id: Number(room?.id),
-  //       })
-  //     ).then((data) => {
-  //       if (data.meta.requestStatus === "fulfilled") {
-  //         const payload = data.payload as CreateStudentResponse;
-  //         console.log(data);
-  //         dispatch(setSettlementModal({ open: false }));
-  //         dispatch(
-  //           updateStudentRoom({
-  //             type: "set",
-  //             dormId: dorm?.id,
-  //             roomId: room?.id,
-  //             student: payload.student,
-  //           })
-  //         );
-  //       }
-  //     });
-  //   }
-  // };
+export const SettlementModal: React.FC<Props> = ({ room, onCancel }) => {
+  const dispatch = useDispatch();
+  const initialSelection = room.students?.map((s) => s.id);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<
+    React.Key[] | undefined
+  >(initialSelection);
+  const [selectedStudents, setSelectedStudents] = useState<
+    Student[] | undefined
+  >(room.students);
+  const [updateStudent] = useUpdateStudentMutation(undefined);
+  const [loading, setLoading] = useState(false);
 
-  // return (
-  //   <Modal
-  //     className={s.settlementModal}
-  //     open={open}
-  //     title="Поселение"
-  //     onCancel={() => dispatch(setSettlementModal({ open: false }))}
-  //     destroyOnClose
-  //     getContainer={false}
-  //     cancelText="Закрыть"
-  //     okButtonProps={{ disabled: !selectedRowKeys.length }}
-  //     okText="Поселить"
-  //     onOk={onSettlement}
-  //   >
-  //     <Typography.Title level={5} className={s.cyrillicName}>
-  //       Общежитие №{dorm?.number} / Комната №{room?.number}
-  //     </Typography.Title>
-  //     <StudentsTable
-  //       rowSelection={{
-  //         type: "radio",
-  //         selectedRowKeys,
-  //         onChange: setSelectedRowKeys,
-  //       }}
-  //       settlementState={settlementModal}
-  //     />
-  //   </Modal>
-  // );
-  return "settlement";
+  const onSettlement = () => {
+    setLoading(true);
+    const studentsToUpdate =
+      selectedStudents?.filter(({ id }) => !initialSelection?.includes(id)) ??
+      [];
+    Promise.all(
+      studentsToUpdate.map((s) =>
+        updateStudent({
+          ...s,
+          academic_group_id: s.academic_group?.id,
+          gender_id: s.gender?.id,
+          country_id: s.country?.id,
+          dorm_room_id: room.id,
+        })
+      )
+    )
+      .then(() => dispatch(setSettlementModalByRoom(undefined)))
+      .finally(() => setLoading(false));
+  };
+
+  const onSelectionChange: TableRowSelection<Student>["onChange"] = (
+    selectedRowKeys,
+    selectedRows
+  ) => {
+    setSelectedRowKeys(selectedRowKeys);
+    setSelectedStudents(selectedRows);
+  };
+
+  return (
+    <Modal
+      className={s.settlementModal}
+      open={true}
+      title="Поселение"
+      onCancel={onCancel}
+      destroyOnClose
+      getContainer={false}
+      cancelText="Закрыть"
+      okText="Поселить"
+      onOk={onSettlement}
+      okButtonProps={{ loading }}
+    >
+      <Typography.Title level={5} className={s.cyrillicName}>
+        Комната №{room?.number}
+      </Typography.Title>
+      <StudentsTable
+        selection={{
+          selectedRowKeys,
+          onChange: onSelectionChange,
+          hideSelectAll: true,
+          getCheckboxProps: ({ id }) => ({
+            disabled:
+              selectedRowKeys?.length === room.number_of_seats &&
+              !selectedRowKeys.includes(id),
+          }),
+        }}
+      />
+    </Modal>
+  );
 };

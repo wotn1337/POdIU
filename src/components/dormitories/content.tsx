@@ -4,6 +4,7 @@ import {
   Dormitory,
   setCreateDormitoryModal,
   setCreateRoomModal,
+  setSettlementModalByRoom,
   useDeleteDormitoryMutation,
   useGetDormitoriesQuery,
 } from "app/features";
@@ -19,6 +20,7 @@ import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateDormitoryModal } from "./createDormitoryModal";
 import { CreateRoomModal } from "./createRoomModal";
+import { SettlementModal } from "./settlementModal";
 
 export const DormitoriesContent = () => {
   const { dormitories: perms } = useUserPermissions();
@@ -26,7 +28,9 @@ export const DormitoriesContent = () => {
   const { createDormitoryModal, deletingDormitoryIds } = useSelector(
     (state) => state.dormitories
   );
-  const { createRoomModal } = useSelector((state) => state.rooms);
+  const { createRoomModal, settlementModal } = useSelector(
+    (state) => state.rooms
+  );
   const actions = [];
   const searchInput = useRef<InputRef>(null);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
@@ -128,6 +132,12 @@ export const DormitoriesContent = () => {
 
   return (
     <>
+      {settlementModal && (
+        <SettlementModal
+          room={settlementModal.room}
+          onCancel={() => dispatch(setSettlementModalByRoom(undefined))}
+        />
+      )}
       {createDormitoryModal.open && <CreateDormitoryModal />}
       {createRoomModal.open && <CreateRoomModal />}
       <TabledContent<Dormitory>

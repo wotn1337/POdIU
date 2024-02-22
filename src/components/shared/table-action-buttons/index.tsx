@@ -17,14 +17,32 @@ export const TableActionButtons: React.FC<Props> = ({
   onDelete,
   onUpdate,
   children,
-}) => (
-  <Space>
-    {children}
-    {hasUpdate && (
-      <Button type={children ? "default" : "primary"} onClick={onUpdate}>
-        Изменить
-      </Button>
-    )}
-    {hasDelete && <DeleteButton onClick={onDelete} loading={deleting} />}
-  </Space>
-);
+}) => {
+  const onClick = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    callback: Function
+  ) => {
+    e.stopPropagation();
+    callback();
+  };
+
+  return (
+    <Space>
+      {children}
+      {hasUpdate && (
+        <Button
+          type={children ? "default" : "primary"}
+          onClick={(e) => onClick(e, onUpdate)}
+        >
+          Изменить
+        </Button>
+      )}
+      {hasDelete && (
+        <DeleteButton
+          onClick={(e) => onClick(e, onDelete)}
+          loading={deleting}
+        />
+      )}
+    </Space>
+  );
+};

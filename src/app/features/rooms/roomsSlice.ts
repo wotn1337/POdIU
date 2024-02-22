@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RoomsStateType } from "./types";
 import { roomsApi } from ".";
 
@@ -13,6 +13,12 @@ const studentsSlice = createSlice({
   reducers: {
     setCreateRoomModal: (state, { payload }) => {
       state.createRoomModal = payload;
+    },
+    setSettlementModalByRoom: (
+      state,
+      { payload }: PayloadAction<RoomsStateType["settlementModal"]>
+    ) => {
+      state.settlementModal = payload;
     },
   },
   extraReducers: (builder) => {
@@ -53,6 +59,6 @@ const studentsSlice = createSlice({
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setCreateRoomModal } = actions;
+export const { setCreateRoomModal, setSettlementModalByRoom } = actions;
 
 export default reducer;

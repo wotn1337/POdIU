@@ -6,7 +6,8 @@ import {
   WithMessage,
   WithPaginationMeta,
 } from "app/types";
-import { BaseDormRoom, Country, Gender } from "..";
+import { Country, Gender } from "..";
+import { BaseRoom } from "../rooms/types";
 
 export const StudentTag = "Student";
 export const StudentTags = [StudentTag];
@@ -27,7 +28,7 @@ export type Student = BaseStudent &
     gender?: Gender | null;
     country?: Country | null;
     academic_group?: WithIdAndTitle | null;
-    dorm_room?: BaseDormRoom | null;
+    dorm_room?: WithId<BaseRoom> | null;
   }>;
 
 export type Filters = {
@@ -71,8 +72,5 @@ export type StudentsStateType = {
     open: boolean;
     defaultStudent?: Student;
   };
-  settlementModal: {
-    open: boolean;
-    student?: Student;
-  };
+  settlementStudent?: Student;
 };
