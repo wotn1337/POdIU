@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "app/store";
 import { Filters, PaginationParams, Sorters } from "app/types";
 import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks/useUserPermissions";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";

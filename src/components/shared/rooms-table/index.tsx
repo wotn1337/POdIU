@@ -1,7 +1,6 @@
 import { Button, Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
-  Sorters,
   setCreateRoomModal,
   setSettlementModalByRoom,
   useDeleteRoomMutation,
@@ -45,7 +44,7 @@ export const RoomsTable: React.FC<Props> = ({
     per_page: 10,
   });
   // const [filters, setFilters] = useState<Filters>();
-  const [sorters, setSorters] = useState<Sorters>();
+  // const [sorters, setSorters] = useState<Sorters>();
   const [deleteRoom] = useDeleteRoomMutation();
   const { data, isLoading, isFetching } = useGetRoomsQuery({
     ...paginationParams,

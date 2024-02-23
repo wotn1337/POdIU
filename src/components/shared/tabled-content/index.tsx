@@ -1,11 +1,9 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Empty, Input, Layout, Space, Table, Typography } from "antd";
+import { Empty, Layout, Space, Table, Typography } from "antd";
 import { AnyObject } from "antd/es/_util/type";
 import type { TableProps } from "antd/es/table";
-import { ContentWrapper } from "components/shared";
-import { useEffect, useState } from "react";
-import s from "./tabledContent.module.scss";
 import classNames from "classnames";
+import { ContentWrapper } from "components/shared";
+import s from "./tabledContent.module.scss";
 
 const { Content, Header } = Layout;
 
