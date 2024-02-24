@@ -7,9 +7,12 @@ export const getBaseQuery = () =>
     baseUrl: import.meta.env.VITE_BACKEND_URL,
     credentials: "include",
     prepareHeaders: (headers) => {
+      headers.set("Accept", "application/json");
+
       const c = new Cookies();
       const token = c.get("XSRF-TOKEN");
       headers.set("X-Xsrf-Token", token);
+
       return headers;
     },
   });
