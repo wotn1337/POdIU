@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UsersStateType } from "./types";
-import { usersApi } from ".";
+import { apiSlice } from "../api";
 
 const initialState: UsersStateType = {
   deleteUserIds: [],
@@ -18,33 +18,33 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     // delete user
     builder.addMatcher(
-      usersApi.endpoints.deleteUser.matchPending,
+      apiSlice.endpoints.deleteUser.matchPending,
       (state, { meta }) => {
         state.deleteUserIds.push(meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      usersApi.endpoints.deleteUser.matchFulfilled,
+      apiSlice.endpoints.deleteUser.matchFulfilled,
       (state, { meta }) => {
         state.deleteUserIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      usersApi.endpoints.deleteUser.matchRejected,
+      apiSlice.endpoints.deleteUser.matchRejected,
       (state, { meta }) => {
         state.deleteUserIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     // create user
     builder.addMatcher(
-      usersApi.endpoints.createUser.matchFulfilled,
+      apiSlice.endpoints.createUser.matchFulfilled,
       (state) => {
         state.createUserModal = { open: false };
       }
     );
     // update user
     builder.addMatcher(
-      usersApi.endpoints.updateUser.matchFulfilled,
+      apiSlice.endpoints.updateUser.matchFulfilled,
       (state) => {
         state.createUserModal = { open: false };
       }

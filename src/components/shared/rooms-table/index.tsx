@@ -89,6 +89,7 @@ export const RoomsTable: React.FC<Props> = ({
   if (actions && (perms.update || perms.delete)) {
     columns.push({
       key: "actions",
+      title: "Действия",
       render: (_, room) => (
         <TableActionButtons
           deleting={deletingRoomIds.includes(room.id)}
@@ -275,7 +276,7 @@ export const RoomsTable: React.FC<Props> = ({
         rowExpandable: ({ students_count }) => students_count !== 0,
         expandRowByClick: true,
         expandedRowRender: ({ students }) => (
-          <StudentsTable dataSource={students} />
+          <StudentsTable dataSource={students} actions />
         ),
       }}
     />

@@ -4,24 +4,13 @@ import {
   useDispatch as useReduxDispatch,
   useSelector as useReduxSelector,
 } from "react-redux";
+import { apiSlice } from "./features";
 import authReducer from "./features/auth/authSlice";
-import studentsReducer from "./features/students/studentsSlice";
 import dormitoriesReducer from "./features/dormitories/dormitoriesSlice";
-import {
-  academicGroupsApi,
-  authApi,
-  countriesApi,
-  dormitoriesApi,
-  permissionsApi,
-  rolesApi,
-  roomsApi,
-  studentsApi,
-  usersApi,
-} from "./features";
 import rolesReducer from "./features/roles/rolesSlice";
-import usersReducer from "./features/users/usersSlice";
 import roomsReducer from "./features/rooms/roomsSlice";
-import { gendersApi } from "./features/genders/gendersApi";
+import studentsReducer from "./features/students/studentsSlice";
+import usersReducer from "./features/users/usersSlice";
 
 const store = configureStore({
   reducer: {
@@ -31,30 +20,10 @@ const store = configureStore({
     roles: rolesReducer,
     users: usersReducer,
     rooms: roomsReducer,
-    [authApi.reducerPath]: authApi.reducer,
-    [studentsApi.reducerPath]: studentsApi.reducer,
-    [rolesApi.reducerPath]: rolesApi.reducer,
-    [permissionsApi.reducerPath]: permissionsApi.reducer,
-    [usersApi.reducerPath]: usersApi.reducer,
-    [gendersApi.reducerPath]: gendersApi.reducer,
-    [countriesApi.reducerPath]: countriesApi.reducer,
-    [academicGroupsApi.reducerPath]: academicGroupsApi.reducer,
-    [dormitoriesApi.reducerPath]: dormitoriesApi.reducer,
-    [roomsApi.reducerPath]: roomsApi.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat(
-      authApi.middleware,
-      rolesApi.middleware,
-      permissionsApi.middleware,
-      usersApi.middleware,
-      studentsApi.middleware,
-      gendersApi.middleware,
-      countriesApi.middleware,
-      academicGroupsApi.middleware,
-      dormitoriesApi.middleware,
-      roomsApi.middleware
-    ),
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 export const useDispatch: () => typeof store.dispatch = useReduxDispatch;

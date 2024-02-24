@@ -2,9 +2,9 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import axios from "axios";
 import { Cookies } from "react-cookie";
 
-export const getBaseQuery = (url: string) =>
+export const getBaseQuery = () =>
   fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BACKEND_URL + url,
+    baseUrl: import.meta.env.VITE_BACKEND_URL,
     credentials: "include",
     prepareHeaders: (headers) => {
       const c = new Cookies();

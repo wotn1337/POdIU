@@ -44,7 +44,7 @@ export const CreateRoomModal = () => {
         disabled: loading,
         onFinish,
         initialValues: {
-          dormitory_id: String(defaultDorm),
+          dormitory_id: defaultDorm ? String(defaultDorm) : undefined,
           ...defaultRoom,
         },
       }}

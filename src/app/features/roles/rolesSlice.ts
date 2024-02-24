@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { apiSlice } from "../api";
 import { RolesStateType } from "./types";
-import { rolesApi } from "./rolesApi";
 
 const initialState: RolesStateType = {
   deleteRoleIds: [],
@@ -18,33 +18,33 @@ const rolesSlice = createSlice({
   extraReducers: (builder) => {
     // delete role
     builder.addMatcher(
-      rolesApi.endpoints.deleteRole.matchPending,
+      apiSlice.endpoints.deleteRole.matchPending,
       (state, { meta }) => {
         state.deleteRoleIds.push(meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      rolesApi.endpoints.deleteRole.matchFulfilled,
+      apiSlice.endpoints.deleteRole.matchFulfilled,
       (state, { meta }) => {
         state.deleteRoleIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      rolesApi.endpoints.deleteRole.matchRejected,
+      apiSlice.endpoints.deleteRole.matchRejected,
       (state, { meta }) => {
         state.deleteRoleIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     // create role
     builder.addMatcher(
-      rolesApi.endpoints.createRole.matchFulfilled,
+      apiSlice.endpoints.createRole.matchFulfilled,
       (state) => {
         state.createRoleModal = { open: false };
       }
     );
     // update role
     builder.addMatcher(
-      rolesApi.endpoints.updateRole.matchFulfilled,
+      apiSlice.endpoints.updateRole.matchFulfilled,
       (state) => {
         state.createRoleModal = { open: false };
       }

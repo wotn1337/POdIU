@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { dormitoriesApi } from ".";
+import { apiSlice } from "../api";
 import { DormitoriesStateType } from "./types";
 
 const initialState: DormitoriesStateType = {
@@ -18,33 +18,33 @@ const studentsSlice = createSlice({
   extraReducers: (builder) => {
     // create dormitory
     builder.addMatcher(
-      dormitoriesApi.endpoints.createDormitory.matchFulfilled,
+      apiSlice.endpoints.createDormitory.matchFulfilled,
       (state) => {
         state.createDormitoryModal = { open: false };
       }
     );
     // update dormitory
     builder.addMatcher(
-      dormitoriesApi.endpoints.updateDormitory.matchFulfilled,
+      apiSlice.endpoints.updateDormitory.matchFulfilled,
       (state) => {
         state.createDormitoryModal = { open: false };
       }
     );
     // delete dormitory
     builder.addMatcher(
-      dormitoriesApi.endpoints.deleteDormitory.matchPending,
+      apiSlice.endpoints.deleteDormitory.matchPending,
       (state, { meta }) => {
         state.deletingDormitoryIds.push(meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      dormitoriesApi.endpoints.deleteDormitory.matchFulfilled,
+      apiSlice.endpoints.deleteDormitory.matchFulfilled,
       (state, { meta }) => {
         state.deletingDormitoryIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      dormitoriesApi.endpoints.deleteDormitory.matchRejected,
+      apiSlice.endpoints.deleteDormitory.matchRejected,
       (state, { meta }) => {
         state.deletingDormitoryIds.filter((id) => id !== meta.arg.originalArgs);
       }

@@ -28,7 +28,11 @@ export const CreateStudentModal = () => {
 
   const onFinish = (values: PostStudentData) => {
     if (defaultStudent) {
-      updateStudent({ id: defaultStudent.id, ...values });
+      updateStudent({
+        id: defaultStudent.id,
+        dorm_room_id: defaultStudent.dorm_room?.id,
+        ...values,
+      });
     } else {
       createStudent(values);
     }

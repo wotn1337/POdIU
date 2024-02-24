@@ -8,3 +8,4 @@ export * from "./genders";
 export * from "./countries";
 export * from "./academicGroups";
 export * from "./rooms";
+export * from "./api";

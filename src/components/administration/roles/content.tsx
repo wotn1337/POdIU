@@ -1,15 +1,15 @@
 import { Button, Space, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import {
-  useDeleteRoleMutation,
-  useGetRolesQuery,
-  setCreateRoleModal,
-  Role,
-} from "app/features/roles";
 import { useDispatch, useSelector } from "app/store";
 import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks/useUserPermissions";
 import { CreateRoleModal } from "./createRoleModal";
+import {
+  Role,
+  setCreateRoleModal,
+  useDeleteRoleMutation,
+  useGetRolesQuery,
+} from "app/features";
 
 export const RolesPageContent = () => {
   const dispatch = useDispatch();

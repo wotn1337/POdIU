@@ -91,6 +91,7 @@ export const DormitoriesContent = () => {
   if (perms.update || perms.delete) {
     columns.push({
       key: "actions",
+      title: "Действия",
       render: (_, dorm) => (
         <TableActionButtons
           deleting={deletingDormitoryIds.includes(dorm.id)}

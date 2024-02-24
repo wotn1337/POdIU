@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RoomsStateType } from "./types";
-import { roomsApi } from ".";
+import { apiSlice } from "../api";
 
 const initialState: RoomsStateType = {
   deletingRoomIds: [],
@@ -24,33 +24,33 @@ const studentsSlice = createSlice({
   extraReducers: (builder) => {
     // create room
     builder.addMatcher(
-      roomsApi.endpoints.createRoom.matchFulfilled,
+      apiSlice.endpoints.createRoom.matchFulfilled,
       (state) => {
         state.createRoomModal = { open: false };
       }
     );
     // update room
     builder.addMatcher(
-      roomsApi.endpoints.updateRoom.matchFulfilled,
+      apiSlice.endpoints.updateRoom.matchFulfilled,
       (state) => {
         state.createRoomModal = { open: false };
       }
     );
     // delete dormitory
     builder.addMatcher(
-      roomsApi.endpoints.deleteRoom.matchPending,
+      apiSlice.endpoints.deleteRoom.matchPending,
       (state, { meta }) => {
         state.deletingRoomIds.push(meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      roomsApi.endpoints.deleteRoom.matchFulfilled,
+      apiSlice.endpoints.deleteRoom.matchFulfilled,
       (state, { meta }) => {
         state.deletingRoomIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      roomsApi.endpoints.deleteRoom.matchRejected,
+      apiSlice.endpoints.deleteRoom.matchRejected,
       (state, { meta }) => {
         state.deletingRoomIds.filter((id) => id !== meta.arg.originalArgs);
       }

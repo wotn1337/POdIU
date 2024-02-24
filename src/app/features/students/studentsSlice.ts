@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { StudentsStateType } from "./types";
-import { studentsApi } from ".";
+import { apiSlice } from "../api";
 
 const initialState: StudentsStateType = {
   createStudentModal: { open: false },
@@ -21,14 +21,14 @@ const studentsSlice = createSlice({
   extraReducers: (builder) => {
     // create student
     builder.addMatcher(
-      studentsApi.endpoints.createStudent.matchFulfilled,
+      apiSlice.endpoints.createStudent.matchFulfilled,
       (state) => {
         state.createStudentModal = { open: false };
       }
     );
     // update student
     builder.addMatcher(
-      studentsApi.endpoints.updateStudent.matchFulfilled,
+      apiSlice.endpoints.updateStudent.matchFulfilled,
       (state) => {
         state.createStudentModal = { open: false };
         state.settlementStudent = undefined;
@@ -36,19 +36,19 @@ const studentsSlice = createSlice({
     );
     // delete student
     builder.addMatcher(
-      studentsApi.endpoints.deleteStudent.matchPending,
+      apiSlice.endpoints.deleteStudent.matchPending,
       (state, { meta }) => {
         state.deletingStudentIds.push(meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      studentsApi.endpoints.deleteStudent.matchFulfilled,
+      apiSlice.endpoints.deleteStudent.matchFulfilled,
       (state, { meta }) => {
         state.deletingStudentIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
     builder.addMatcher(
-      studentsApi.endpoints.deleteStudent.matchRejected,
+      apiSlice.endpoints.deleteStudent.matchRejected,
       (state, { meta }) => {
         state.deletingStudentIds.filter((id) => id !== meta.arg.originalArgs);
       }

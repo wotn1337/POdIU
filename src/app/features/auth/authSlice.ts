@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { authApi } from ".";
+import { apiSlice } from "../api";
 import { AuthStateType } from "./types";
 import { getInitialUser } from "./utils";
 
@@ -14,14 +14,14 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     // login
     builder.addMatcher(
-      authApi.endpoints.login.matchFulfilled,
+      apiSlice.endpoints.login.matchFulfilled,
       (state, { payload }) => {
         state.user = payload.user;
         localStorage.setItem("user", JSON.stringify(payload.user));
       }
     );
     // logout
-    builder.addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
+    builder.addMatcher(apiSlice.endpoints.logout.matchFulfilled, (state) => {
       state.user = undefined;
       localStorage.clear();
     });

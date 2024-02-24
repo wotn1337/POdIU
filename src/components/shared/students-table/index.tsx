@@ -1,10 +1,11 @@
-import { Empty, InputRef, Table } from "antd";
+import { Button, Empty, InputRef, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
   useGetCountriesQuery,
   useGetGendersQuery,
   useGetStudentsQuery,
+  useUpdateStudentMutation,
 } from "app/features";
 import { Student } from "app/features/students/types";
 import { Filters, PaginationParams, Sorters } from "app/types";
@@ -14,9 +15,16 @@ import { getColumnSearchProps } from "utils";
 type Props = {
   dataSource?: Student[];
   selection?: TableRowSelection<Student>;
+  actions?: boolean;
+  withRoom?: boolean;
 };
 
-export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
+export const StudentsTable: React.FC<Props> = ({
+  dataSource,
+  selection,
+  actions = false,
+  withRoom = false,
+}) => {
   const searchInput = useRef<InputRef>(null);
   const { data: genders } = useGetGendersQuery(undefined, {
     skip: !!dataSource,
@@ -33,21 +41,23 @@ export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
   const { data, isLoading, isFetching } = useGetStudentsQuery(
     {
       ...paginationParams,
-      with_dormitory: true,
+      with_dormitory: withRoom,
       filters,
       sorters,
     },
     { skip: !!dataSource }
   );
   const loading = isFetching || isLoading;
+  const [updateStudent, { isLoading: unsettleming }] =
+    useUpdateStudentMutation();
 
   const columns: ColumnsType<Student> = [
     {
       key: "cyrillic_name",
       dataIndex: "cyrillic_name",
       title: "ФИО (Кириллица)",
-      sortOrder: sorters?.cyrillic_name,
-      sorter: () => 0,
+      sortOrder: !dataSource ? sorters?.cyrillic_name : undefined,
+      sorter: !dataSource ? () => 0 : undefined,
       ...getColumnSearchProps({
         searchInput,
         onFilter: (value) => setFilters({ ...filters, cyrillic_name: value }),
@@ -57,8 +67,8 @@ export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
       key: "latin_name",
       dataIndex: "latin_name",
       title: "ФИО (Латиница)",
-      sortOrder: sorters?.latin_name,
-      sorter: () => 0,
+      sortOrder: !dataSource ? sorters?.latin_name : undefined,
+      sorter: !dataSource ? () => 0 : undefined,
       ...getColumnSearchProps({
         searchInput,
         onFilter: (value) => setFilters({ ...filters, latin_name: value }),
@@ -71,11 +81,6 @@ export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
       render: (value) => value?.title,
       filters: genders?.map((g) => ({ text: g.title, value: g.id })),
       filterMultiple: false,
-    },
-    {
-      key: "dorm_room",
-      dataIndex: ["dorm_room", "number"],
-      title: "Номер комнаты",
     },
     {
       key: "country",
@@ -106,6 +111,40 @@ export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
       title: "Комментарий",
     },
   ];
+
+  const onUnsettlement = (student: Student) => {
+    updateStudent({
+      ...student,
+      academic_group_id: student.academic_group?.id,
+      gender_id: student.gender?.id,
+      country_id: student.country?.id,
+      dorm_room_id: null,
+    });
+  };
+
+  if (withRoom) {
+    columns.splice(3, 0, {
+      key: "dorm_room",
+      dataIndex: ["dorm_room", "number"],
+      title: "Номер комнаты",
+    });
+  }
+
+  if (actions) {
+    columns.push({
+      key: "actions",
+      title: "Действия",
+      render: (_, student) => (
+        <Button
+          type="primary"
+          onClick={() => onUnsettlement(student)}
+          loading={unsettleming}
+        >
+          Выселить
+        </Button>
+      ),
+    });
+  }
 
   return (
     <Table
@@ -144,16 +183,6 @@ export const StudentsTable: React.FC<Props> = ({ dataSource, selection }) => {
         }
       }}
       rowKey="id"
-      // expandable={{
-      //   rowExpandable: ({ students_count }) => students_count !== 0,
-      //   expandedRowRender: ({ students, id }) => (
-      //     <Table
-      //       dataSource={students?.map((s) => ({ ...s, roomId: id }))}
-      //       columns={studentColumns}
-      //       pagination={false}
-      //     />
-      //   ),
-      // }}
     />
   );
 };
