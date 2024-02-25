@@ -2,12 +2,12 @@
   display: flex;
   height: auto;
   background-color: transparent;
-  padding: 40px 64px 0;
   justify-content: space-between;
   align-items: end;
+  padding: 0px 32px;
 
   &__logo {
-    width: 150px;
+    height: 64px;
   }
 
   &__menu {

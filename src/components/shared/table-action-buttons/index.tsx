@@ -1,6 +1,7 @@
 import { Button, Space } from "antd";
 import { DeleteButton } from "../delete-button";
 import React, { PropsWithChildren } from "react";
+import { EditOutlined } from "@ant-design/icons";
 
 type Props = PropsWithChildren<{
   onUpdate: () => void;
@@ -30,12 +31,7 @@ export const TableActionButtons: React.FC<Props> = ({
     <Space>
       {children}
       {hasUpdate && (
-        <Button
-          type={children ? "default" : "primary"}
-          onClick={(e) => onClick(e, onUpdate)}
-        >
-          Изменить
-        </Button>
+        <Button onClick={(e) => onClick(e, onUpdate)} icon={<EditOutlined />} />
       )}
       {hasDelete && (
         <DeleteButton
