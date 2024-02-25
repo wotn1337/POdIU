@@ -1,19 +1,20 @@
 import { Button, Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { TableRowSelection } from "antd/es/table/interface";
 import {
+  Room,
   setCreateRoomModal,
   setSettlementModalByRoom,
   useDeleteRoomMutation,
   useGetRoomsQuery,
 } from "app/features";
-import { Room } from "app/features/rooms/types";
-import { PaginationParams } from "app/types";
-import { useUserPermissions } from "hooks/useUserPermissions";
-import { useState } from "react";
-import { TableActionButtons } from "../table-action-buttons";
 import { useDispatch, useSelector } from "app/store";
+import { Filters, PaginationParams, Sorters } from "app/types";
+import { useUserPermissions } from "hooks";
+import { useState } from "react";
 import { StudentsTable } from "..";
-import { TableRowSelection } from "antd/es/table/interface";
+import { TableActionButtons } from "../table-action-buttons";
+import { getAvailableFilterProps } from "./getAvailableFilterProps";
 
 type Props = {
   dormId: number;
@@ -28,9 +29,9 @@ export const RoomsTable: React.FC<Props> = ({
   dormId,
   actions = true,
   selection,
-  onlyAvailable,
   isFamily,
   gender,
+  ...props
 }) => {
   const { dormitories: perms } = useUserPermissions();
   const dispatch = useDispatch();
@@ -43,8 +44,11 @@ export const RoomsTable: React.FC<Props> = ({
     page: 1,
     per_page: 10,
   });
-  // const [filters, setFilters] = useState<Filters>();
-  // const [sorters, setSorters] = useState<Sorters>();
+  const [filters, setFilters] = useState<Filters>();
+  const [sorters, setSorters] = useState<Sorters>();
+  const [onlyAvailable, setOnlyAvailable] = useState<boolean | undefined>(
+    props.onlyAvailable
+  );
   const [deleteRoom] = useDeleteRoomMutation();
   const { data, isLoading, isFetching } = useGetRoomsQuery({
     ...paginationParams,
@@ -53,6 +57,7 @@ export const RoomsTable: React.FC<Props> = ({
     only_available_dorm_rooms: onlyAvailable,
     is_family: isFamily,
     gender_id: gender,
+    sorters,
   });
   const loading = isLoading || isFetching;
 
@@ -61,8 +66,8 @@ export const RoomsTable: React.FC<Props> = ({
       key: "number",
       dataIndex: "number",
       title: "Номер комнаты",
-      // sortOrder: sorters?.number,
-      // sorter: () => 0,
+      sortOrder: sorters?.number,
+      sorter: () => 0,
     },
     {
       key: "number_of_seats",
@@ -73,6 +78,10 @@ export const RoomsTable: React.FC<Props> = ({
       key: "empty_seats_count",
       dataIndex: "empty_seats_count",
       title: "Свободных мест",
+      ...getAvailableFilterProps<Room>({
+        value: onlyAvailable,
+        onChange: setOnlyAvailable,
+      }),
     },
     {
       key: "students_count",
@@ -264,13 +273,13 @@ export const RoomsTable: React.FC<Props> = ({
         locale: { items_per_page: "строк на страницу" },
         onChange: (page, per_page) => setPaginationParams({ page, per_page }),
       }}
-      // onChange={(_, __, sorter) => {
-      //   if (!Array.isArray(sorter)) {
-      //     setSorters({
-      //       [String(sorter.columnKey)]: sorter.order,
-      //     });
-      //   }
-      // }}
+      onChange={(_, __, sorter) => {
+        if (!Array.isArray(sorter)) {
+          setSorters({
+            [String(sorter.columnKey)]: sorter.order,
+          });
+        }
+      }}
       rowKey="id"
       expandable={{
         rowExpandable: ({ students_count }) => students_count !== 0,

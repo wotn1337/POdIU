@@ -23,7 +23,6 @@ export function getColumnSearchProps<T>({
           }
           onPressEnter={() => {
             onFilter(selectedKeys[0]);
-            // dispatch(setFilters({ ...filters, [dataIndex]: selectedKeys[0] }));
             close();
           }}
           style={{ marginBottom: 8, display: "block" }}
@@ -33,9 +32,6 @@ export function getColumnSearchProps<T>({
             type="primary"
             onClick={() => {
               onFilter(selectedKeys[0]);
-              // dispatch(
-              //   setFilters({ ...filters, [dataIndex]: selectedKeys[0] })
-              // );
               close();
             }}
             icon={<SearchOutlined />}
@@ -47,7 +43,6 @@ export function getColumnSearchProps<T>({
           <Button
             onClick={() => {
               onFilter(undefined);
-              // dispatch(setFilters({ ...filters, [dataIndex]: undefined }));
               setSelectedKeys([]);
               close();
             }}
@@ -63,7 +58,7 @@ export function getColumnSearchProps<T>({
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      <SearchOutlined style={{ color: filtered ? "#fa7a45" : undefined }} />
     ),
   };
 }

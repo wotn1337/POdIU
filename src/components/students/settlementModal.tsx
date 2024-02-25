@@ -31,12 +31,7 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
   const [dormId, setDormId] = useState<number>();
   const [gender, setGender] = useState<number>();
   const [isFamily, setIsFamily] = useState<boolean>(false);
-  const [onlyAvailable, setAvailable] = useState<boolean>(true);
   const [updateStudent, { isLoading: updating }] = useUpdateStudentMutation();
-  // const dispatch = useDispatch();
-  // const { filters: dormFilters, sorters: dormSorters } = useSelector(
-  //   (state) => state.dormitories
-  // );
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(
     student.dorm_room?.id ? [student.dorm_room.id] : []
   );
@@ -100,12 +95,6 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
           >
             Семья
           </Checkbox>
-          <Checkbox
-            checked={onlyAvailable}
-            onChange={(e) => setAvailable(e.target.checked)}
-          >
-            Только свободные
-          </Checkbox>
         </Space>
       </Flex>
       {dormId && (
@@ -117,7 +106,7 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
             selectedRowKeys,
             onChange: setSelectedRowKeys,
           }}
-          onlyAvailable={onlyAvailable}
+          onlyAvailable={true}
           isFamily={isFamily}
           gender={gender}
         />

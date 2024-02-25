@@ -1,6 +1,7 @@
-import { SortOrder } from "antd/es/table/interface";
 import {
+  Filters,
   PaginationParams,
+  Sorters,
   WithId,
   WithIdAndTitle,
   WithMessage,
@@ -30,18 +31,6 @@ export type Student = BaseStudent &
     academic_group?: WithIdAndTitle | null;
     dorm_room?: WithId<BaseRoom> | null;
   }>;
-
-export type Filters = {
-  gender_id?: number;
-  latin_name?: string;
-  cyrillic_name?: string;
-  countries?: number[];
-};
-
-export type Sorters = {
-  latin_name?: SortOrder;
-  cyrillic_name?: SortOrder;
-};
 
 export type PostStudentData = BaseStudent & {
   dorm_room_id?: number | null;

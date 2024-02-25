@@ -1,6 +1,7 @@
-import { SortOrder } from "antd/es/table/interface";
 import {
+  Filters,
   PaginationParams,
+  Sorters,
   WithId,
   WithMessage,
   WithPaginationMeta,
@@ -24,20 +25,6 @@ export type Dormitory = WithId<
     updated_at: string | null;
   }
 >;
-
-export type Filters = {
-  address?: string;
-  number?: number;
-};
-
-export type Sorters = {
-  number?: SortOrder;
-  address?: SortOrder;
-};
-
-export type RoomsSorters = {
-  number?: SortOrder;
-};
 
 export type GetDormitoriesParams = PaginationParams<{
   with_user_info?: boolean;

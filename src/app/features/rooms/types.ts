@@ -1,6 +1,7 @@
-import { SortOrder } from "antd/es/table/interface";
 import {
+  Filters,
   PaginationParams,
+  Sorters,
   WithId,
   WithMessage,
   WithPaginationMeta,
@@ -10,10 +11,6 @@ import { User } from "../users";
 
 export const RoomTag = "Room";
 export const RoomTags = [RoomTag];
-
-export type RoomsSorters = {
-  number?: SortOrder;
-};
 
 export type BaseRoom = {
   number: string;
@@ -37,7 +34,8 @@ export type GetRoomsParams = PaginationParams<{
   is_family?: boolean;
   only_available_dorm_rooms?: boolean;
   with_students?: boolean;
-  sorters?: RoomsSorters;
+  sorters?: Sorters;
+  filters?: Filters;
 }>;
 export type GetRoomsResponse = WithPaginationMeta<{
   dorm_rooms: Room[];
@@ -52,18 +50,6 @@ export type CreateRoomResponse = WithMessage<{
 
 export type UpdateRoomData = WithId<CreateRoomData>;
 export type UpdateRoomResponse = CreateRoomResponse;
-
-export type GetDormRoomsParams = PaginationParams<{
-  dormId: number;
-  gender_id?: number;
-  is_family?: boolean;
-  only_available_dorm_rooms?: boolean;
-  with_students?: boolean;
-  sorters: RoomsSorters;
-}>;
-export type GetDormRoomsResponse = WithPaginationMeta<{
-  dorm_rooms: Room[];
-}>;
 
 export type RoomsStateType = {
   deletingRoomIds: number[];
