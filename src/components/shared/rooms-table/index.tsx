@@ -9,7 +9,7 @@ import {
   useGetRoomsQuery,
 } from "app/features";
 import { useDispatch, useSelector } from "app/store";
-import { Filters, PaginationParams, Sorters } from "app/types";
+import { PaginationParams, Sorters } from "app/types";
 import { useUserPermissions } from "hooks";
 import { useState } from "react";
 import { StudentsTable } from "..";
@@ -36,15 +36,10 @@ export const RoomsTable: React.FC<Props> = ({
   const { dormitories: perms } = useUserPermissions();
   const dispatch = useDispatch();
   const { deletingRoomIds } = useSelector((state) => state.rooms);
-  // const dorm = dormitories.find((d) => d.id === dormId);
-  // const [sorters, setSorters] = useState<{
-  //   [x: string]: SortOrder | undefined;
-  // }>({});
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
     page: 1,
     per_page: 10,
   });
-  const [filters, setFilters] = useState<Filters>();
   const [sorters, setSorters] = useState<Sorters>();
   const [onlyAvailable, setOnlyAvailable] = useState<boolean | undefined>(
     props.onlyAvailable

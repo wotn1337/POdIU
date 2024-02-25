@@ -16,9 +16,9 @@ export const getRoomsApiEndpoints = (
   builder: EndpointBuilder<BaseQueryFn, string, string>
 ) => ({
   getRooms: builder.query<GetRoomsResponse, GetRoomsParams>({
-    query: ({ page, per_page, dormId, sorters, ...params }) =>
+    query: ({ page, per_page, dormId, sorters, filters, ...params }) =>
       `api/v1/dormitories/${dormId}/dorm-rooms?page=${page}&per_page=${per_page}&${getFilterParams(
-        params
+        { ...filters, ...params }
       )}&${getSorterParams(sorters)}`,
     providesTags: (_, __, { dormId }) => [
       ...RoomTags,
