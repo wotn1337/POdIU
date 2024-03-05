@@ -7,7 +7,7 @@ export const RolesPage = () => {
 
   return (
     <Forbidden access={roles.read}>
-      <RolesPageContent />;
+      <RolesPageContent />
     </Forbidden>
   );
 };

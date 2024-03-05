@@ -30,6 +30,10 @@ export const getBaseQuery = () => {
   ) => {
     const { data, error } = await baseQuery(args, api, extraOptions);
     if (error) {
+      if (isObject(error.data) && typeof error.data?.message === "string") {
+        message.error(error.data.message);
+      }
+
       if (error.status === 401) {
         const csrf = await baseQuery("/sanctum/csrf-cookie", api, extraOptions);
         if (csrf.data) {
