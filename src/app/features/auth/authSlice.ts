@@ -10,7 +10,12 @@ const initialState: AuthStateType = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state.user = undefined;
+      localStorage.clear();
+    },
+  },
   extraReducers: (builder) => {
     // login
     builder.addMatcher(
@@ -29,6 +34,6 @@ const authSlice = createSlice({
 });
 
 const { actions, reducer } = authSlice;
-export const {} = actions;
+export const { logout } = actions;
 
 export default reducer;
