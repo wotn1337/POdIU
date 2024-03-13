@@ -55,6 +55,11 @@ export type GetStudentsResponse = WithPaginationMeta<{
   students: Student[];
 }>;
 
+export type SettleStudentParams = {
+  studentId: number;
+  roomId: number;
+};
+
 export type StudentsStateType = {
   deletingStudentIds: number[];
   createStudentModal: {

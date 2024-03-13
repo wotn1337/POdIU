@@ -99,7 +99,7 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
       </Flex>
       {dormId && (
         <RoomsTable
-          dormId={dormId}
+          dorm={dormitoriesData?.dormitories.find((d) => d.id === dormId)}
           actions={false}
           selection={{
             type: "radio",

@@ -4,6 +4,7 @@ import {
   Dormitory,
   setCreateDormitoryModal,
   setCreateRoomModal,
+  setSettlementHistoryModal,
   setSettlementModalByRoom,
   useDeleteDormitoryMutation,
   useGetDormitoriesQuery,
@@ -21,6 +22,7 @@ import { getColumnSearchProps } from "utils";
 import { CreateDormitoryModal } from "./createDormitoryModal";
 import { CreateRoomModal } from "./createRoomModal";
 import { SettlementModal } from "./settlementModal";
+import { SettlementHistoryModal } from "./settlement-history-modal";
 
 export const DormitoriesContent = () => {
   const { dormitories: perms } = useUserPermissions();
@@ -28,9 +30,8 @@ export const DormitoriesContent = () => {
   const { createDormitoryModal, deletingDormitoryIds } = useSelector(
     (state) => state.dormitories
   );
-  const { createRoomModal, settlementModal } = useSelector(
-    (state) => state.rooms
-  );
+  const { createRoomModal, settlementModal, settlementHistoryModal } =
+    useSelector((state) => state.rooms);
   const actions = [];
   const searchInput = useRef<InputRef>(null);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
@@ -139,6 +140,12 @@ export const DormitoriesContent = () => {
           onCancel={() => dispatch(setSettlementModalByRoom(undefined))}
         />
       )}
+      {settlementHistoryModal && (
+        <SettlementHistoryModal
+          {...settlementHistoryModal}
+          onCancel={() => dispatch(setSettlementHistoryModal(undefined))}
+        />
+      )}
       {createDormitoryModal.open && <CreateDormitoryModal />}
       {createRoomModal.open && <CreateRoomModal />}
       <TabledContent<Dormitory>
@@ -163,7 +170,7 @@ export const DormitoriesContent = () => {
         }}
         expandable={{
           rowExpandable: () => true,
-          expandedRowRender: ({ id }) => <RoomsTable dormId={id} />,
+          expandedRowRender: (dorm) => <RoomsTable dorm={dorm} />,
           expandRowByClick: true,
         }}
       />

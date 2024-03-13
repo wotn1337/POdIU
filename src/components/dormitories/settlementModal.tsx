@@ -2,7 +2,7 @@ import { Modal, Typography } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
   setSettlementModalByRoom,
-  useUpdateStudentMutation,
+  useSettleStudentMutation,
 } from "app/features";
 import { Room } from "app/features/rooms/types";
 import { Student } from "app/features/students/types";
@@ -25,7 +25,7 @@ export const SettlementModal: React.FC<Props> = ({ room, onCancel }) => {
   const [selectedStudents, setSelectedStudents] = useState<
     Student[] | undefined
   >(room.students);
-  const [updateStudent] = useUpdateStudentMutation(undefined);
+  const [settleStudent] = useSettleStudentMutation();
   const [loading, setLoading] = useState(false);
 
   const onSettlement = () => {
@@ -35,13 +35,7 @@ export const SettlementModal: React.FC<Props> = ({ room, onCancel }) => {
       [];
     Promise.all(
       studentsToUpdate.map((s) =>
-        updateStudent({
-          ...s,
-          academic_group_id: s.academic_group?.id,
-          gender_id: s.gender?.id,
-          country_id: s.country?.id,
-          dorm_room_id: room.id,
-        })
+        settleStudent({ studentId: s.id, roomId: room.id })
       )
     )
       .then(() => dispatch(setSettlementModalByRoom(undefined)))

@@ -20,6 +20,12 @@ const studentsSlice = createSlice({
     ) => {
       state.settlementModal = payload;
     },
+    setSettlementHistoryModal: (
+      state,
+      { payload }: PayloadAction<RoomsStateType["settlementHistoryModal"]>
+    ) => {
+      state.settlementHistoryModal = payload;
+    },
   },
   extraReducers: (builder) => {
     // create room
@@ -59,6 +65,10 @@ const studentsSlice = createSlice({
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setCreateRoomModal, setSettlementModalByRoom } = actions;
+export const {
+  setCreateRoomModal,
+  setSettlementModalByRoom,
+  setSettlementHistoryModal,
+} = actions;
 
 export default reducer;

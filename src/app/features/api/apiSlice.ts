@@ -11,6 +11,8 @@ import { getGendersApiEndpoints } from "../genders";
 import { getCountriesApiEndpoints } from "../countries";
 import { getDormitoriesApiEndpoints } from "../dormitories";
 import { getRoomsApiEndpoints } from "../rooms";
+import { getSettlementHistoryApiEndpoints } from "../settlementHistory";
+import { getSettlementStatusesApiEndpoints } from "../settlementStatuses";
 
 export const apiSlice = createApi({
   reducerPath: "api",
@@ -27,6 +29,8 @@ export const apiSlice = createApi({
     ...getCountriesApiEndpoints(builder),
     ...getDormitoriesApiEndpoints(builder),
     ...getRoomsApiEndpoints(builder),
+    ...getSettlementStatusesApiEndpoints(builder),
+    ...getSettlementHistoryApiEndpoints(builder),
   }),
 });
 
@@ -52,6 +56,8 @@ export const {
   useCreateStudentMutation,
   useUpdateStudentMutation,
   useDeleteStudentMutation,
+  useSettleStudentMutation,
+  useEvictStudentMutation,
   // academic groups
   useGetAcademicGroupsQuery,
   // genders
@@ -68,4 +74,8 @@ export const {
   useCreateRoomMutation,
   useUpdateRoomMutation,
   useDeleteRoomMutation,
+  // settlement statuses
+  useGetSettlementStatusesQuery,
+  // settlement history
+  useGetSettlementHistoryQuery,
 } = apiSlice;

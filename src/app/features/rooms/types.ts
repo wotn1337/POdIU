@@ -8,6 +8,7 @@ import {
 } from "app/types";
 import { Student } from "../students/types";
 import { User } from "../users";
+import { Dormitory } from "..";
 
 export const RoomTag = "Room";
 export const RoomTags = [RoomTag];
@@ -29,7 +30,7 @@ export type Room = WithId<
 >;
 
 export type GetRoomsParams = PaginationParams<{
-  dormId: number;
+  dormId?: number;
   gender_id?: number;
   is_family?: boolean;
   only_available_dorm_rooms?: boolean;
@@ -59,4 +60,5 @@ export type RoomsStateType = {
     defaultRoom?: Room;
   };
   settlementModal?: { room: Room };
+  settlementHistoryModal?: { room: Room; dorm: Dormitory };
 };

@@ -2,8 +2,10 @@ import { Button, Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
+  Dormitory,
   Room,
   setCreateRoomModal,
+  setSettlementHistoryModal,
   setSettlementModalByRoom,
   useDeleteRoomMutation,
   useGetRoomsQuery,
@@ -17,7 +19,7 @@ import { TableActionButtons } from "../table-action-buttons";
 import { getAvailableFilterProps } from "./getAvailableFilterProps";
 
 type Props = {
-  dormId: number;
+  dorm?: Dormitory;
   actions?: boolean;
   selection?: TableRowSelection<Room>;
   onlyAvailable?: boolean;
@@ -26,7 +28,7 @@ type Props = {
 };
 
 export const RoomsTable: React.FC<Props> = ({
-  dormId,
+  dorm,
   actions = true,
   selection,
   isFamily,
@@ -45,15 +47,18 @@ export const RoomsTable: React.FC<Props> = ({
     props.onlyAvailable
   );
   const [deleteRoom] = useDeleteRoomMutation();
-  const { data, isLoading, isFetching } = useGetRoomsQuery({
-    ...paginationParams,
-    with_students: true,
-    dormId,
-    only_available_dorm_rooms: onlyAvailable,
-    is_family: isFamily,
-    gender_id: gender,
-    sorters,
-  });
+  const { data, isLoading, isFetching } = useGetRoomsQuery(
+    {
+      ...paginationParams,
+      with_students: true,
+      dormId: dorm?.id,
+      only_available_dorm_rooms: onlyAvailable,
+      is_family: isFamily,
+      gender_id: gender,
+      sorters,
+    },
+    { skip: !dorm }
+  );
   const loading = isLoading || isFetching;
 
   const columns: ColumnsType<Room> = [
@@ -100,15 +105,17 @@ export const RoomsTable: React.FC<Props> = ({
           hasDelete={perms.delete}
           hasUpdate={perms.update}
           onDelete={() => deleteRoom(room.id)}
-          onUpdate={() =>
-            dispatch(
-              setCreateRoomModal({
-                open: true,
-                defaultDorm: dormId,
-                defaultRoom: room,
-              })
-            )
-          }
+          onUpdate={() => {
+            if (dorm) {
+              dispatch(
+                setCreateRoomModal({
+                  open: true,
+                  defaultDorm: dorm.id,
+                  defaultRoom: room,
+                })
+              );
+            }
+          }}
         >
           <Button
             type="primary"
@@ -120,115 +127,20 @@ export const RoomsTable: React.FC<Props> = ({
           >
             Поселить
           </Button>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (dorm) {
+                dispatch(setSettlementHistoryModal({ room, dorm }));
+              }
+            }}
+          >
+            История поселения
+          </Button>
         </TableActionButtons>
       ),
     });
   }
-  //   {
-  //     key: "cyrillic_name",
-  //     dataIndex: "cyrillic_name",
-  //     title: "ФИО (Кириллица)",
-  //   },
-  //   {
-  //     key: "latin_name",
-  //     dataIndex: "latin_name",
-  //     title: "ФИО (Латиница)",
-  //   },
-  //   {
-  //     key: "gender",
-  //     dataIndex: "gender",
-  //     title: "Пол",
-  //     render: (value) => value?.title,
-  //   },
-  //   {
-  //     key: "country",
-  //     dataIndex: "country",
-  //     title: "Страна",
-  //     render: (value) => value?.title,
-  //   },
-  //   {
-  //     key: "eisu_id",
-  //     dataIndex: "eisu_id",
-  //     title: "ЕИСУ",
-  //   },
-  //   {
-  //     key: "academic_group",
-  //     dataIndex: "academic_group",
-  //     title: "Группа",
-  //     render: (value) => value?.title,
-  //   },
-  //   {
-  //     key: "telephone",
-  //     dataIndex: "telephone",
-  //     title: "Номер телефона",
-  //   },
-  //   {
-  //     key: "comment",
-  //     dataIndex: "comment",
-  //     title: "Комментарий",
-  //   },
-  //   {
-  //     key: "actions",
-  //     title: "Действия",
-  //     render: (_, student) => (
-  //       <Button
-  //         type="primary"
-  //         loading={loadingStudentIds.includes(student.id)}
-  //         onClick={() => {
-  //           dispatch(addLoadingStudentId(student.id));
-  //           dispatch(
-  //             updateStudent({
-  //               ...student,
-  //               gender_id: student.gender?.id,
-  //               academic_group_id: student.academic_group?.id,
-  //               country_id: student.country?.id,
-  //               dorm_room_id: null,
-  //             })
-  //           ).then((data) => {
-  //             dispatch(removeLoadingStudentId(student.id));
-  //             if (data.meta.requestStatus === "fulfilled") {
-  //               const payload = data.payload as CreateStudentResponse;
-  //               dispatch(setSettlementModal({ open: false }));
-  //               dispatch(
-  //                 updateStudentRoom({
-  //                   dormId: dorm?.id,
-  //                   roomId: student.roomId,
-  //                   student: payload.student,
-  //                 })
-  //               );
-  //             }
-  //           });
-  //         }}
-  //       >
-  //         Выселить
-  //       </Button>
-  //     ),
-  //   },
-  // ];
-
-  // useEffect(() => {
-  //   if (dormId) {
-  //     dispatch(
-  //       getDormRooms({
-  //         dormId,
-  //         page: roomsInfo?.current_page ?? 1,
-  //         per_page: roomsInfo?.per_page ?? 10,
-  //         gender_id: gender,
-  //         is_family: isFamily,
-  //         only_available_dorm_rooms: onlyAvailable,
-  //         with_students: true,
-  //         sorters,
-  //       })
-  //     );
-  //   }
-  // }, [
-  //   roomsInfo?.current_page,
-  //   roomsInfo?.per_page,
-  //   sorters,
-  //   gender,
-  //   isFamily,
-  //   onlyAvailable,
-  // ]);
 
   return (
     <Table
@@ -279,8 +191,8 @@ export const RoomsTable: React.FC<Props> = ({
       expandable={{
         rowExpandable: ({ students_count }) => students_count !== 0,
         expandRowByClick: true,
-        expandedRowRender: ({ students }) => (
-          <StudentsTable dataSource={students} actions />
+        expandedRowRender: ({ students, id }) => (
+          <StudentsTable dataSource={students} actions roomId={id} />
         ),
       }}
     />

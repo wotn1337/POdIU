@@ -2,10 +2,10 @@ import { Button, Empty, InputRef, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
+  useEvictStudentMutation,
   useGetCountriesQuery,
   useGetGendersQuery,
   useGetStudentsQuery,
-  useUpdateStudentMutation,
 } from "app/features";
 import { Student } from "app/features/students/types";
 import { Filters, PaginationParams, Sorters } from "app/types";
@@ -17,6 +17,7 @@ type Props = {
   selection?: TableRowSelection<Student>;
   actions?: boolean;
   withRoom?: boolean;
+  roomId?: number;
 };
 
 export const StudentsTable: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const StudentsTable: React.FC<Props> = ({
   selection,
   actions = false,
   withRoom = false,
+  roomId,
 }) => {
   const searchInput = useRef<InputRef>(null);
   const { data: genders } = useGetGendersQuery(undefined, {
@@ -48,8 +50,7 @@ export const StudentsTable: React.FC<Props> = ({
     { skip: !!dataSource }
   );
   const loading = isFetching || isLoading;
-  const [updateStudent, { isLoading: unsettleming }] =
-    useUpdateStudentMutation();
+  const [evictStudent, { isLoading: evicting }] = useEvictStudentMutation();
 
   const columns: ColumnsType<Student> = [
     {
@@ -112,14 +113,13 @@ export const StudentsTable: React.FC<Props> = ({
     },
   ];
 
-  const onUnsettlement = (student: Student) => {
-    updateStudent({
-      ...student,
-      academic_group_id: student.academic_group?.id,
-      gender_id: student.gender?.id,
-      country_id: student.country?.id,
-      dorm_room_id: null,
-    });
+  const onEvict = (student: Student) => {
+    if (roomId) {
+      evictStudent({
+        studentId: student.id,
+        roomId,
+      });
+    }
   };
 
   if (withRoom) {
@@ -137,8 +137,8 @@ export const StudentsTable: React.FC<Props> = ({
       render: (_, student) => (
         <Button
           type="primary"
-          onClick={() => onUnsettlement(student)}
-          loading={unsettleming}
+          onClick={() => onEvict(student)}
+          loading={evicting}
         >
           Выселить
         </Button>

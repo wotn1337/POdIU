@@ -43,3 +43,8 @@ export enum METHOD {
 
 export type Filters = Record<string, boolean | Key | undefined | FilterValue>;
 export type Sorters = Record<string, SortOrder | undefined>;
+
+export type WithTimeInfo<T = {}> = T & {
+  created_at: string | null;
+  deleted_at: string | null;
+};

@@ -5,6 +5,7 @@ import {
   GetStudentsParams,
   GetStudentsResponse,
   PostStudentData,
+  SettleStudentParams,
   StudentTags,
   UpdateStudentData,
 } from "./types";
@@ -42,9 +43,28 @@ export const getStudentsApiEndpoints = (
       method: METHOD.PATCH,
       body,
     }),
-    invalidatesTags: (_, __, { dorm_room_id }) => [
+  }),
+  settleStudent: builder.mutation<void, SettleStudentParams>({
+    query: ({ studentId, roomId }) => ({
+      url: `api/v1/students/${studentId}/settle`,
+      method: METHOD.PATCH,
+      body: {
+        dorm_room_id: roomId,
+      },
+    }),
+    invalidatesTags: (_, __, { roomId }) => [
       ...StudentTags,
-      { type: RoomTag, dorm_room_id },
+      { type: RoomTag, dorm_room_id: roomId },
+    ],
+  }),
+  evictStudent: builder.mutation<void, SettleStudentParams>({
+    query: ({ studentId }) => ({
+      url: `api/v1/students/${studentId}/evict`,
+      method: METHOD.PATCH,
+    }),
+    invalidatesTags: (_, __, { roomId }) => [
+      ...StudentTags,
+      { type: RoomTag, dorm_room_id: roomId },
     ],
   }),
 });
