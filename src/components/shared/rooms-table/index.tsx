@@ -35,7 +35,11 @@ export const RoomsTable: React.FC<Props> = ({
   gender,
   ...props
 }) => {
-  const { dormitories: perms } = useUserPermissions();
+  const {
+    dormitories: perms,
+    settlementHistory: settlementHistoryPerms,
+    students: studentsPerms,
+  } = useUserPermissions();
   const dispatch = useDispatch();
   const { deletingRoomIds } = useSelector((state) => state.rooms);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
@@ -95,7 +99,13 @@ export const RoomsTable: React.FC<Props> = ({
     },
   ];
 
-  if (actions && (perms.update || perms.delete)) {
+  if (
+    actions &&
+    (perms.update ||
+      perms.delete ||
+      settlementHistoryPerms.read ||
+      studentsPerms.update)
+  ) {
     columns.push({
       key: "actions",
       title: "Действия",
@@ -117,26 +127,30 @@ export const RoomsTable: React.FC<Props> = ({
             }
           }}
         >
-          <Button
-            type="primary"
-            disabled={room.empty_seats_count === 0}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch(setSettlementModalByRoom({ room }));
-            }}
-          >
-            Поселить
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (dorm) {
-                dispatch(setSettlementHistoryModal({ room, dorm }));
-              }
-            }}
-          >
-            История поселения
-          </Button>
+          {studentsPerms.update && (
+            <Button
+              type="primary"
+              disabled={room.empty_seats_count === 0}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch(setSettlementModalByRoom({ room }));
+              }}
+            >
+              Поселить
+            </Button>
+          )}
+          {settlementHistoryPerms.read && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (dorm) {
+                  dispatch(setSettlementHistoryModal({ room, dorm }));
+                }
+              }}
+            >
+              История поселения
+            </Button>
+          )}
         </TableActionButtons>
       ),
     });

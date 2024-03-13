@@ -56,10 +56,18 @@ export const useUserPermissions = () => {
     delete: hasPermission("Роль", "Удаление", user),
   };
 
+  const settlementHistory: CrudPermissions = {
+    create: hasPermission("История поселения", "Создание", user),
+    read: hasPermission("История поселения", "Просмотр", user),
+    update: hasPermission("История поселения", "Обновление", user),
+    delete: hasPermission("История поселения", "Удаление", user),
+  };
+
   return {
     users,
     students,
     dormitories,
     roles,
+    settlementHistory,
   };
 };
