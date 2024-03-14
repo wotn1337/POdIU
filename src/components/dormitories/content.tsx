@@ -21,8 +21,8 @@ import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateDormitoryModal } from "./createDormitoryModal";
 import { CreateRoomModal } from "./createRoomModal";
+import { SettlementHistoryModal } from "./SettlementHistoryModal";
 import { SettlementModal } from "./settlementModal";
-import { SettlementHistoryModal } from "./settlement-history-modal";
 
 export const DormitoriesContent = () => {
   const { dormitories: perms } = useUserPermissions();

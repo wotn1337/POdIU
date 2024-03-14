@@ -1,10 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { StudentsStateType } from "./types";
 import { apiSlice } from "../api";
 
 const initialState: StudentsStateType = {
   createStudentModal: { open: false },
   deletingStudentIds: [],
+  evictingStudentIds: [],
 };
 
 const studentsSlice = createSlice({
@@ -16,6 +17,12 @@ const studentsSlice = createSlice({
     },
     setSettlementStudent: (state, { payload }) => {
       state.settlementStudent = payload;
+    },
+    setSettlementHistoryStudent: (
+      state,
+      { payload }: PayloadAction<StudentsStateType["settlementHistoryStudent"]>
+    ) => {
+      state.settlementHistoryStudent = payload;
     },
   },
   extraReducers: (builder) => {
@@ -60,10 +67,37 @@ const studentsSlice = createSlice({
         state.settlementStudent = undefined;
       }
     );
+    // evict student
+    builder.addMatcher(
+      apiSlice.endpoints.evictStudent.matchPending,
+      (state, { meta }) => {
+        state.evictingStudentIds.push(meta.arg.originalArgs.studentId);
+      }
+    );
+    builder.addMatcher(
+      apiSlice.endpoints.evictStudent.matchFulfilled,
+      (state, { meta }) => {
+        state.evictingStudentIds.filter(
+          (id) => id !== meta.arg.originalArgs.studentId
+        );
+      }
+    );
+    builder.addMatcher(
+      apiSlice.endpoints.evictStudent.matchRejected,
+      (state, { meta }) => {
+        state.evictingStudentIds.filter(
+          (id) => id !== meta.arg.originalArgs.studentId
+        );
+      }
+    );
   },
 });
 
 const { actions, reducer } = studentsSlice;
-export const { setCreateStudentModal, setSettlementStudent } = actions;
+export const {
+  setCreateStudentModal,
+  setSettlementStudent,
+  setSettlementHistoryStudent,
+} = actions;
 
 export default reducer;

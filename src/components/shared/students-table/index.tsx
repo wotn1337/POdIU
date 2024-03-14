@@ -13,6 +13,8 @@ import { Filters, PaginationParams, Sorters } from "app/types";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { TableActionButtons } from "..";
+import { useUserPermissions } from "hooks/useUserPermissions";
+import { useSelector } from "app/store";
 
 type Props = {
   dataSource?: Student[];
@@ -29,6 +31,7 @@ export const StudentsTable: React.FC<Props> = ({
   withRoom = false,
   roomId,
 }) => {
+  const { students: perms } = useUserPermissions();
   const searchInput = useRef<InputRef>(null);
   const { data: genders } = useGetGendersQuery(undefined, {
     skip: !!dataSource,
@@ -52,7 +55,8 @@ export const StudentsTable: React.FC<Props> = ({
     { skip: !!dataSource }
   );
   const loading = isFetching || isLoading;
-  const [evictStudent, { isLoading: evicting }] = useEvictStudentMutation();
+  const [evictStudent] = useEvictStudentMutation();
+  const { evictingStudentIds } = useSelector((state) => state.students);
 
   const columns: ColumnsType<Student> = [
     {
@@ -132,7 +136,7 @@ export const StudentsTable: React.FC<Props> = ({
     });
   }
 
-  if (actions) {
+  if (actions && perms.update) {
     columns.push({
       key: "actions",
       title: "Действия",
@@ -140,16 +144,20 @@ export const StudentsTable: React.FC<Props> = ({
         <TableActionButtons
           hasDelete={false}
           hasUpdate={false}
-          items={[
-            {
-              key: "evict",
-              label: "Выселить",
-              icon: <LogoutOutlined />,
-              disabled: evicting,
-              onClick: () => onEvict(student),
-            },
-          ]}
-          loading={evicting}
+          items={
+            perms.update
+              ? [
+                  {
+                    key: "evict",
+                    label: "Выселить",
+                    icon: <LogoutOutlined />,
+                    disabled: evictingStudentIds.includes(student.id),
+                    onClick: () => onEvict(student),
+                  },
+                ]
+              : []
+          }
+          loading={evictingStudentIds.includes(student.id)}
         />
       ),
     });

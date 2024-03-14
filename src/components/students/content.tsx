@@ -2,8 +2,10 @@ import { Button, InputRef } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   setCreateStudentModal,
+  setSettlementHistoryStudent,
   setSettlementStudent,
   useDeleteStudentMutation,
+  useEvictStudentMutation,
   useGetCountriesQuery,
   useGetGendersQuery,
   useGetStudentsQuery,
@@ -12,19 +14,25 @@ import { Student } from "app/features/students/types";
 import { useDispatch, useSelector } from "app/store";
 import { Filters, PaginationParams, Sorters } from "app/types";
 import { TableActionButtons, TabledContent } from "components/shared";
-import { useUserPermissions } from "hooks/useUserPermissions";
+import { useUserPermissions } from "hooks";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
-import { getOnChange } from "./utils";
-import { LoginOutlined } from "@ant-design/icons";
+import { getOnChange, getActionButtons } from "./utils";
+import { SettlementHistoryModal } from "./SettlementHistoryModal";
 
 export const StudentsPageContent = () => {
   const dispatch = useDispatch();
-  const { deletingStudentIds, createStudentModal, settlementStudent } =
-    useSelector((state) => state.students);
-  const { students: perms } = useUserPermissions();
+  const {
+    deletingStudentIds,
+    createStudentModal,
+    settlementStudent,
+    settlementHistoryStudent,
+    evictingStudentIds,
+  } = useSelector((state) => state.students);
+  const { students: perms, settlementHistory: settlementHistoryPerms } =
+    useUserPermissions();
   const searchInput = useRef<InputRef>(null);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
     page: 1,
@@ -42,6 +50,13 @@ export const StudentsPageContent = () => {
   const { data: genders } = useGetGendersQuery();
   const { data: countries } = useGetCountriesQuery();
   const [deleteStudent] = useDeleteStudentMutation();
+  const [evictStudent] = useEvictStudentMutation();
+
+  const onEvict = (student: Student) => {
+    if (student.dorm_room) {
+      evictStudent({ studentId: student.id, roomId: student.dorm_room.id });
+    }
+  };
 
   const columns: ColumnsType<Student> = [
     {
@@ -109,7 +124,7 @@ export const StudentsPageContent = () => {
     },
   ];
 
-  if (perms.update || perms.delete) {
+  if (perms.update || perms.delete || settlementHistoryPerms.read) {
     columns.push({
       key: "actions",
       title: "Действия",
@@ -119,23 +134,22 @@ export const StudentsPageContent = () => {
           hasDelete={perms.delete}
           hasUpdate={perms.update}
           onDelete={() => deleteStudent(student.id)}
+          loading={evictingStudentIds.includes(student.id)}
           onUpdate={() =>
             dispatch(
               setCreateStudentModal({ open: true, defaultStudent: student })
             )
           }
-          items={
-            perms.update && !student.dorm_room
-              ? [
-                  {
-                    key: "settle",
-                    label: "Поселить",
-                    icon: <LoginOutlined />,
-                    onClick: () => dispatch(setSettlementStudent(student)),
-                  },
-                ]
-              : []
-          }
+          items={getActionButtons({
+            hasSettle: perms.update,
+            disableSettle: !!student.dorm_room,
+            hasEvict: perms.update,
+            onEvict: () => onEvict(student),
+            onSettle: () => dispatch(setSettlementStudent(student)),
+            hasSettlementHistory: settlementHistoryPerms.read,
+            onOpenSettlementHistory: () =>
+              dispatch(setSettlementHistoryStudent(student)),
+          })}
         />
       ),
     });
@@ -143,6 +157,12 @@ export const StudentsPageContent = () => {
 
   return (
     <>
+      {settlementHistoryStudent && (
+        <SettlementHistoryModal
+          student={settlementHistoryStudent}
+          onCancel={() => dispatch(setSettlementHistoryStudent(undefined))}
+        />
+      )}
       {settlementStudent && (
         <SettlementModal
           student={settlementStudent}

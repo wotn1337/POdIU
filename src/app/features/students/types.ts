@@ -67,4 +67,6 @@ export type StudentsStateType = {
     defaultStudent?: Student;
   };
   settlementStudent?: Student;
+  settlementHistoryStudent?: Student;
+  evictingStudentIds: number[];
 };

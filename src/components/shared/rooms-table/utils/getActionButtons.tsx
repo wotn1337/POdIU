@@ -37,7 +37,7 @@ export const getActionButtons = ({
 
   if (hasSettlementHistory) {
     items.push({
-      key: "settlement history",
+      key: "settlement-history",
       label: "История поселения",
       icon: <HistoryOutlined />,
       onClick: () => {
