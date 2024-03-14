@@ -2,7 +2,7 @@ import { Checkbox, Flex, Modal, Select, Space, Typography } from "antd";
 import {
   useGetDormitoriesQuery,
   useGetGendersQuery,
-  useUpdateStudentMutation,
+  useSettleStudentMutation,
 } from "app/features";
 import { Student } from "app/features/students/types";
 import { RoomsTable } from "components/shared";
@@ -31,18 +31,15 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
   const [dormId, setDormId] = useState<number>();
   const [gender, setGender] = useState<number>();
   const [isFamily, setIsFamily] = useState<boolean>(false);
-  const [updateStudent, { isLoading: updating }] = useUpdateStudentMutation();
+  const [settleStudent, { isLoading: settling }] = useSettleStudentMutation();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(
     student.dorm_room?.id ? [student.dorm_room.id] : []
   );
 
   const onSettlement = () => {
-    updateStudent({
-      ...student,
-      gender_id: student.gender?.id,
-      academic_group_id: student.academic_group?.id,
-      country_id: student.country?.id,
-      dorm_room_id: Number(selectedRowKeys[0]),
+    settleStudent({
+      roomId: Number(selectedRowKeys[0]),
+      studentId: student.id,
     });
   };
 
@@ -55,7 +52,7 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
       className={s.settlementModal}
       getContainer={false}
       cancelText="Закрыть"
-      okButtonProps={{ loading: updating }}
+      okButtonProps={{ loading: settling }}
       okText="Поселить"
       onOk={onSettlement}
     >
@@ -65,12 +62,13 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
       <Typography.Text className={s.latinName}>
         {student.latin_name}
       </Typography.Text>
-      <Flex className={s.filters} gap="small" align="center">
+      <Flex className={s.filters} gap="small" align="center" wrap="wrap">
         <Select
           loading={dormitoriesLoading || dormitoriesFetching}
           value={dormId}
           onChange={setDormId}
           placeholder="Выберите общежитие"
+          style={{ maxWidth: "100%" }}
         >
           {dormitoriesData?.dormitories.map((dorm) => (
             <Select.Option key={dorm.id}>
@@ -99,7 +97,7 @@ export const SettlementModal: React.FC<Props> = ({ student, onCancel }) => {
       </Flex>
       {dormId && (
         <RoomsTable
-          dorm={dormitoriesData?.dormitories.find((d) => d.id === dormId)}
+          dorm={dormitoriesData?.dormitories.find((d) => +d.id === +dormId)}
           actions={false}
           selection={{
             type: "radio",

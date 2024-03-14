@@ -53,6 +53,13 @@ const studentsSlice = createSlice({
         state.deletingStudentIds.filter((id) => id !== meta.arg.originalArgs);
       }
     );
+    // settle student
+    builder.addMatcher(
+      apiSlice.endpoints.settleStudent.matchFulfilled,
+      (state) => {
+        state.settlementStudent = undefined;
+      }
+    );
   },
 });
 
