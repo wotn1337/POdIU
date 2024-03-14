@@ -77,7 +77,7 @@ const studentsSlice = createSlice({
     builder.addMatcher(
       apiSlice.endpoints.evictStudent.matchFulfilled,
       (state, { meta }) => {
-        state.evictingStudentIds.filter(
+        state.evictingStudentIds = state.evictingStudentIds.filter(
           (id) => id !== meta.arg.originalArgs.studentId
         );
       }
@@ -85,7 +85,7 @@ const studentsSlice = createSlice({
     builder.addMatcher(
       apiSlice.endpoints.evictStudent.matchRejected,
       (state, { meta }) => {
-        state.evictingStudentIds.filter(
+        state.evictingStudentIds = state.evictingStudentIds.filter(
           (id) => id !== meta.arg.originalArgs.studentId
         );
       }

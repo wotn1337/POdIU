@@ -13,6 +13,7 @@ type Props = {
   hasSettlementHistory: boolean;
   onOpenSettlementHistory: () => void;
   disableSettle: boolean;
+  disableEvict: boolean;
 };
 
 export const getActionButtons = ({
@@ -23,6 +24,7 @@ export const getActionButtons = ({
   hasSettlementHistory,
   onOpenSettlementHistory,
   disableSettle,
+  disableEvict,
 }: Props) => {
   const items: MenuProps["items"] = [];
 
@@ -42,6 +44,7 @@ export const getActionButtons = ({
       label: "Выселить",
       icon: <LogoutOutlined />,
       onClick: onEvict,
+      disabled: disableEvict,
     });
   }
 

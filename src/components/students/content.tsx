@@ -143,6 +143,7 @@ export const StudentsPageContent = () => {
           items={getActionButtons({
             hasSettle: perms.update,
             disableSettle: !!student.dorm_room,
+            disableEvict: !student.dorm_room,
             hasEvict: perms.update,
             onEvict: () => onEvict(student),
             onSettle: () => dispatch(setSettlementStudent(student)),
