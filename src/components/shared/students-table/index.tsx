@@ -1,4 +1,5 @@
-import { Button, Empty, InputRef, Table } from "antd";
+import { LogoutOutlined } from "@ant-design/icons";
+import { Empty, InputRef, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
@@ -12,7 +13,6 @@ import { Filters, PaginationParams, Sorters } from "app/types";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { TableActionButtons } from "..";
-import { LogoutOutlined } from "@ant-design/icons";
 
 type Props = {
   dataSource?: Student[];
