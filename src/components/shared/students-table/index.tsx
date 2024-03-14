@@ -11,6 +11,8 @@ import { Student } from "app/features/students/types";
 import { Filters, PaginationParams, Sorters } from "app/types";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
+import { TableActionButtons } from "..";
+import { LogoutOutlined } from "@ant-design/icons";
 
 type Props = {
   dataSource?: Student[];
@@ -135,13 +137,20 @@ export const StudentsTable: React.FC<Props> = ({
       key: "actions",
       title: "Действия",
       render: (_, student) => (
-        <Button
-          type="primary"
-          onClick={() => onEvict(student)}
+        <TableActionButtons
+          hasDelete={false}
+          hasUpdate={false}
+          items={[
+            {
+              key: "evict",
+              label: "Выселить",
+              icon: <LogoutOutlined />,
+              disabled: evicting,
+              onClick: () => onEvict(student),
+            },
+          ]}
           loading={evicting}
-        >
-          Выселить
-        </Button>
+        />
       ),
     });
   }

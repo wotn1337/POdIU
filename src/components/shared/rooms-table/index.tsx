@@ -1,12 +1,10 @@
-import { Button, Empty, Table } from "antd";
+import { Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
   Dormitory,
   Room,
   setCreateRoomModal,
-  setSettlementHistoryModal,
-  setSettlementModalByRoom,
   useDeleteRoomMutation,
   useGetRoomsQuery,
 } from "app/features";
@@ -16,7 +14,7 @@ import { useUserPermissions } from "hooks";
 import { useState } from "react";
 import { StudentsTable } from "..";
 import { TableActionButtons } from "../table-action-buttons";
-import { getAvailableFilterProps } from "./getAvailableFilterProps";
+import { getActionButtons, getAvailableFilterProps } from "./utils";
 
 type Props = {
   dorm?: Dormitory;
@@ -126,32 +124,14 @@ export const RoomsTable: React.FC<Props> = ({
               );
             }
           }}
-        >
-          {studentsPerms.update && (
-            <Button
-              type="primary"
-              disabled={room.empty_seats_count === 0}
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(setSettlementModalByRoom({ room }));
-              }}
-            >
-              Поселить
-            </Button>
-          )}
-          {settlementHistoryPerms.read && (
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (dorm) {
-                  dispatch(setSettlementHistoryModal({ room, dorm }));
-                }
-              }}
-            >
-              История поселения
-            </Button>
-          )}
-        </TableActionButtons>
+          items={getActionButtons({
+            dispatch,
+            dorm,
+            room,
+            hasSettle: studentsPerms.update,
+            hasSettlementHistory: settlementHistoryPerms.read,
+          })}
+        />
       ),
     });
   }

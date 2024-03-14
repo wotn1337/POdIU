@@ -18,6 +18,7 @@ import { getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
 import { getOnChange } from "./utils";
+import { LoginOutlined } from "@ant-design/icons";
 
 export const StudentsPageContent = () => {
   const dispatch = useDispatch();
@@ -123,16 +124,19 @@ export const StudentsPageContent = () => {
               setCreateStudentModal({ open: true, defaultStudent: student })
             )
           }
-        >
-          {perms.update && !student.dorm_room && (
-            <Button
-              type="primary"
-              onClick={() => dispatch(setSettlementStudent(student))}
-            >
-              Поселить
-            </Button>
-          )}
-        </TableActionButtons>
+          items={
+            perms.update && !student.dorm_room
+              ? [
+                  {
+                    key: "settle",
+                    label: "Поселить",
+                    icon: <LoginOutlined />,
+                    onClick: () => dispatch(setSettlementStudent(student)),
+                  },
+                ]
+              : []
+          }
+        />
       ),
     });
   }
