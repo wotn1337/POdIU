@@ -124,7 +124,7 @@ export const StudentsPageContent = () => {
             )
           }
         >
-          {perms.update && (
+          {perms.update && !student.dorm_room && (
             <Button
               type="primary"
               onClick={() => dispatch(setSettlementStudent(student))}

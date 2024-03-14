@@ -77,6 +77,7 @@ export const SettlementModal: React.FC<Props> = ({ room, onCancel }) => {
               !selectedRowKeys.includes(id),
           }),
         }}
+        withRoom
       />
     </Modal>
   );
