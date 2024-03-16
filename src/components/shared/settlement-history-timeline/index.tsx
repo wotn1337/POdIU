@@ -1,4 +1,4 @@
-import { Empty, Spin, Tooltip } from "antd";
+import { Empty, Spin } from "antd";
 import { useGetSettlementHistoryQuery } from "app/features";
 import moment from "moment";
 import Timeline from "react-calendar-timeline";
