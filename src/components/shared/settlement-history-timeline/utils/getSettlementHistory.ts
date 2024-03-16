@@ -1,17 +1,16 @@
 import { SettlementHistory } from "app/features";
 import moment from "moment";
+import { TimelineGroupBase, TimelineItemBase } from "react-calendar-timeline";
 
-type Group = {
-  id: number | string;
-  title: string;
+export type Group = TimelineGroupBase & {
+  cyrillic_name: string;
+  latin_name: string;
+  room: string;
 };
 
-type Item = {
-  id: number | string;
-  group: number | string;
-  title: string;
-  start_time: moment.Moment;
-  end_time: moment.Moment;
+export type Item = TimelineItemBase<moment.Moment> & {
+  groupProps: Group;
+  untilNow: boolean;
 };
 
 export const getSettlementHistory = (
@@ -38,13 +37,20 @@ export const getSettlementHistory = (
       type === "student"
         ? value[0].dorm_room.number
         : value[0].student.cyrillic_name;
-    groups.push({ id: key, title: groupTitle });
+    const group = {
+      id: key,
+      title: groupTitle,
+      cyrillic_name: value[0].student.cyrillic_name,
+      latin_name: value[0].student.latin_name,
+      room: value[0].dorm_room.number,
+    };
+    groups.push(group);
 
     for (let i = 0; i < value.length; i += 2) {
-      const end_time =
+      const untilNow = !(
         value.length === 1 && value[i].settlement_status.title === "Выселение"
-          ? value[i].created_at
-          : undefined;
+      );
+      const end_time = !untilNow ? value[i].created_at : undefined;
       const itemId =
         type === "student"
           ? `${value[i].dorm_room.id}-${i}`
@@ -57,6 +63,8 @@ export const getSettlementHistory = (
         end_time: moment(
           i === value.length - 1 ? end_time : value[i + 1].created_at
         ),
+        groupProps: group,
+        untilNow,
       });
     }
   });

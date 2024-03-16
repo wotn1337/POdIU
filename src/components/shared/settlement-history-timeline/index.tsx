@@ -1,10 +1,10 @@
-import { Empty, Spin } from "antd";
+import { Empty, Spin, Tooltip } from "antd";
 import { useGetSettlementHistoryQuery } from "app/features";
 import moment from "moment";
 import Timeline from "react-calendar-timeline";
 import "react-calendar-timeline/lib/Timeline.css";
 import "./style.scss";
-import { getSettlementHistory } from "./utils";
+import { getSettlementHistory, itemRenderer } from "./utils";
 
 type Props = {
   itemId: number;
@@ -33,12 +33,14 @@ export const SettlementHistoryTimeline: React.FC<Props> = ({
         <Timeline
           groups={groups}
           items={items}
-          defaultTimeStart={moment().add(-12, "hour")}
-          defaultTimeEnd={moment().add(12, "hour")}
+          defaultTimeStart={moment().startOf("year")}
+          defaultTimeEnd={moment().endOf("year")}
           canResize={false}
           canMove={false}
           className="settlement-timeline"
           sidebarWidth={type === "room" ? 300 : 100}
+          minZoom={1000 * 60 * 60 * 60 * 10}
+          itemRenderer={itemRenderer}
         />
       ) : (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
