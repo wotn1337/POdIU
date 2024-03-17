@@ -58,6 +58,7 @@ export type GetStudentsResponse = WithPaginationMeta<{
 export type SettleStudentParams = {
   studentId: number;
   roomId: number;
+  has_dorm_room?: boolean;
 };
 
 export type StudentsStateType = {

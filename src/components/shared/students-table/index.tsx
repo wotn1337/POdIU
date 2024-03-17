@@ -9,12 +9,12 @@ import {
   useGetStudentsQuery,
 } from "app/features";
 import { Student } from "app/features/students/types";
+import { useSelector } from "app/store";
 import { Filters, PaginationParams, Sorters } from "app/types";
+import { useUserPermissions } from "hooks/useUserPermissions";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { TableActionButtons } from "..";
-import { useUserPermissions } from "hooks/useUserPermissions";
-import { useSelector } from "app/store";
 
 type Props = {
   dataSource?: Student[];
@@ -22,6 +22,7 @@ type Props = {
   actions?: boolean;
   withRoom?: boolean;
   roomId?: number;
+  initFilters?: Filters;
 };
 
 export const StudentsTable: React.FC<Props> = ({
@@ -30,6 +31,7 @@ export const StudentsTable: React.FC<Props> = ({
   actions = false,
   withRoom = false,
   roomId,
+  initFilters,
 }) => {
   const { students: perms } = useUserPermissions();
   const searchInput = useRef<InputRef>(null);
@@ -43,7 +45,7 @@ export const StudentsTable: React.FC<Props> = ({
     page: 1,
     per_page: 10,
   });
-  const [filters, setFilters] = useState<Filters>();
+  const [filters, setFilters] = useState<Filters>(initFilters ?? {});
   const [sorters, setSorters] = useState<Sorters>();
   const { data, isLoading, isFetching } = useGetStudentsQuery(
     {
@@ -133,6 +135,13 @@ export const StudentsTable: React.FC<Props> = ({
       key: "dorm_room",
       dataIndex: ["dorm_room", "number"],
       title: "Номер комнаты",
+      filters: [
+        { text: "Только поселенные", value: true },
+        { text: "Только не поселенные", value: false },
+      ],
+      filterMultiple: false,
+      filteredValue:
+        filters.has_dorm_room !== undefined ? [!!filters.has_dorm_room] : [],
     });
   }
 
@@ -192,12 +201,22 @@ export const StudentsTable: React.FC<Props> = ({
         locale: { items_per_page: "строк на страницу" },
         onChange: (page, per_page) => setPaginationParams({ page, per_page }),
       }}
-      onChange={(_, __, sorter) => {
+      onChange={(_, tableFilters, sorter) => {
         if (!Array.isArray(sorter)) {
           setSorters({
             [String(sorter.columnKey)]: sorter.order,
           });
         }
+        setFilters({
+          ...filters,
+          gender_id: tableFilters["gender"]
+            ? tableFilters["gender"][0]
+            : undefined,
+          countries: tableFilters["country"] ?? undefined,
+          has_dorm_room: tableFilters["dorm_room"]
+            ? tableFilters["dorm_room"][0]
+            : undefined,
+        });
       }}
       rowKey="id"
     />

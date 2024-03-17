@@ -16,10 +16,11 @@ export const getStudentsApiEndpoints = (
   builder: EndpointBuilder<BaseQueryFn, string, string>
 ) => ({
   getStudents: builder.query<GetStudentsResponse, GetStudentsParams>({
-    query: ({ page, per_page, with_dormitory, filters, sorters }) =>
-      `api/v1/students?page=${page}&per_page=${per_page}&with_dormitory=${Number(
-        with_dormitory ?? false
-      )}&${getFilterParams(filters)}&${getSorterParams(sorters)}`,
+    query: ({ filters, sorters, ...params }) =>
+      `api/v1/students?${getFilterParams({
+        ...filters,
+        ...params,
+      })}&${getSorterParams(sorters)}`,
     providesTags: StudentTags,
   }),
   createStudent: builder.mutation<CreateStudentResponse, PostStudentData>({

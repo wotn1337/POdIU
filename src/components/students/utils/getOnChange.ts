@@ -23,6 +23,9 @@ export const getOnChange = ({
       ...filters,
       gender_id: tableFilters["gender"] ? tableFilters["gender"][0] : undefined,
       countries: tableFilters["country"] ?? undefined,
+      has_dorm_room: tableFilters["dorm_room"]
+        ? tableFilters["dorm_room"][0]
+        : undefined,
     });
   };
 };

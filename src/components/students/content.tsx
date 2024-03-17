@@ -16,7 +16,7 @@ import { Filters, PaginationParams, Sorters } from "app/types";
 import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks";
 import { useRef, useState } from "react";
-import { getColumnSearchProps } from "utils";
+import { getBinaryFilterProps, getColumnSearchProps } from "utils";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
 import { getOnChange, getActionButtons } from "./utils";
@@ -40,9 +40,11 @@ export const StudentsPageContent = () => {
   });
   const [filters, setFilters] = useState<Filters>();
   const [sorters, setSorters] = useState<Sorters>();
+  const [onlyWithRoom, setOnlyWithRoom] = useState<boolean>();
   const { data, isLoading, isFetching } = useGetStudentsQuery({
     ...paginationParams,
     with_dormitory: true,
+    // has_dorm_room: onlyWithRoom,
     filters,
     sorters,
   });
@@ -87,12 +89,18 @@ export const StudentsPageContent = () => {
       title: "Пол",
       render: (value) => value?.title,
       filters: genders?.map((g) => ({ text: g.title, value: g.id })),
-      filterMultiple: false,
     },
     {
       key: "dorm_room",
       dataIndex: ["dorm_room", "number"],
       title: "Номер комнаты",
+      filters: [
+        { text: "Только поселенные", value: true },
+        { text: "Только не поселенные", value: false },
+      ],
+      filterMultiple: false,
+      filteredValue:
+        filters?.has_dorm_room !== undefined ? [!!filters.has_dorm_room] : [],
     },
     {
       key: "country",

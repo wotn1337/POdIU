@@ -71,13 +71,15 @@ export const SettlementModal: React.FC<Props> = ({ room, onCancel }) => {
           selectedRowKeys,
           onChange: onSelectionChange,
           hideSelectAll: true,
-          getCheckboxProps: ({ id }) => ({
+          getCheckboxProps: ({ id, dorm_room }) => ({
             disabled:
-              selectedRowKeys?.length === room.number_of_seats &&
-              !selectedRowKeys.includes(id),
+              !!dorm_room ||
+              (selectedRowKeys?.length === room.number_of_seats &&
+                !selectedRowKeys.includes(id)),
           }),
         }}
         withRoom
+        initFilters={{ has_dorm_room: false }}
       />
     </Modal>
   );

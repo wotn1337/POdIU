@@ -15,6 +15,7 @@ import { useState } from "react";
 import { StudentsTable } from "..";
 import { TableActionButtons } from "../table-action-buttons";
 import { getActionButtons, getAvailableFilterProps } from "./utils";
+import { getBinaryFilterProps } from "utils";
 
 type Props = {
   dorm?: Dormitory;
@@ -80,7 +81,8 @@ export const RoomsTable: React.FC<Props> = ({
       key: "empty_seats_count",
       dataIndex: "empty_seats_count",
       title: "Свободных мест",
-      ...getAvailableFilterProps<Room>({
+      ...getBinaryFilterProps({
+        label: "Только свободные",
         value: onlyAvailable,
         onChange: setOnlyAvailable,
       }),
