@@ -14,7 +14,7 @@ import { useUserPermissions } from "hooks";
 import { useState } from "react";
 import { StudentsTable } from "..";
 import { TableActionButtons } from "../table-action-buttons";
-import { getActionButtons, getAvailableFilterProps } from "./utils";
+import { getActionButtons } from "./utils";
 import { getBinaryFilterProps } from "utils";
 
 type Props = {
