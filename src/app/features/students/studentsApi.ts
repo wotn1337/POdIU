@@ -2,6 +2,7 @@ import { BaseQueryFn, EndpointBuilder } from "@reduxjs/toolkit/query/react";
 import { METHOD, WithMessage } from "app/types";
 import {
   CreateStudentResponse,
+  GetStudentPaymentsResponse,
   GetStudentsParams,
   GetStudentsResponse,
   PostStudentData,
@@ -67,5 +68,25 @@ export const getStudentsApiEndpoints = (
       ...StudentTags,
       { type: RoomTag, dorm_room_id: roomId },
     ],
+  }),
+  studentPaymentsImport: builder.mutation<void, Blob>({
+    query: (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return {
+        url: "api/v1/students/payments/import",
+        method: METHOD.POST,
+        body: formData,
+      };
+    },
+  }),
+  getStudentPayments: builder.query<
+    GetStudentPaymentsResponse,
+    number | undefined
+  >({
+    query: (studentId) => ({
+      url: `api/v1/students/payments/${studentId}`,
+      method: METHOD.GET,
+    }),
   }),
 });

@@ -3,7 +3,7 @@
   height: auto;
   background-color: transparent;
   justify-content: space-between;
-  align-items: end;
+  align-items: start;
   padding: 0px 32px;
 
   &__logo {
@@ -19,6 +19,25 @@
       &::after {
         width: calc(100% - 16px);
       }
+    }
+  }
+
+  &__notificationPopover {
+    :global {
+      .ant-popover-content {
+        width: 350px;
+      }
+    }
+
+    .notification {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .notificationsPagination {
+      width: fit-content;
+      margin: 8px auto 0;
     }
   }
 }

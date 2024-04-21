@@ -61,6 +61,14 @@ export type SettleStudentParams = {
   has_dorm_room?: boolean;
 };
 
+export type GetStudentPaymentsResponse = {
+  student_payments: WithId<{
+    student_payment_type: WithIdAndTitle;
+    value: number;
+    comment: string;
+  }>[];
+};
+
 export type StudentsStateType = {
   deletingStudentIds: number[];
   createStudentModal: {

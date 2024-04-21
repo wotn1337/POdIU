@@ -51,6 +51,9 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useGetUserNotificationsQuery,
+  useLazyGetUserNotificationsQuery,
+  useReadNotificationMutation,
   // students
   useGetStudentsQuery,
   useCreateStudentMutation,
@@ -58,6 +61,9 @@ export const {
   useDeleteStudentMutation,
   useSettleStudentMutation,
   useEvictStudentMutation,
+  useStudentPaymentsImportMutation,
+  useGetStudentPaymentsQuery,
+  useLazyGetStudentPaymentsQuery,
   // academic groups
   useGetAcademicGroupsQuery,
   // genders

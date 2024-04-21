@@ -8,7 +8,7 @@ import {
   UserOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Layout as AntdLayout, Menu, MenuProps } from "antd";
+import { Layout as AntdLayout, Menu, MenuProps, Space } from "antd";
 import { useLogoutMutation } from "app/features";
 import { useSelector } from "app/store";
 import { PATH } from "assets/constants";
@@ -16,6 +16,7 @@ import { Logo } from "assets/images";
 import { useCurrentPage } from "hooks/useCurrentPage";
 import { NavLink } from "react-router-dom";
 import s from "./header.module.scss";
+import { NotificationsDropdown } from "./NotificationsPopover";
 
 const { Header: AntdHeader } = AntdLayout;
 
@@ -71,13 +72,16 @@ export const Header = () => {
   return (
     <AntdHeader className={s.header}>
       <img src={Logo} className={s.header__logo} />
-      <Menu
-        mode="horizontal"
-        items={items}
-        disabledOverflow={true}
-        className={s.header__menu}
-        selectedKeys={[currentPage]}
-      />
+      <Space size={32}>
+        <Menu
+          mode="horizontal"
+          items={items}
+          disabledOverflow={true}
+          className={s.header__menu}
+          selectedKeys={[currentPage]}
+        />
+        <NotificationsDropdown />
+      </Space>
     </AntdHeader>
   );
 };

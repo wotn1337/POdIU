@@ -3,10 +3,12 @@ import { METHOD, PaginationParams, WithMessage } from "app/types";
 import {
   CreateUserData,
   CreateUserResponse,
+  GetUserNotificationsResponse,
   GetUsersResponse,
   UpdateUserData,
   UserTags,
 } from "./types";
+import { getFilterParams } from "app/utils";
 
 export const getUsersApiEndpoints = (
   builder: EndpointBuilder<BaseQueryFn, string, string>
@@ -38,5 +40,20 @@ export const getUsersApiEndpoints = (
       method: METHOD.DELETE,
     }),
     invalidatesTags: UserTags,
+  }),
+  getUserNotifications: builder.query<
+    GetUserNotificationsResponse,
+    PaginationParams
+  >({
+    query: (params) => ({
+      url: `api/v1/profile/notifications?${getFilterParams(params)}`,
+      method: METHOD.GET,
+    }),
+  }),
+  readNotification: builder.mutation<void, number>({
+    query: (notificationId) => ({
+      url: `api/v1/profile/notifications/${notificationId}`,
+      method: METHOD.PATCH,
+    }),
   }),
 });

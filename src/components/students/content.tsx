@@ -1,4 +1,4 @@
-import { Button, InputRef } from "antd";
+import { InputRef } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   setCreateStudentModal,
@@ -15,14 +15,16 @@ import { useDispatch, useSelector } from "app/store";
 import { Filters, PaginationParams, Sorters } from "app/types";
 import { TableActionButtons, TabledContent } from "components/shared";
 import { useUserPermissions } from "hooks";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import { JSX } from "react/jsx-runtime";
 import { getColumnSearchProps } from "utils";
+import { SettlementHistoryModal } from "./SettlementHistoryModal";
+import { TalbeRowWithPopover } from "./TableRowWithPopover";
 import { CreateStudentModal } from "./createStudentModal";
 import { SettlementModal } from "./settlementModal";
-import { getOnChange, getActionButtons } from "./utils";
-import { SettlementHistoryModal } from "./SettlementHistoryModal";
+import { getActionButtons, getHeaderActionButtons, getOnChange } from "./utils";
 
-export const StudentsPageContent = () => {
+export const StudentsPageContent: React.FC = () => {
   const dispatch = useDispatch();
   const {
     deletingStudentIds,
@@ -123,11 +125,6 @@ export const StudentsPageContent = () => {
       dataIndex: "telephone",
       title: "Номер телефона",
     },
-    {
-      key: "comment",
-      dataIndex: "comment",
-      title: "Комментарий",
-    },
   ];
 
   if (perms.update || perms.delete || settlementHistoryPerms.read) {
@@ -179,14 +176,12 @@ export const StudentsPageContent = () => {
       {createStudentModal.open && <CreateStudentModal />}
       <TabledContent<Student>
         pageTitle="Студенты"
-        actionButtons={
-          perms.create ? (
-            <Button
-              children="Добавить студента"
-              onClick={() => dispatch(setCreateStudentModal({ open: true }))}
-            />
-          ) : undefined
-        }
+        actionButtons={getHeaderActionButtons({
+          hasCreate: perms.create,
+          hasUpdate: perms.update,
+          onCreateButtonClick: () =>
+            dispatch(setCreateStudentModal({ open: true })),
+        })}
         dataSource={data?.students}
         columns={columns}
         loading={loading}
@@ -196,6 +191,15 @@ export const StudentsPageContent = () => {
           pageSize: paginationParams.per_page,
           total: data?.meta.total,
           onChange: (page, per_page) => setPaginationParams({ page, per_page }),
+        }}
+        components={{
+          body: {
+            row: (
+              props: JSX.IntrinsicAttributes & {
+                children: { props: { record: Student } }[];
+              }
+            ) => <TalbeRowWithPopover {...props} />,
+          },
         }}
       />
     </>

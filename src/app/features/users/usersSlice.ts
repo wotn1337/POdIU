@@ -5,6 +5,7 @@ import { apiSlice } from "../api";
 const initialState: UsersStateType = {
   deleteUserIds: [],
   createUserModal: { open: false },
+  notifications: [],
 };
 
 const usersSlice = createSlice({
@@ -47,6 +48,27 @@ const usersSlice = createSlice({
       apiSlice.endpoints.updateUser.matchFulfilled,
       (state) => {
         state.createUserModal = { open: false };
+      }
+    );
+    // notifications
+    builder.addMatcher(
+      apiSlice.endpoints.getUserNotifications.matchFulfilled,
+      (state, { payload }) => {
+        state.notifications = payload.notifications;
+      }
+    );
+    builder.addMatcher(
+      apiSlice.endpoints.readNotification.matchFulfilled,
+      (state, { meta: { arg } }) => {
+        state.notifications = state.notifications.map((n) => {
+          if (n.id === arg.originalArgs) {
+            return {
+              ...n,
+              read_at: new Date().toDateString(),
+            };
+          }
+          return n;
+        });
       }
     );
   },

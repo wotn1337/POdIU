@@ -15,6 +15,8 @@ import { useUserPermissions } from "hooks/useUserPermissions";
 import { useRef, useState } from "react";
 import { getColumnSearchProps } from "utils";
 import { TableActionButtons } from "..";
+import { TalbeRowWithPopover } from "components/students";
+import { JSX } from "react/jsx-runtime";
 
 type Props = {
   dataSource?: Student[];
@@ -113,11 +115,6 @@ export const StudentsTable: React.FC<Props> = ({
       key: "telephone",
       dataIndex: "telephone",
       title: "Номер телефона",
-    },
-    {
-      key: "comment",
-      dataIndex: "comment",
-      title: "Комментарий",
     },
   ];
 
@@ -219,6 +216,15 @@ export const StudentsTable: React.FC<Props> = ({
         });
       }}
       rowKey="id"
+      components={{
+        body: {
+          row: (
+            props: JSX.IntrinsicAttributes & {
+              children: { props: { record: Student } }[];
+            }
+          ) => <TalbeRowWithPopover {...props} />,
+        },
+      }}
     />
   );
 };

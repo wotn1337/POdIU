@@ -1,4 +1,9 @@
-import { WithId, WithMessage, WithPaginationMeta } from "app/types";
+import {
+  WithId,
+  WithMessage,
+  WithPaginationMeta,
+  WithTimeInfo,
+} from "app/types";
 import { Role } from "../roles";
 import { Permission } from "../permissions";
 
@@ -33,10 +38,26 @@ export type CreateUserResponse = WithMessage<{
 
 export type UpdateUserData = WithId<CreateUserData>;
 
+export type NotificationType = WithTimeInfo<
+  WithId<{
+    type: string;
+    read_at: string | null;
+    data: {
+      message: string;
+      status: string;
+    };
+  }>
+>;
+
+export type GetUserNotificationsResponse = WithPaginationMeta<{
+  notifications: NotificationType[];
+}>;
+
 export type UsersStateType = {
   deleteUserIds: number[];
   createUserModal: {
     open: boolean;
     defaultUser?: User;
   };
+  notifications: NotificationType[];
 };
