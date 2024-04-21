@@ -20,6 +20,7 @@ export const NotificationsDropdown = () => {
       trigger="click"
       className={s.header__notificationPopover}
       getPopupContainer={(node) => node}
+      destroyTooltipOnHide
     >
       <Badge dot={notifications.some((n) => !n.read_at)}>
         <Button
