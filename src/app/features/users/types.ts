@@ -44,7 +44,7 @@ export type NotificationType = WithTimeInfo<
     read_at: string | null;
     data: {
       message: string;
-      status: string;
+      status: "success" | "failure";
     };
   }>
 >;

@@ -1,8 +1,9 @@
-import { CheckCircleTwoTone } from "@ant-design/icons";
+import { CheckCircleTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
 import { Badge, List, Tooltip } from "antd";
 import { NotificationType, useReadNotificationMutation } from "app/features";
 import moment from "moment";
 import s from "../header.module.scss";
+import React from "react";
 
 export const NotificationItem: React.FC<NotificationType> = ({
   data,
@@ -12,6 +13,12 @@ export const NotificationItem: React.FC<NotificationType> = ({
   created_at,
 }) => {
   const [readNotification] = useReadNotificationMutation();
+
+  const icons: Record<NotificationType["data"]["status"], React.ReactNode> = {
+    success: <CheckCircleTwoTone twoToneColor="#52c41a" />,
+    failure: <CloseCircleTwoTone twoToneColor="red" />,
+  };
+
   const onNotificationClick = (id: number, notReaded: boolean) => {
     if (notReaded) {
       readNotification(id);
@@ -32,9 +39,7 @@ export const NotificationItem: React.FC<NotificationType> = ({
           }
           description={moment(created_at).format("DD.MM.YYYY HH:MM")}
         />
-        {data.status === "success" && (
-          <CheckCircleTwoTone twoToneColor="#52c41a" />
-        )}
+        {icons[data.status]}
       </List.Item>
     </Tooltip>
   );
